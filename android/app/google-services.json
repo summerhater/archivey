@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1021969266142",
+    "project_id": "archivey-4d62f",
+    "storage_bucket": "archivey-4d62f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021969266142:android:2ea765d367c5a7ac6a994f",
+        "android_client_info": {
+          "package_name": "com.archivey.archivey"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrBAOqop8X8LdXhQaFCkYPKNUVphecJJw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
