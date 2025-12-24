@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:archivey/config/color_scheme_extension.dart';
+import 'package:archivey/config/text_theme_extension.dart';
 import 'package:archivey/firebase_options.dart';
 import 'package:archivey/routing/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,9 +16,6 @@ void main() async {
   );
   runApp(const Archivey());
 }
-// void main() {
-//   runApp(MyApp());
-// }
 
 class Archivey extends StatelessWidget {
   const Archivey({super.key});
@@ -25,7 +25,12 @@ class Archivey extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: goRouter,
       debugShowCheckedModeBanner: false,
-      // theme: ,
+      theme: ThemeData(
+        extensions: [
+          AppColorScheme(),
+          AppTextTheme()
+        ],
+      ),
     );
   }
 }

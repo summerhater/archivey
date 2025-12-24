@@ -15,29 +15,37 @@ class AppTextTheme extends ThemeExtension<AppTextTheme> {
 
   const AppTextTheme({
     this.headlineSmallEn = const TextStyle(
+      fontFamily: 'theseasons',
       fontSize: 20,
       fontWeight: FontWeight.w600,
     ), ///all_page - index(영문)
     this.headlineSmallKo = const TextStyle(
+      fontFamily: 'scDream',
       fontSize: 16,
       fontWeight: FontWeight.w600,
     ),///all_page - 전체(국문)
     this.bodyLarge = const TextStyle(
+      fontFamily: 'scDream',
       fontSize: 18,
     ),///회원가입 페이지
     this.bodyMedium = const TextStyle(
+      fontFamily: 'scDream',
       fontSize: 14,
     ),///바텀시트, vertical tab navigation 등
     this.bodySmall = const TextStyle(
+      fontFamily: 'scDream',
       fontSize: 12,
     ),///카테고리 수집물 갯수 디스플레이, AI요약 본문 등
     this.labelLarge = const TextStyle(
+      fontFamily: 'scDream',
       fontSize: 10,
     ),///회원가입 페이지네이션, 검색창 placeholder 등
     this.labelMedium = const TextStyle(
+      fontFamily: 'scDream',
       fontSize: 9,
     ),///리스트 저장 날짜, 수집물 갯수 등
     this.labelSmall = const TextStyle(
+      fontFamily: 'scDream',
       fontSize: 8,
     ),///리스트 태그
   });

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class DocumentListPage extends StatelessWidget {
+class DocumentCategoryPageListPage extends StatelessWidget {
   final String? category;
-  const DocumentListPage({super.key, required this.category});
+  const DocumentCategoryPageListPage({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
