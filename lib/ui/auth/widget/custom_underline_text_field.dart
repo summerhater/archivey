@@ -42,8 +42,7 @@ class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
     return TextField(
       controller: _controller,
       decoration: InputDecoration(
-        hintStyle: TextStyle(
-          fontSize: appText.bodyMedium.fontSize,
+        hintStyle: appText.bodyMedium.copyWith(
           color: appColor.textLight,
         ),
         hintText: hintText,
@@ -73,7 +72,7 @@ class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
       ),
       keyboardType: isPassword ? TextInputType.text : TextInputType.emailAddress,
       cursorColor: appColor.primaryDark,
-      style: TextStyle(
+      style: appText.bodyMedium.copyWith(
         color: appColor.primaryDark,
       ),
       obscureText: isPassword && !visibility,

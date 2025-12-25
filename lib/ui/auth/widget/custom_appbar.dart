@@ -17,21 +17,20 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     var appText = Theme.of(context).extension<AppTextTheme>()!;
     
     return AppBar(
-      leading: IconButton(
+      leading: context.canPop() ? IconButton(
         onPressed: () {
           context.pop(context);
         },
         icon: Icon(Icons.chevron_left, color: appColor.textLight),
-      ),
+      ) : null,
       actions: [
         TextButton(
           onPressed: null,
           child: Text(
             progressText,
-            style: TextStyle(
-              fontSize: appText.labelLarge.fontSize,
+            style: appText.labelLarge.copyWith(
               color: appColor.textLight,
-            ),
+            )
           ),
         ),
       ],

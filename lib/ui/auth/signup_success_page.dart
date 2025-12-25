@@ -27,31 +27,27 @@ class SignupSuccessPage extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: '환영해요! ',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
-                        fontWeight: FontWeight.bold,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '가입을 ',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                     TextSpan(
                       text: '완료',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
-                        fontWeight: FontWeight.bold,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '했어요.\n로그인 후 발견을 저장하고,\n취향을 쌓아보세요. ',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),

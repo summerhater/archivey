@@ -31,39 +31,34 @@ class SignupEmailPage extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: '가입하실 ',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                     TextSpan(
                       text: '이메일',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
-                        fontWeight: FontWeight.bold,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '을\n',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                     TextSpan(
                       text: '입력해 주세요.',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(
+              SizedBox(
                 height: 40,
-                color: Colors.transparent,
               ),
               CustomUnderlineTextField(controller: _controller, hintText: '이메일 주소 입력'),
             ],
@@ -72,7 +67,7 @@ class SignupEmailPage extends StatelessWidget {
         bottomSheet: CustomNextButton(
           path: '/auth/signup-email/signup-password',
           guide: '다음',
-          vmAsyncFunction: () => context.read<AuthViewModel>().isAlreadyExistEmail(_controller.text),
+          onPressed: () => context.read<AuthViewModel>().isAlreadyExistEmail(_controller.text),
         ),
       ),
     );

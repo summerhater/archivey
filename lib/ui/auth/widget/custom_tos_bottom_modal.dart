@@ -55,32 +55,27 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
               children: [
                 TextSpan(
                   text: '아카이비 이용을 위해\n',
-                  style: TextStyle(
-                    fontSize: appText.bodyLarge.fontSize,
+                  style: appText.bodyLarge.copyWith(
                     color: appColor.primaryDark,
                   ),
                 ),
                 TextSpan(
                   text: '동의',
-                  style: TextStyle(
-                    fontSize: appText.bodyLarge.fontSize,
+                  style: appText.bodyLarge.copyWith(
                     color: appColor.primaryDark,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 TextSpan(
                   text: '가 필요해요.',
-                  style: TextStyle(
-                    fontSize: appText.bodyLarge.fontSize,
+                  style: appText.bodyLarge.copyWith(
                     color: appColor.primaryDark,
                   ),
                 ),
               ],
             ),
           ),
-          Divider(
-            color: Colors.transparent,
-          ),
+          SizedBox(),
           GestureDetector(
             onTap: () {
               setState(() {
@@ -104,18 +99,15 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
                 ),
                 Text(
                   '모두 동의합니다.',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                  style: appText.bodySmall.copyWith(
                     color: appColor.primaryDark,
-                    fontSize: appText.bodySmall.fontSize,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
           ),
-          Divider(
-            color: Colors.transparent,
-          ),
+          SizedBox(),
           for (int i = 0; i < checkList.length; i++) ...[
             Column(
               children: [
@@ -147,9 +139,8 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
                       }),
                       child: Text(
                         checkGuide[i],
-                        style: TextStyle(
+                        style: appText.bodySmall.copyWith(
                           color: appColor.primaryDark,
-                          fontSize: appText.bodySmall.fontSize,
                         ),
                       ),
                     ),
@@ -159,18 +150,18 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
               ],
             ),
           ],
-          Divider(
-            color: Colors.transparent,
-          ),
+          SizedBox(),
           Container(
             margin: EdgeInsets.symmetric(
               vertical: 10,
             ),
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: checkList.every((e) => e) ? () {
-                context.go(path);
-              } : null,
+              onPressed: checkList.every((e) => e)
+                  ? () {
+                      context.go(path);
+                    }
+                  : null,
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -183,9 +174,8 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
               ),
               child: Text(
                 '약관 동의 완료',
-                style: TextStyle(
+                style: appText.bodyMedium.copyWith(
                   color: appColor.primaryLight,
-                  fontSize: appText.bodyMedium.fontSize,
                 ),
               ),
             ),

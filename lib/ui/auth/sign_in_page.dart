@@ -54,18 +54,16 @@ class _SignInPageState extends State<SignInPage> {
                     controller: _emailController,
                     guide: '이메일',
                   ),
-                  Divider(
+                  SizedBox(
                     height: 15,
-                    color: Colors.transparent,
                   ),
                   SignInCustomTextField(
                     controller: _pwController,
                     guide: '패스워드',
                     isPassword: true,
                   ),
-                  Divider(
+                  SizedBox(
                     height: 25,
-                    color: Colors.transparent,
                   ),
                   CustomElevatedButton(
                     path: '/document-index',

@@ -26,54 +26,47 @@ class SignupEmailVerifyPage extends StatelessWidget {
             children: [
               Text(
                 '이메일을 전송했어요.',
-                style: TextStyle(
-                  fontSize: appText.bodyLarge.fontSize,
+                style: appText.bodyLarge.copyWith(
                   color: appColor.primaryDark,
                 ),
               ),
-              Divider(
+              SizedBox(
                 height: 40,
-                color: Colors.transparent,
               ),
               Text.rich(
                 TextSpan(
                   children: [
                     TextSpan(
                       text: '전송된 링크로 접속해 ',
-                      style: TextStyle(
-                        fontSize: appText.bodyMedium.fontSize,
+                      style: appText.bodyMedium.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                     TextSpan(
                       text: '인증완료 후,\n',
-                      style: TextStyle(
-                        fontSize: appText.bodyMedium.fontSize,
-                        fontWeight: FontWeight.bold,
+                      style: appText.bodyMedium.copyWith(
                         color: appColor.primaryDark,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '다음 ',
-                      style: TextStyle(
-                        fontSize: appText.bodyMedium.fontSize,
-                        fontWeight: FontWeight.bold,
+                      style: appText.bodyMedium.copyWith(
                         color: appColor.primaryDark,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '버튼을 눌러 진행해 주세요.',
-                      style: TextStyle(
-                        fontSize: appText.bodyMedium.fontSize,
+                      style: appText.bodyMedium.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(
+              SizedBox(
                 height: 40,
-                color: Colors.transparent,
               ),
             ],
           ),
@@ -81,7 +74,7 @@ class SignupEmailVerifyPage extends StatelessWidget {
         bottomSheet: CustomNextButton(
           path: '/auth/signup-success/',
           guide: '다음',
-          vmAsyncFunction: () => vm.isVerifyEmail(),
+          onPressed: () => vm.isVerifyEmail(),
         ),
       ),
     );

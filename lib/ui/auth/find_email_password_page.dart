@@ -32,39 +32,34 @@ class FindEmailPasswordPage extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: '가입하신 ',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                     TextSpan(
                       text: '이메일',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
-                        fontWeight: FontWeight.bold,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '을\n',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                     TextSpan(
                       text: '입력해 주세요.',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(
+              SizedBox(
                 height: 40,
-                color: Colors.transparent,
               ),
               CustomUnderlineTextField(
                 controller: _controller,
@@ -76,7 +71,7 @@ class FindEmailPasswordPage extends StatelessWidget {
         bottomSheet: CustomNextButton(
           path: '/auth/sign-in',
           guide: '비밀번호 재설정 메일 보내기',
-          vmAsyncFunction: () => context
+          onPressed: () => context
               .read<AuthViewModel>()
               .resetPasswordWithEmail(_controller.text)
               .then(

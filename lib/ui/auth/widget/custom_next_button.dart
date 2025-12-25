@@ -7,13 +7,13 @@ import 'package:go_router/go_router.dart';
 class CustomNextButton extends StatelessWidget {
   final String guide;
   final String path;
-  final Future<void> Function()? vmAsyncFunction;
+  final Future<void> Function()? onPressed;
 
   const CustomNextButton({
     super.key,
     required this.path,
     required this.guide,
-    this.vmAsyncFunction,
+    this.onPressed,
   });
 
   @override
@@ -27,8 +27,8 @@ class CustomNextButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () async {
           try {
-            if(vmAsyncFunction != null) {
-              await vmAsyncFunction!();
+            if(onPressed != null) {
+              await onPressed!();
               if(!context.mounted) return;
             }
             context.go(path);
@@ -46,10 +46,9 @@ class CustomNextButton extends StatelessWidget {
         child: Center(
           child: Text(
             guide,
-            style: TextStyle(
+            style: appText.headlineSmallKo.copyWith(
               color: appColor.primaryLight,
-              fontSize: appText.headlineSmallKo.fontSize,
-            ),
+            )
           ),
         ),
       ),

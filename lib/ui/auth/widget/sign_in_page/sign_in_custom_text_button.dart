@@ -25,10 +25,9 @@ class SignInCustomTextButton extends StatelessWidget {
       },
       child: Text(
         guide,
-        style: TextStyle(
+        style: appText.labelLarge.copyWith(
           color: appColor.primaryLight,
-          fontSize: appText.labelLarge.fontSize,
-        )
+        ),
       ),
     );
   }

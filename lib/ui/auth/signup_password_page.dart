@@ -39,37 +39,32 @@ class _SignupPasswordPageState extends State<SignupPasswordPage> {
                   children: [
                     TextSpan(
                       text: '사용하실',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                     TextSpan(
                       text: '비밀번호',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
-                        fontWeight: FontWeight.bold,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '를 입력해 주세요.',
-                      style: TextStyle(
-                        fontSize: appText.bodyLarge.fontSize,
+                      style: appText.bodyLarge.copyWith(
                         color: appColor.primaryDark,
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(
+              SizedBox(
                 height: 40,
-                color: Colors.transparent,
               ),
               CustomUnderlineTextField(controller: _pw, hintText: '비밀번호 입력', isPassword: true,),
-              Divider(
+              SizedBox(
                 height: 20,
-                color: Colors.transparent,
               ),
               CustomUnderlineTextField(controller: _pwVerify, hintText: '비밀번호를 다시 한번 입력해 주세요', isPassword: true,),
             ],
@@ -78,7 +73,7 @@ class _SignupPasswordPageState extends State<SignupPasswordPage> {
         bottomSheet: CustomNextButton(
           path: '/auth/signup-email/signup-password/signup-email-verify',
           guide: '다음',
-          vmAsyncFunction: () async => await context.read<AuthViewModel>().signUpWithEmailAndPassword(_pw.text, _pwVerify.text),
+          onPressed: () async => await context.read<AuthViewModel>().signUpWithEmailAndPassword(_pw.text, _pwVerify.text),
         ),
       ),
     );

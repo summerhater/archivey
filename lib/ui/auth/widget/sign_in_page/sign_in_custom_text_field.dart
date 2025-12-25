@@ -37,9 +37,8 @@ class _SignInCustomTextFieldState extends State<SignInCustomTextField> {
       controller: controller,
       decoration: InputDecoration(
         labelText: guide,
-        labelStyle: TextStyle(
+        labelStyle: appText.bodySmall.copyWith(
           color: appColor.textLight,
-          fontSize: appText.bodySmall.fontSize,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -74,7 +73,7 @@ class _SignInCustomTextFieldState extends State<SignInCustomTextField> {
         ) : null,
       ),
       cursorColor: appColor.textLight,
-      style: TextStyle(
+      style: appText.bodySmall.copyWith(
         color: appColor.textLight,
       ),
       obscureText: isPassword && !visibility,

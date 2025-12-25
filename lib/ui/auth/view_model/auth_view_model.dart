@@ -25,7 +25,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> isAlreadyExistEmail(String email) async {
     bool result = false;
 
-    if (getEmail.isEmpty) {
+    if (email.isEmpty) {
       throw Exception('이메일을 입력하세요.');
     }
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
