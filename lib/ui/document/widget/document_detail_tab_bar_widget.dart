@@ -15,11 +15,11 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
   });
 
   /// 탭 하나가 차지할 고정 높이
-  static const double tabHeight = 50.0;
-  static const double tabWidth = 110.0;
+  static const double tabHeight = 42.0;
+  static const double tabWidth = 95.0;
 
   /// 탭끼리 겹칠 간격
-  static const double overlap = 20.0;
+  static const double overlap = 15.0;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +29,7 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        color: Colors.red,
-        height: 50,
+        height: 40,
         child: Stack(
           children: _buildStackedTabs(context, appColorScheme, appTextTheme),
         ),
@@ -103,12 +102,13 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: Text(
             title,
-            style: appTextTheme.bodyMedium.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+            style: appTextTheme.bodySmall.copyWith(
+              fontFamily: title == 'memo' || title == 'tag' ? 'theseasons' : 'scDream',
+              fontWeight: title == 'memo' || title == 'tag' ? FontWeight.w600 : FontWeight.w500,
               color: isSelected
                   ? appColorScheme.textDark
                   : appColorScheme.textLight,
+              height: 1,
             ),
           ),
         ),

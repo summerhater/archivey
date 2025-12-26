@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../config/color_scheme_extension.dart';
+import '../../../config/text_theme_extension.dart';
 
 class DocumentAllIndexPostCountWidget extends StatelessWidget {
   const DocumentAllIndexPostCountWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
@@ -17,7 +19,7 @@ class DocumentAllIndexPostCountWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text('32', style: TextStyle(color: appColorScheme.primaryLight),),
+          Text('32', style: appTextTheme.bodyLarge.copyWith(color: appColorScheme.primaryLight),),
           SizedBox(width: 3,),
           SvgPicture.asset(
             'assets/images/logo_variation_asterisk.svg',

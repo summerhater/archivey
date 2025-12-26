@@ -43,7 +43,6 @@ class _BottomSheetCategoryAddEditWidgetState
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
 
-      ///키보드 대응 핵심
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
@@ -60,8 +59,6 @@ class _BottomSheetCategoryAddEditWidgetState
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-
-          ///컨텐츠 내용만큼만으로 바텀시트 높이 제어
           children: [
             const SizedBox(height: 16),
 
@@ -74,9 +71,7 @@ class _BottomSheetCategoryAddEditWidgetState
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-
             const SizedBox(height: 20),
-
             Row(
               children: [
                 Text(
@@ -106,7 +101,7 @@ class _BottomSheetCategoryAddEditWidgetState
               focusNode: _focusNode,
               autofocus: true,
               maxLength: 15,
-              cursorColor: appColorScheme.primaryLight, // 커서 색상 변경
+              cursorColor: appColorScheme.primaryLight,
               cursorWidth: 1.0,
               cursorHeight: 18,
               style: appTextTheme.headlineSmallKo.copyWith(
@@ -156,12 +151,10 @@ class _BottomSheetCategoryAddEditWidgetState
                   setState(() {
                     _hasSubmitted = true;
                   });
-
                   if (_inputValue.isEmpty) {
                     HapticFeedback.lightImpact(); ///입력창 비어있을때 저장 누르면 진동
                     return;
                   }
-
                   context.pop(_inputValue);
                 },
                 style: ElevatedButton.styleFrom(

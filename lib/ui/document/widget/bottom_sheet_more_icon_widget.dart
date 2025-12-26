@@ -1,5 +1,4 @@
 import 'package:archivey/domain/model/document_model.dart';
-import 'package:archivey/ui/document/widget/app_snack_bar_widget.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,16 +7,18 @@ import '../../../config/text_theme_extension.dart';
 import 'bottom_sheet_share_widget.dart';
 import 'delete_dialog_widget.dart';
 
-enum TypeSettingMode { document, category }
+enum TypeSettingMode { category, document, documentDetail }
 
 class BottomSheetWithNoHeaderWidget extends StatefulWidget {
   final DocumentModel? document;
   final TypeSettingMode typeSettingMode;
+  final VoidCallback? onEditPressed;
 
   const BottomSheetWithNoHeaderWidget({
     super.key,
     required this.typeSettingMode,
     this.document,
+    this.onEditPressed,
   });
 
   @override
@@ -93,7 +94,7 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                       builder: (_) => BottomSheetShareWidget(
                         shareSettingMode: widget.typeSettingMode == TypeSettingMode.category
                             ? ShareSettingMode.category
-                            : ShareSettingMode.document,
+                            : ShareSettingMode.document
                       ),
                     );
                   },
@@ -126,7 +127,7 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                 ),
                 child: TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    context.pop();
                     if (widget.typeSettingMode == TypeSettingMode.category) {
                       showModalBottomSheet<String>(
                         isScrollControlled: true,
@@ -134,8 +135,13 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                         useRootNavigator: true,
                         builder: (_) => BottomSheetCategoryAddEditWidget(categorySettingMode: CategorySettingMode.edit),
                       );
-                    } else {
+                    } else if (widget.typeSettingMode == TypeSettingMode.document){
                       context.go('/document_all_total/detail', extra: widget.document,);
+                    } else {
+                      ///도큐먼트 수정하기 로직
+                      if (widget.onEditPressed != null) {
+                        widget.onEditPressed!();
+                      }
                     }
                   },
                   style: TextButton.styleFrom(
@@ -147,7 +153,10 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        widget.typeSettingMode == TypeSettingMode.category ? '카테고리 수정하기': '수집물 보기',
+                        widget.typeSettingMode == TypeSettingMode.category
+                            ? '카테고리 수정하기'
+                            : widget.typeSettingMode == TypeSettingMode.document
+                            ? '수집물 보기' : '수정하기',
                         style: appTextTheme.bodyMedium.copyWith(
                           color: appColorScheme.primaryLight,
                         ),

@@ -72,15 +72,16 @@ final GoRouter goRouter = GoRouter(
               contentPage: DocumentAllTotalPage(),
             ),
           ),
-          // routes: [
-          //   GoRoute(
-          //     path: 'detail',
-          //     builder: (context, state) {
-          //       final document = state.extra as DocumentModel;
-          //       return DocumentDetailPage(document: document);
-          //     },
-          //   ),
-          // ],
+          routes: [
+            GoRoute(
+              path: 'detail',
+              parentNavigatorKey: _rootNavigatorKey,
+              builder: (context, state) {
+                final document = state.extra as DocumentModel;
+                return DocumentDetailPage(document: document);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/document_all_index',
@@ -93,31 +94,23 @@ final GoRouter goRouter = GoRouter(
 
         /// others
         GoRoute(
-          path: '/document/취업',
-          builder: (context, state) => DocumentCategoryPageListPage(
-            category: '취업',
-          ),
+          path: '/document_category/:name',
+          pageBuilder: (context, state) {
+            final name = state.pathParameters['name'] ?? 'ALL';
+            return NoTransitionPage(
+              child: DocumentAllPage(
+                contentPage: DocumentCategoryPageListPage(category: name),
+              ),
+            );
+          },
         ),
-        GoRoute(
-          path: '/document/recipe',
-          builder: (context, state) => DocumentCategoryPageListPage(
-            category: '레시피',
-          ),
-        ),
+
       ],
     ),
 
     GoRoute(
       path: '/settings',
       builder: (context, state) => SettingsPage(),
-    ),
-    GoRoute(
-      path: '/document_all_total/detail',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) {
-        final document = state.extra as DocumentModel;
-        return DocumentDetailPage(document: document);
-      },
     ),
   ],
 );

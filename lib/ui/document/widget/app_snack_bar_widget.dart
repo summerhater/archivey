@@ -1,30 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../config/color_scheme_extension.dart';
 
-///아래 코드 사용하다가 슬라이드아웃 + 페이드아웃 되지않고 뚝 사라지는 UI 때문에 커스텀 스낵바 제작.
-// extension AppSnackBar on BuildContext {
-//   void showAppSnackBar({
-//     required Widget content,
-//     Duration duration = const Duration(seconds: 2),
-//   }) {
-//     ScaffoldMessenger.of(this)
-//       ..hideCurrentSnackBar()
-//       ..showSnackBar(
-//         SnackBar(
-//           content: content,
-//           duration: duration,
-//           backgroundColor:
-//           Theme.of(this).extension<AppColorScheme>()!.snackBarBg,
-//           behavior: SnackBarBehavior.floating,
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(10),
-//           ),
-//           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-//           margin: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-//         ),
-//       );
-//   }
-// }
+///슬라이드아웃 + 페이드아웃 되지않고 뚝 사라지는 UI 때문에 커스텀 스낵바 제작.
 
 class CustomAppSnackBar extends StatefulWidget {
   final Widget content;

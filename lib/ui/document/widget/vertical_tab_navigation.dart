@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
 
+import '../../../config/text_theme_extension.dart';
+
 class VerticalTabNavigation extends StatelessWidget {
   final ValueChanged<int> onTapChanged;
   final int selectedIndex;
+  final List<String> categories;
 
   const VerticalTabNavigation({
     super.key,
     required this.onTapChanged,
     required this.selectedIndex,
+    required this.categories,
   });
 
   ///탭 하나가 차지할 고정 높이
@@ -16,17 +20,6 @@ class VerticalTabNavigation extends StatelessWidget {
 
   ///탭끼리 겹칠 간격
   static const double overlap = 20.0;
-
-  static const List<String> _categories = [
-    'ALL',
-    '위시리스트입니다',
-    '취업',
-    'wishlist haha',
-    '여행입니다만',
-    '공부',
-    '운동',
-    '기타',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +47,8 @@ class VerticalTabNavigation extends StatelessWidget {
                   ),
                 ),
                 child: SingleChildScrollView(
-                primary: false,
+                  physics : ClampingScrollPhysics(),
+                  primary: false,
                   padding: EdgeInsets.only(
 
                     ///상단 상태바 높이만큼 패딩주기
@@ -62,15 +56,13 @@ class VerticalTabNavigation extends StatelessWidget {
                   ),
                   child: Container(
                     color: appColorScheme.primaryDark,
-
                     ///탭 개수에 따른 전체 길이 설정
-                    height: (_categories.length * tabHeight) - 80,
+                    height: (categories.length * tabHeight) - 40,
                     child: Stack(children: _buildTopFirstStackedTabs(context)),
                   ),
                 ),
               ),
             ),
-
             /// 하단 고정 설정 영역(settings, add button)
             Container(
               padding: EdgeInsets.only(bottom: 20, top: 20),
@@ -131,7 +123,7 @@ class VerticalTabNavigation extends StatelessWidget {
   }
 
   List<Widget> _buildTopFirstStackedTabs(context, ) {
-    return _categories
+    return categories
         .asMap()
         .entries
         .map((entry) {
@@ -157,6 +149,7 @@ class VerticalTabNavigation extends StatelessWidget {
 
   Widget _buildTabItem(BuildContext context, String title, bool isSelected) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     return Container(
       height: tabHeight,
       decoration: BoxDecoration(
@@ -175,11 +168,11 @@ class VerticalTabNavigation extends StatelessWidget {
             child: SizedBox(
               width: 85,
               child: Text(
-                textAlign: TextAlign.end,
                 title,
+                textAlign: TextAlign.end,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: appTextTheme.bodySmall.copyWith(
                   color: isSelected ? appColorScheme.textDark : appColorScheme.textLight,
                 ),
               ),

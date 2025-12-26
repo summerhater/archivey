@@ -52,7 +52,8 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
   }
   @override
   Widget build(BuildContext context) {
-    var appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       floatingActionButton: SizedBox(
@@ -67,9 +68,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
           ),
           label: Text(
             '새 카테고리 추가',
-            style: TextStyle(
-              fontFamily: 'scDream',
-              fontSize: 12,
+            style: appTextTheme.bodySmall.copyWith(
               height: 1.2
             ),
           ),
@@ -111,10 +110,8 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                     children: [
                       Text(
                         "아이템 $index",
-                        style: TextStyle(
-                          fontFamily: 'scDream',
+                        style: appTextTheme.headlineSmallKo.copyWith(
                           fontWeight: FontWeight.w300,
-                          fontSize: 16,
                         ),
                       ),
                       Row(

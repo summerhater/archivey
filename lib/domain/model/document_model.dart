@@ -3,18 +3,20 @@ class DocumentModel {
   final String title;
   final String url;
   final String imageUrl;
-  final List<String> tags;
-  final String sourceType;
-  final String sourceName;
+  final List<String>? tags;
+  final String category;
+  final String platform;
+  final String? memo;
 
   DocumentModel({
     required this.date,
     required this.title,
     required this.url,
     required this.imageUrl,
-    required this.tags,
-    required this.sourceType,
-    required this.sourceName,
+    this.tags,
+    required this.category,
+    required this.platform,
+    this.memo,
   });
 }
 
@@ -28,8 +30,9 @@ class DocumentDummyData {
         url: '',
         imageUrl: 'https://via.placeholder.com/120x120',
         tags: ['해장국', '맛집', '삼겹살', '안성재'],
-        sourceType: '맛집',
-        sourceName: 'Instagram',
+        category: '맛집',
+        platform: 'Instagram',
+        memo: '새해에는 꼭 가보기'
       ),
       DocumentModel(
         date: '2025.12.12',
@@ -37,8 +40,8 @@ class DocumentDummyData {
         url: '',
         imageUrl: 'https://via.placeholder.com/120x120',
         tags: ['서울', '여행', '핫플'],
-        sourceType: '링크',
-        sourceName: 'Naver',
+        category: '링크',
+        platform: 'Naver',
       ),
       DocumentModel(
         date: '2025.12.11',
@@ -46,8 +49,8 @@ class DocumentDummyData {
         url: '',
         imageUrl: 'https://via.placeholder.com/120x120',
         tags: ['요리', '레시피', '파스타', '간단'],
-        sourceType: '레시피',
-        sourceName: 'YouTube',
+        category: '레시피',
+        platform: 'YouTube',
       ),
       DocumentModel(
         date: '2025.12.10',
@@ -55,8 +58,8 @@ class DocumentDummyData {
         url: '',
         imageUrl: 'https://via.placeholder.com/120x120',
         tags: ['개발', 'Flutter', '취업'],
-        sourceType: '링크',
-        sourceName: 'Medium',
+        category: '링크',
+        platform: 'Medium',
       ),
       DocumentModel(
         date: '2025.12.09',
@@ -64,9 +67,16 @@ class DocumentDummyData {
         url: '',
         imageUrl: 'https://via.placeholder.com/120x120',
         tags: ['제주도', '여행', '국내여행'],
-        sourceType: '여행',
-        sourceName: '네이버 Blog',
+        category: '여행',
+        platform: '네이버 Blog',
       ),
     ];
+  }
+
+  static List<String> getCategories() {
+    final allDocs = getDummyDocuments();
+    // 'ALL'을 처음에 넣고, 나머지는 데이터에서 추출하여 중복 제거
+    final categories = allDocs.map((doc) => doc.category).toSet().toList();
+    return ['ALL', ...categories];
   }
 }

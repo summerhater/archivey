@@ -1,51 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../config/color_scheme_extension.dart';
+import '../../../config/text_theme_extension.dart';
 import '../../../domain/model/document_model.dart';
 import 'more_icon_widget.dart';
 
 class DocumentCard extends StatelessWidget {
   final DocumentModel document;
-  // final String date;
-  // final String title;
-  // final String imageUrl;
-  // final List<String> tags;
-  // final String sourceType;
-  // final String sourceName;
   final bool isFirstItem;
-  final bool showBottomBorder; /// 하단 border 제어
+  final bool isDetailPage;
+  final bool showBottomBorder;
   final VoidCallback? onTap;
 
   const DocumentCard({
     super.key,
     required this.document,
-    // required this.date,
-    // required this.title,
-    // required this.imageUrl,
-    // required this.tags,
-    // required this.sourceType,
-    // required this.sourceName,
     required this.isFirstItem,
+    required this.isDetailPage,
     this.showBottomBorder = true,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    var appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    // print("전달 전 확인: ${document.title}, ${document.memo}");
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     return Container(
-      padding: EdgeInsets.only(bottom: 10, left: 16, right: 16),
-      decoration: BoxDecoration(
+      padding: isDetailPage ? EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16)
+          : EdgeInsets.only(bottom: 10, left: 16, right: 16),
+      decoration: isDetailPage
+          ? BoxDecoration(
+        color: appColorScheme.primaryLight,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: appColorScheme.strokeLight,
+          width: 1,
+        ),
+      )
+          : BoxDecoration(
+        color: null,
         border: Border(
-          top: isFirstItem ? BorderSide(
+          top: isFirstItem
+              ? BorderSide(
             color: appColorScheme.strokeLight,
             width: .5,
-          ) : BorderSide.none,
+          )
+              : BorderSide.none,
           bottom: showBottomBorder
               ? BorderSide(
             color: appColorScheme.strokeLight,
             width: .5,
-          ) : BorderSide.none,
+          )
+              : BorderSide.none,
         ),
       ),
       child: Column(
@@ -57,13 +64,13 @@ class DocumentCard extends StatelessWidget {
             children: [
               Text(
                 document.date,
-                style: TextStyle(
+                style: appTextTheme.labelLarge.copyWith(
                   fontFamily: 'scDream',
                   fontSize: 10,
                   color: Colors.grey.shade600,
                 ),
               ),
-              MoreIconWidget(moreIconSettingMode: MoreIconSettingMode.document, document: document),
+              !isDetailPage ? MoreIconWidget(moreIconSettingMode: MoreIconSettingMode.document, document: document) : SizedBox(height: 30,),
             ],
           ),
           /// 썸네일, 제목, 카테고리명 및 플랫폼
@@ -97,7 +104,7 @@ class DocumentCard extends StatelessWidget {
               ),
               SizedBox(width: 16),
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: 80,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,8 +114,7 @@ class DocumentCard extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 20.0),
                         child: Text(
                           document.title,
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: appTextTheme.bodySmall.copyWith(
                             fontWeight: FontWeight.w500,
                             height: 1.4,
                           ),
@@ -135,10 +141,9 @@ class DocumentCard extends StatelessWidget {
                                 SvgPicture.asset('assets/icons/inbox_text.svg', width: 13, height: 13, colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),),
                                 SizedBox(width: 4),
                                 Text(
-                                  document.sourceType,
-                                  style: TextStyle(
+                                  document.category,
+                                  style: appTextTheme.labelLarge.copyWith(
                                     color: Colors.white,
-                                    fontSize: 10,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -156,10 +161,9 @@ class DocumentCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              document.sourceName,
-                              style: TextStyle(
+                              document.platform,
+                              style: appTextTheme.labelLarge.copyWith(
                                 color: Colors.white,
-                                fontSize: 10,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -182,7 +186,7 @@ class DocumentCard extends StatelessWidget {
                 child: Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: document.tags.map((tag) {
+                  children: document.tags!.map((tag) {
                     return Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: 12,
@@ -194,8 +198,7 @@ class DocumentCard extends StatelessWidget {
                       ),
                       child: Text(
                         tag,
-                        style: TextStyle(
-                          fontSize: 10,
+                        style: appTextTheme.labelLarge.copyWith(
                           color: appColorScheme.categoryTagBg,
                         ),
                       ),

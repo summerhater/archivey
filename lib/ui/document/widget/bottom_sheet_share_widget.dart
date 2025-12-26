@@ -173,7 +173,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                     Text(
                       '카카오톡으로 공유하기',
                       style: appTextTheme.bodyMedium.copyWith(
-                        color: appColorScheme.error,
+                        color: appColorScheme.primaryLight,
                       ),
                     ),
                   ],
