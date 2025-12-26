@@ -41,10 +41,16 @@ dependencies:
   cloud_firestore: ^6.1.1
   flutter_svg: ^2.2.3
   flutter_sharing_intent: ^2.0.4
+  drift: ^2.30.0
+  sqlite3: ^2.9.4
+  path: ^1.9.1
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  drift_dev: ^2.30.0
+  build_runner: ^2.10.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

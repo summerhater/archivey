@@ -1,5 +1,6 @@
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
+import 'package:archivey/data/drift/app_database.dart';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/firebase_options.dart';
@@ -16,6 +17,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  final database = AppDatabase();
+
   runApp(
     MultiProvider(
       providers: [
