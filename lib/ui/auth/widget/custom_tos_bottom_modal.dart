@@ -159,6 +159,7 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
             child: ElevatedButton(
               onPressed: checkList.every((e) => e)
                   ? () {
+                      Navigator.pop(context);
                       context.go(path);
                     }
                   : null,
