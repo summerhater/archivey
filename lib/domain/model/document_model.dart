@@ -22,17 +22,19 @@ class DocumentModel {
 
 // 더미 데이터
 class DocumentDummyData {
+  static List<String> _cachedCategories = [];
   static List<DocumentModel> getDummyDocuments() {
     return [
       DocumentModel(
         date: '2025.12.13',
-        title: '안성재 단골 맛집 (60년 + 15개 블루리본) 안국역 백반집 핫한 맛집 안성재 단골 맛집 (60년 + 15개 블루리본)',
+        title:
+            '안성재 단골 맛집 (60년 + 15개 블루리본) 안국역 백반집 핫한 맛집 안성재 단골 맛집 (60년 + 15개 블루리본)',
         url: '',
         imageUrl: 'https://via.placeholder.com/120x120',
         tags: ['해장국', '맛집', '삼겹살', '안성재'],
         category: '맛집',
         platform: 'Instagram',
-        memo: '새해에는 꼭 가보기'
+        memo: '새해에는 꼭 가보기',
       ),
       DocumentModel(
         date: '2025.12.12',
@@ -73,10 +75,40 @@ class DocumentDummyData {
     ];
   }
 
+  // static List<String> getCategories() {
+  //   final allDocs = getDummyDocuments();
+  //   // 'ALL'을 처음에 넣고, 나머지는 데이터에서 추출하여 중복 제거
+  //   final categories = allDocs.map((doc) => doc.category).toSet().toList();
+  //   return ['ALL', ...categories];
+  // }
+
   static List<String> getCategories() {
-    final allDocs = getDummyDocuments();
-    // 'ALL'을 처음에 넣고, 나머지는 데이터에서 추출하여 중복 제거
-    final categories = allDocs.map((doc) => doc.category).toSet().toList();
-    return ['ALL', ...categories];
+    if (_cachedCategories.isEmpty) {
+      ///todo: 초기 데이터 로드, DB나 API에서 가져오게 처리해야함
+      _cachedCategories = ['ALL', '맛집', '링크', '레시피', '여행', '스크랩'];
+    }
+    return _cachedCategories;
+  }
+
+  ///ALL을 제외한 실제 순서 바꿀 수 있는 관리용 카테고리만 반환
+  static List<String> getManageableCategories() {
+    final all = getCategories();
+    return all.where((c) => c != 'ALL').toList();
+  }
+
+  ///카테고리 순서 변경 로직
+  static void reorderCategories(int oldIndex, int newIndex) {
+    /// getManageableCategories 기준의 idx를 실제 _cachedCategories idx로 치환
+    ///ALL이 인덱스 0번에 고정이라 1을 더해줌.
+    int oldIdx = oldIndex + 1;
+    int newIdx = newIndex + 1;
+
+    if (newIdx > oldIdx) newIdx -= 1;
+
+    if (oldIdx < 0 || oldIdx >= _cachedCategories.length) return;
+    if (newIdx < 0 || newIdx >= _cachedCategories.length) return;
+
+    final String item = _cachedCategories.removeAt(oldIdx);
+    _cachedCategories.insert(newIdx, item);
   }
 }

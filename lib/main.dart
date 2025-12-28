@@ -44,26 +44,32 @@ class _MyAppState extends State<MyApp> {
     // For sharing images coming from outside the app while the app is in the memory
     _intentDataStreamSubscription = FlutterSharingIntent.instance
         .getMediaStream()
-        .listen((List<SharedFile> value) {
-      setState(() {
-        list = value;
-      });
-      if (kDebugMode) {
-        print(" Shared: getMediaStream ${value.map((f) => f.value).join(",")}");
-      }
-    }, onError: (err) {
-      if (kDebugMode) {
-        print("Shared: getIntentDataStream error: $err");
-      }
-    });
+        .listen(
+          (List<SharedFile> value) {
+            setState(() {
+              list = value;
+            });
+            if (kDebugMode) {
+              print(
+                " Shared: getMediaStream ${value.map((f) => f.value).join(",")}",
+              );
+            }
+          },
+          onError: (err) {
+            if (kDebugMode) {
+              print("Shared: getIntentDataStream error: $err");
+            }
+          },
+        );
 
     // For sharing images coming from outside the app while the app is closed
-    FlutterSharingIntent.instance
-        .getInitialSharing()
-        .then((List<SharedFile> value) {
+    FlutterSharingIntent.instance.getInitialSharing().then((
+      List<SharedFile> value,
+    ) {
       if (kDebugMode) {
         print(
-            "Shared: getInitialMedia => ${value.map((f) => f.value).join(",")}");
+          "Shared: getInitialMedia => ${value.map((f) => f.value).join(",")}",
+        );
       }
       setState(() {
         list = value;
@@ -80,9 +86,11 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              child: SingleChildScrollView(
-                  child: Text('Sharing data: \n${list?.join("\n\n")}\n'))),
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: SingleChildScrollView(
+              child: Text('Sharing data: \n${list?.join("\n\n")}\n'),
+            ),
+          ),
         ),
       ),
     );
@@ -105,18 +113,13 @@ class Archivey extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
-          surfaceTintColor: Colors.transparent, ///스크롤 시 material 기본 색 없애기
+          surfaceTintColor: Colors.transparent,
+
+          ///스크롤 시 material 기본 색 없애기
           scrolledUnderElevation: 0,
         ),
-        extensions: [
-          AppColorScheme(),
-          AppTextTheme()
-        ],
+        extensions: [AppColorScheme(), AppTextTheme()],
       ),
     );
-    // return MaterialApp(
-    //   home: MyApp(),
-    //   debugShowCheckedModeBanner: false,
-    // );
   }
 }

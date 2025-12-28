@@ -1,13 +1,15 @@
-import 'package:archivey/ui/document/widget/app_snack_bar_widget.dart';
-import 'package:archivey/ui/document/widget/document_list_card_widget.dart';
-import 'package:archivey/ui/document/widget/more_icon_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:archivey/config/color_scheme_extension.dart';
-import 'package:archivey/ui/document/widget/document_detail_tab_bar_widget.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../config/text_theme_extension.dart';
+import 'package:archivey/config/color_scheme_extension.dart';
+import 'package:archivey/config/text_theme_extension.dart';
 import '../../domain/model/document_model.dart';
+import 'package:archivey/ui/document/widget/app_snack_bar_widget.dart';
+import 'package:archivey/ui/document/widget/document_card_widget.dart';
+import 'package:archivey/ui/document/widget/more_icon_widget.dart';
+import 'package:archivey/ui/document/widget/document_detail_tab_bar_widget.dart';
+import 'package:archivey/ui/document/widget/document_detail_ai_summary_widget.dart';
+import 'package:archivey/ui/document/widget/document_detail_memo_widget.dart';
+import 'package:archivey/ui/document/widget/document_detail_tag_widget.dart';
 
 class DocumentDetailPage extends StatefulWidget {
   final DocumentModel document;
@@ -26,21 +28,21 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
   bool _isEditing = false;
 
   late TextEditingController _memoController;
-  late TextEditingController _tagController;
   final FocusNode _memoFocusNode = FocusNode();
+  late TextEditingController _tagController;
   final FocusNode _tagFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _memoController = TextEditingController(text: widget.document.memo);
-    _tagController = TextEditingController();
-
-    /// 메모 포커스 리스너
     _memoFocusNode.addListener(_focusListener);
 
-    /// 태그 포커스 리스너 추가
+    ///메모 포커스 리스너
+    _tagController = TextEditingController();
     _tagFocusNode.addListener(_focusListener);
+
+    ///태그 포커스 리스너 추가
   }
 
   ///포커스 해제 시 자동 저장
@@ -102,7 +104,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: Column(
           children: [
-            /// 수집물 카드 (재사용)
+            /// 선택한 수집물 카드 ui
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: DocumentCard(
@@ -113,7 +115,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
               ),
             ),
 
-            /// 겹쳐진 탭바
+            /// 겹쳐진 탭바 (ai요약, 메모, 태그)
             Padding(
               padding: const EdgeInsets.only(left: 0),
               child: DocumentDetailTabBarWidget(
@@ -200,163 +202,45 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
     AppTextTheme appTextTheme,
   ) {
     if (_selectedTabIndex == 0) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam facilisis velit at urna tempor, id semper est mattis. Mauris eu nulla condimentum, suscipit massa sed, suscipit quam. Aliquam quis commodo ex, non dapibus arcu. Nullam velit purus, finibus ut congue ut, consectetur dictum turpis. Vestibulum eu orci eget risus rutrum pretium. Donec ipsum sem, porttitor eget erat at, cursus gravida arcu. Integer tincidunt eu felis in imperdiet. Ut vitae est aliquet, sagittis felis eget, ornare sem. Nulla consectetur ullamcorper ligula, a iaculis odio aliquam non. Ut ac massa a felis hendrerit cursus. Nulla mauris nisi, interdum et varius quis, sagittis id velit. Proin posuere vitae diam sed efficitur.',
-            style: appTextTheme.bodySmall.copyWith(
-              fontWeight: FontWeight.w300,
-              color: appColorScheme.textDark,
-              height: 1.6,
-            ),
-          ),
-        ],
-      );
+      return DocumentDetailAiSummaryWidget();
     } else if (_selectedTabIndex == 1) {
-      return _buildMemoContent(appColorScheme, appTextTheme);
-    } else {
-      return _buildTagContent(appColorScheme, appTextTheme);
-    }
-  }
-
-  Widget _buildMemoContent(
-    AppColorScheme appColorScheme,
-    AppTextTheme appTextTheme,
-  ) {
-    if (_isEditing) {
-      return Column(
-        children: [
-          TextField(
-            controller: _memoController,
-            focusNode: _memoFocusNode,
-            maxLines: 10,
-            maxLength: 200,
-            style: appTextTheme.bodySmall.copyWith(
-              fontWeight: FontWeight.w300,
-              color: appColorScheme.textDark,
-              height: 1.6,
-            ),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: appColorScheme.documentDetailBg,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              hintText: '메모를 입력하세요..',
-            ),
-          ),
-        ],
+      return DocumentDetailMemoWidget(
+        isEditing: _isEditing,
+        memo: widget.document.memo,
+        controller: _memoController,
+        focusNode: _memoFocusNode,
       );
-    }
-    return Text(
-      widget.document.memo ?? '저장된 메모가 아직 없어요 📝',
-      style: appTextTheme.bodySmall.copyWith(
-        fontWeight: FontWeight.w300,
-        color: appColorScheme.textDark,
-        height: 1.6,
-      ),
-    );
-  }
-
-  /// 2. 태그 탭 내용 (수정 모드 포함)
-  Widget _buildTagContent(
-    AppColorScheme appColorScheme,
-    AppTextTheme appTextTheme,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: widget.document.tags!.map((tag) {
-            return Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: appColorScheme.searchBackground,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    tag,
-                    style: appTextTheme.labelLarge.copyWith(
-                      color: appColorScheme.categoryTagBg,
-                    ),
-                  ),
-                  if (_isEditing) ...[
-                    SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          widget.document.tags!.remove(tag);
-                        });
-                      },
-                      child: Icon(
-                        Icons.close,
-                        size: 12,
-                        color: appColorScheme.categoryTagBg,
-                      ),
-                    ),
-                  ],
-                ],
+    } else {
+      return DocumentDetailTagWidget(
+        isEditing: _isEditing,
+        tags: widget.document.tags ?? [],
+        controller: _tagController,
+        focusNode: _tagFocusNode,
+        onTagDeleted: (tag) {
+          setState(() {
+            widget.document.tags!.remove(tag);
+          });
+        },
+        onTagAdded: (value) {
+          if (widget.document.tags!.length >= 4) {
+            context.showAppSnackBar(
+              content: Text(
+                '태그는 최대 4개까지만 등록 할 수 있어요!',
+                style: appTextTheme.bodySmall.copyWith(
+                  height: 1.8,
+                  color: appColorScheme.primaryLight,
+                ),
               ),
             );
-          }).toList(),
-        ),
-        if (_isEditing) ...[
-          SizedBox(height: 20),
-          TextField(
-            controller: _tagController,
-            focusNode: _tagFocusNode,
-            autofocus: true,
-            cursorColor: appColorScheme.categoryTagBg,
-            cursorWidth: 1.0,
-            cursorHeight: 18,
-            onSubmitted: (value) {
-              if (value.isNotEmpty) {
-                if (widget.document.tags!.length >= 4) {
-                  context.showAppSnackBar(
-                    content: Text(
-                      '태그는 최대 4개까지만 등록 할 수 있어요!',
-                      style: appTextTheme.bodySmall.copyWith(
-                        height: 1.8,
-                        color: appColorScheme.primaryLight,
-                      ),
-                    ),
-                  );
-                  // _tagController.clear();
-                  _tagFocusNode.requestFocus();
-                } else {
-                  setState(() {
-                    widget.document.tags!.add(value);
-                    _tagController.clear();
-                  });
-                  _tagFocusNode.requestFocus();
-                }
-              } else {
-                _tagFocusNode.unfocus();
-              }
-            },
-            decoration: InputDecoration(
-              hintText: '태그를 입력해 주세요..',
-              hintStyle: appTextTheme.bodySmall.copyWith(
-                color: appColorScheme.textLight,
-              ),
-              isDense: true,
-              filled: true,
-              fillColor: Colors.grey.shade100,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
+          } else {
+            setState(() {
+              widget.document.tags!.add(value);
+              _tagController.clear();
+            });
+          }
+          _tagFocusNode.requestFocus();
+        },
+      );
+    }
   }
 }

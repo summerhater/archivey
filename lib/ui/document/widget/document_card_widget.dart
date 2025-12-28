@@ -27,34 +27,35 @@ class DocumentCard extends StatelessWidget {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     return Container(
-      padding: isDetailPage ? EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16)
+      padding: isDetailPage
+          ? EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16)
           : EdgeInsets.only(bottom: 10, left: 16, right: 16),
       decoration: isDetailPage
           ? BoxDecoration(
-        color: appColorScheme.primaryLight,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: appColorScheme.strokeLight,
-          width: 1,
-        ),
-      )
+              color: appColorScheme.primaryLight,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: appColorScheme.strokeLight,
+                width: 1,
+              ),
+            )
           : BoxDecoration(
-        color: null,
-        border: Border(
-          top: isFirstItem
-              ? BorderSide(
-            color: appColorScheme.strokeLight,
-            width: .5,
-          )
-              : BorderSide.none,
-          bottom: showBottomBorder
-              ? BorderSide(
-            color: appColorScheme.strokeLight,
-            width: .5,
-          )
-              : BorderSide.none,
-        ),
-      ),
+              color: null,
+              border: Border(
+                top: isFirstItem
+                    ? BorderSide(
+                        color: appColorScheme.strokeLight,
+                        width: .5,
+                      )
+                    : BorderSide.none,
+                bottom: showBottomBorder
+                    ? BorderSide(
+                        color: appColorScheme.strokeLight,
+                        width: .5,
+                      )
+                    : BorderSide.none,
+              ),
+            ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -70,9 +71,17 @@ class DocumentCard extends StatelessWidget {
                   color: Colors.grey.shade600,
                 ),
               ),
-              !isDetailPage ? MoreIconWidget(moreIconSettingMode: MoreIconSettingMode.document, document: document) : SizedBox(height: 30,),
+              !isDetailPage
+                  ? MoreIconWidget(
+                      moreIconSettingMode: MoreIconSettingMode.document,
+                      document: document,
+                    )
+                  : SizedBox(
+                      height: 30,
+                    ),
             ],
           ),
+
           /// 썸네일, 제목, 카테고리명 및 플랫폼
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +147,15 @@ class DocumentCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SvgPicture.asset('assets/icons/inbox_text.svg', width: 13, height: 13, colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),),
+                                SvgPicture.asset(
+                                  'assets/icons/inbox_text.svg',
+                                  width: 13,
+                                  height: 13,
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
                                 SizedBox(width: 4),
                                 Text(
                                   document.category,
@@ -206,10 +223,11 @@ class DocumentCard extends StatelessWidget {
                   }).toList(),
                 ),
               ),
-              // SizedBox(width: 8),
               IconButton(
-                onPressed: (){},
-                icon: Icon(Icons.bookmark_border,),
+                onPressed: () {},
+                icon: Icon(
+                  Icons.bookmark_border,
+                ),
                 color: Colors.grey.shade400,
                 iconSize: 24,
                 visualDensity: VisualDensity(horizontal: -4.0),

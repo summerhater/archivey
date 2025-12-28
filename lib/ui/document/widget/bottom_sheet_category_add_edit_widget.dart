@@ -88,7 +88,6 @@ class _BottomSheetCategoryAddEditWidgetState
               height: 20,
             ),
             TextField(
-              ///바텀시트 뜨자마자 키보드 올라오게 처리
               onChanged: (value) {
                 setState(() {
                   _inputValue = value;
@@ -152,7 +151,9 @@ class _BottomSheetCategoryAddEditWidgetState
                     _hasSubmitted = true;
                   });
                   if (_inputValue.isEmpty) {
-                    HapticFeedback.lightImpact(); ///입력창 비어있을때 저장 누르면 진동
+                    HapticFeedback.lightImpact();
+
+                    ///입력창 비어있을때 저장 누르면 진동
                     return;
                   }
                   context.pop(_inputValue);

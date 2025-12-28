@@ -1,81 +1,49 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:archivey/config/color_scheme_extension.dart';
+import 'package:archivey/config/text_theme_extension.dart';
 
-import '../../../config/color_scheme_extension.dart';
-import '../../../config/text_theme_extension.dart';
-
-enum DeleteSettingMode { category, document }
-
-class DeleteDialogWidget extends StatelessWidget {
-  final DeleteSettingMode deleteSettingMode;
-  const DeleteDialogWidget({super.key, required this.deleteSettingMode});
-
-  String settingModeToString() {
-    if (deleteSettingMode == DeleteSettingMode.category) {
-      return '카테고리';
-    }
-    return '수집물';
-  }
+class DeleteAccountDialogWidget extends StatelessWidget {
+  const DeleteAccountDialogWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+
     return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 32),
       child: Container(
-        width: 300,
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 24),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(
           color: appColorScheme.primaryDark,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text.rich(
-                  style: appTextTheme.headlineSmallKo.copyWith(
-                    color: appColorScheme.primaryLight,
-                  ),
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: settingModeToString(),
-                      ),
-                      TextSpan(
-                        text: ' 삭제',
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 16,
-            ),
             Text(
-              deleteSettingMode == DeleteSettingMode.category
-                  ? '삭제 시 categoryname에 수집된 내용은 모두 삭제되며 복구할 수 없습니다.'
-                  : '삭제 시 해당 수집물은 삭제되며, 삭제 후 복구할 수 없습니다.',
+              '정말 탈퇴 하시겠어요?',
+              style: appTextTheme.headlineSmallKo.copyWith(
+                color: appColorScheme.primaryLight,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '탈퇴하시면 계정은 삭제되며,\n복구되지 않습니다.',
               style: appTextTheme.bodyMedium.copyWith(
                 color: appColorScheme.primaryLight,
                 height: 1.6,
               ),
             ),
-            SizedBox(
-              height: 32,
-            ),
+            const SizedBox(height: 24),
             Column(
               children: [
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: () {
-                      context.pop();
-                    },
+                    onPressed: () => Navigator.of(context).pop(),
                     style: TextButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       overlayColor: Colors.transparent,
@@ -84,7 +52,7 @@ class DeleteDialogWidget extends StatelessWidget {
                         width: .5,
                       ),
                       backgroundColor: Colors.transparent,
-                      padding: EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -97,27 +65,25 @@ class DeleteDialogWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () {
-                      context.pop();
-                      ///todo: 카테고리 삭제 로직
+                      Navigator.of(context).pop();
+                      // todo: 탈퇴 로직
                     },
                     style: TextButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       overlayColor: Colors.transparent,
                       backgroundColor: appColorScheme.errorBg,
-                      padding: EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                     child: Text(
-                      '삭제',
+                      '탈퇴',
                       style: appTextTheme.bodyMedium.copyWith(
                         color: appColorScheme.error,
                       ),

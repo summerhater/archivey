@@ -38,38 +38,43 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
   }
 
   List<Widget> _buildStackedTabs(
-      BuildContext context, AppColorScheme appColorScheme, AppTextTheme appTextTheme) {
-    return tabs.asMap().entries.map((entry) {
-      int idx = entry.key;
-      bool isSelected = selectedIndex == idx;
+    BuildContext context,
+    AppColorScheme appColorScheme,
+    AppTextTheme appTextTheme,
+  ) {
+    return tabs
+        .asMap()
+        .entries
+        .map((entry) {
+          int idx = entry.key;
+          bool isSelected = selectedIndex == idx;
 
-      return Positioned(
-        /// 아래로 갈수록 각 탭의 top 값 커지게
-        left: idx == 0 ? 0 : idx * (tabWidth - overlap),
-        child: GestureDetector(
-          onTap: () => onTabChanged(idx),
-          child: _buildTabItem(
-            context,
-            entry.value,
-            isSelected,
-            appColorScheme,
-            appTextTheme
-          ),
-        ),
-      );
-    })
+          return Positioned(
+            left: idx == 0 ? 0 : idx * (tabWidth - overlap),
+            child: GestureDetector(
+              onTap: () => onTabChanged(idx),
+              child: _buildTabItem(
+                context,
+                entry.value,
+                isSelected,
+                appColorScheme,
+                appTextTheme,
+              ),
+            ),
+          );
+        })
         .toList()
         .reversed
         .toList();
   }
 
   Widget _buildTabItem(
-      BuildContext context,
-      String title,
-      bool isSelected,
-      AppColorScheme appColorScheme,
-      AppTextTheme appTextTheme,
-      ) {
+    BuildContext context,
+    String title,
+    bool isSelected,
+    AppColorScheme appColorScheme,
+    AppTextTheme appTextTheme,
+  ) {
     return Container(
       height: tabHeight,
       width: tabWidth,
@@ -103,8 +108,12 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
           child: Text(
             title,
             style: appTextTheme.bodySmall.copyWith(
-              fontFamily: title == 'memo' || title == 'tag' ? 'theseasons' : 'scDream',
-              fontWeight: title == 'memo' || title == 'tag' ? FontWeight.w600 : FontWeight.w500,
+              fontFamily: title == 'memo' || title == 'tag'
+                  ? 'theseasons'
+                  : 'scDream',
+              fontWeight: title == 'memo' || title == 'tag'
+                  ? FontWeight.w600
+                  : FontWeight.w500,
               color: isSelected
                   ? appColorScheme.textDark
                   : appColorScheme.textLight,

@@ -19,11 +19,22 @@ class DocumentAllIndexPostCountWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text('32', style: appTextTheme.bodyLarge.copyWith(color: appColorScheme.primaryLight),),
-          SizedBox(width: 3,),
+          Text(
+            ///todo: 해당 카테고리에 저장된 수집물 갯수 가져오기
+            '32',
+            style: appTextTheme.bodyLarge.copyWith(
+              color: appColorScheme.primaryLight,
+            ),
+          ),
+          SizedBox(
+            width: 3,
+          ),
           SvgPicture.asset(
             'assets/images/logo_variation_asterisk.svg',
-            colorFilter: ColorFilter.mode(appColorScheme.primaryLight, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(
+              appColorScheme.primaryLight,
+              BlendMode.srcIn,
+            ),
             width: 18,
             height: 18,
           ),

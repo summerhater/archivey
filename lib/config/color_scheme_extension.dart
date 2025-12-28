@@ -41,9 +41,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
 
   @override
   AppColorScheme lerp(
-      covariant ThemeExtension<AppColorScheme>? other,
-      double t,
-      ) {
+    covariant ThemeExtension<AppColorScheme>? other,
+    double t,
+  ) {
     if (other is! AppColorScheme) return this;
 
     return AppColorScheme(
@@ -51,14 +51,21 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       textLight: Color.lerp(textLight, other.textLight, t)!,
       primaryLight: Color.lerp(primaryLight, other.primaryLight, t)!,
       primaryDark: Color.lerp(primaryDark, other.primaryDark, t)!,
-      searchBackground:
-      Color.lerp(searchBackground, other.searchBackground, t)!,
+      searchBackground: Color.lerp(
+        searchBackground,
+        other.searchBackground,
+        t,
+      )!,
       error: Color.lerp(error, other.error, t)!,
       errorBg: Color.lerp(errorBg, other.errorBg, t)!,
       strokeLight: Color.lerp(strokeLight, other.strokeLight, t)!,
       snackBarBg: Color.lerp(snackBarBg, other.snackBarBg, t)!,
       categoryTagBg: Color.lerp(categoryTagBg, other.categoryTagBg, t)!,
-      documentDetailBg: Color.lerp(documentDetailBg, other.documentDetailBg, t)!,
+      documentDetailBg: Color.lerp(
+        documentDetailBg,
+        other.documentDetailBg,
+        t,
+      )!,
     );
   }
 }

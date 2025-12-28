@@ -26,7 +26,8 @@ class BottomSheetWithNoHeaderWidget extends StatefulWidget {
       _BottomSheetWithNoHeaderWidgetState();
 }
 
-class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderWidget> {
+class _BottomSheetWithNoHeaderWidgetState
+    extends State<BottomSheetWithNoHeaderWidget> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
@@ -45,7 +46,6 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
 
-      ///키보드 대응 핵심
       child: Container(
         decoration: BoxDecoration(
           color: appColorScheme.primaryDark,
@@ -60,12 +60,10 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
           ),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,///컨텐츠 내용만큼만으로 바텀시트 높이 제어
+          mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 16),
-
-            ///바텀시트 핸들
-            Container(
+            Container( ///바텀시트 핸들
               width: 40,
               height: 4,
               decoration: BoxDecoration(
@@ -92,9 +90,10 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                       context: context,
                       useRootNavigator: true,
                       builder: (_) => BottomSheetShareWidget(
-                        shareSettingMode: widget.typeSettingMode == TypeSettingMode.category
+                        shareSettingMode:
+                            widget.typeSettingMode == TypeSettingMode.category
                             ? ShareSettingMode.category
-                            : ShareSettingMode.document
+                            : ShareSettingMode.document,
                       ),
                     );
                   },
@@ -133,12 +132,18 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                         isScrollControlled: true,
                         context: context,
                         useRootNavigator: true,
-                        builder: (_) => BottomSheetCategoryAddEditWidget(categorySettingMode: CategorySettingMode.edit),
+                        builder: (_) => BottomSheetCategoryAddEditWidget(
+                          categorySettingMode: CategorySettingMode.edit,
+                        ),
                       );
-                    } else if (widget.typeSettingMode == TypeSettingMode.document){
-                      context.go('/document_all_total/detail', extra: widget.document,);
+                    } else if (widget.typeSettingMode ==
+                        TypeSettingMode.document) {
+                      context.go(
+                        '/document_all_total/detail',
+                        extra: widget.document,
+                      );
                     } else {
-                      ///도큐먼트 수정하기 로직
+                      ///todo: 도큐먼트 상세보기 페이지 수정하기 로직
                       if (widget.onEditPressed != null) {
                         widget.onEditPressed!();
                       }
@@ -146,8 +151,8 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                    splashFactory: NoSplash.splashFactory,/// 탭할 시 애니메이션 제거
-                    overlayColor: Colors.transparent,///탭할 시 하이라이트 제거
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor: Colors.transparent,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -156,7 +161,8 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                         widget.typeSettingMode == TypeSettingMode.category
                             ? '카테고리 수정하기'
                             : widget.typeSettingMode == TypeSettingMode.document
-                            ? '수집물 보기' : '수정하기',
+                            ? '수집물 보기'
+                            : '수정하기',
                         style: appTextTheme.bodyMedium.copyWith(
                           color: appColorScheme.primaryLight,
                         ),
@@ -173,28 +179,32 @@ class _BottomSheetWithNoHeaderWidgetState extends State<BottomSheetWithNoHeaderW
                   if (widget.typeSettingMode == TypeSettingMode.category) {
                     Navigator.pop(context);
                     showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) {
-                          return DeleteDialogWidget(deleteSettingMode: DeleteSettingMode.category,);
-                        }
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return DeleteDialogWidget(
+                          deleteSettingMode: DeleteSettingMode.category,
+                        );
+                      },
                     );
                   } else {
-                    //1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
-                    Navigator.pop(context);
+                    ///1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
+                    context.pop();
                     showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) {
-                          return DeleteDialogWidget(deleteSettingMode: DeleteSettingMode.document,);
-                        }
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return DeleteDialogWidget(
+                          deleteSettingMode: DeleteSettingMode.document,
+                        );
+                      },
                     );
                   }
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                  splashFactory: NoSplash.splashFactory,/// 탭할 시 애니메이션 제거
-                  overlayColor: Colors.transparent,///탭할 시 하이라이트 제거
+                  splashFactory: NoSplash.splashFactory,
+                  overlayColor: Colors.transparent,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,

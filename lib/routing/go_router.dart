@@ -1,3 +1,4 @@
+import 'package:archivey/ui/document/document_add_page.dart';
 import 'package:archivey/ui/document/document_all_total_page.dart';
 import 'package:archivey/ui/document/document_all_index_page.dart';
 import 'package:archivey/ui/document/document_category_list_page.dart';
@@ -56,8 +57,6 @@ final GoRouter goRouter = GoRouter(
       ],
     ),
 
-    ///document가 반복되서 document는 페이지가 없고 ShellRoute가 페이지를 감싸는 역할로 구현하려 했으나 구현한 코드가 없는
-    ///구색용 페이지로써 임의로 /document 지정 불가 -> shellRoute 작동안함 -> 그냥 모든 하위 경로를 절대 경로로 변경
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
       builder: (context, state, child) {
@@ -92,25 +91,33 @@ final GoRouter goRouter = GoRouter(
           ),
         ),
 
-        /// others
+        ///사용자 설정 카테고리
         GoRoute(
           path: '/document_category/:name',
           pageBuilder: (context, state) {
             final name = state.pathParameters['name'] ?? 'ALL';
             return NoTransitionPage(
-              child: DocumentAllPage(
-                contentPage: DocumentCategoryPageListPage(category: name),
-              ),
+              child: DocumentCategoryPageListPage(category: name),
             );
           },
         ),
 
+        ///세팅 페이지
+        GoRoute(
+          path: '/settings',
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              child: SettingsPage(),
+            );
+          },
+        ),
       ],
     ),
 
+    /// document 추가 페이지
     GoRoute(
-      path: '/settings',
-      builder: (context, state) => SettingsPage(),
+      path: '/document_add',
+      builder: (context, state) => DocumentAddPage(),
     ),
   ],
 );

@@ -1,12 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:archivey/config/color_scheme_extension.dart';
+import 'package:archivey/config/text_theme_extension.dart';
+import '../../domain/model/document_model.dart';
+import 'document_shell_page.dart';
+import 'package:archivey/ui/document/widget/more_icon_widget.dart';
 import 'package:archivey/ui/document/widget/app_snack_bar_widget.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:archivey/config/color_scheme_extension.dart';
-import 'package:archivey/ui/document/widget/more_icon_widget.dart';
 import 'package:archivey/ui/document/widget/document_all_index_post_count_widget.dart';
-import 'package:flutter_svg/svg.dart';
 
-import '../../config/text_theme_extension.dart';
 
 class DocumentAllIndexPage extends StatefulWidget {
   const DocumentAllIndexPage({super.key});
@@ -15,6 +17,14 @@ class DocumentAllIndexPage extends StatefulWidget {
 }
 
 class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
+  late List<String> _displayCategories; ///all을 제외한 나머지 편집 가능한 카테고리
+
+  void _loadCategories() {
+    setState(() {
+      _displayCategories = DocumentDummyData.getManageableCategories();
+    });
+  }
+
   Future<void> _onAddCategoryPressed() async {
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
@@ -50,6 +60,13 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
       );
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
   @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
@@ -64,13 +81,11 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
           foregroundColor: appColorScheme.primaryLight,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25), // Adjust radius as needed
+            borderRadius: BorderRadius.circular(25),
           ),
           label: Text(
             '새 카테고리 추가',
-            style: appTextTheme.bodySmall.copyWith(
-              height: 1.2
-            ),
+            style: appTextTheme.bodySmall.copyWith(height: 1.2),
           ),
           icon: SvgPicture.asset(
             'assets/images/logo_variation_plus.svg',
@@ -88,44 +103,86 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) => Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: appColorScheme.strokeLight,
-                      width: .5,
+            child: ReorderableListView.builder(
+              proxyDecorator: (child, index, animation) {
+                return AnimatedBuilder(
+                  animation: animation,
+                  builder: (BuildContext context, Widget? child) {
+                    final double elevation = Curves.easeInOut.transform(animation.value) * 8;
+                    return Material(
+                      elevation: elevation,
+                      shadowColor: appColorScheme.primaryDark.withValues(alpha:0.3),
+                      color: appColorScheme.documentDetailBg.withValues(alpha:0.9),
+                      child: child,
+                    );
+                  },
+                  child: child,
+                );
+              },
+              itemCount: _displayCategories.length,
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  ///카테고리 리스트 아이템 롱탭 - 드래그앤드랍으로 순서 변경하기
+                  ///1. 전역 데이터 순서 변경 (임시로 static 선언해 놓음)
+                  DocumentDummyData.reorderCategories(oldIndex, newIndex);
+                  ///2. 현재 화면 리스트 갱신
+                  _displayCategories = DocumentDummyData.getManageableCategories();
+                });
+
+                ///contentpage가 gorouter에서 주입되고 있어서 vertical navigation bar 감싸고 있는 DocumentShellPage에 콜백 주기가 애매해져버렸다.
+                ///그래서 vertical navigation bar 감싸고 있는 DocumentShellPage에 강제로 setstate..
+                ///나중에 provider 상태관리 라이브러리 쓰면 이렇게 강제 주입 안해도 되는건가?
+                context.findAncestorStateOfType<DocumentShellPageState>()?.setState(() {});
+              },
+              itemBuilder: (context, index) {
+                final category = _displayCategories[index];
+
+                return Container(
+                  ///ReorderableListView 쓸라면 각 아이템에 반드시 고유한 Key가 필요
+                  key: ValueKey(category),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: appColorScheme.strokeLight,
+                        width: .5,
+                      ),
                     ),
                   ),
-                ),
-                child: ListTile(
-                  contentPadding: EdgeInsets.only(
-                    left: 18,
-                    top: 9,
-                    bottom: 9,
-                  ),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "아이템 $index",
-                        style: appTextTheme.headlineSmallKo.copyWith(
-                          fontWeight: FontWeight.w300,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 9,
+                    ),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          category,
+                          style: appTextTheme.headlineSmallKo.copyWith(
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          DocumentAllIndexPostCountWidget(),
-                          SizedBox(width: 10,),
-                          MoreIconWidget(moreIconSettingMode: MoreIconSettingMode.category,),
-                          SizedBox(width: 8,),
-                        ],
-                      ),
-                    ],
+                        Row(
+                          children: [
+                            const DocumentAllIndexPostCountWidget(),
+                            const SizedBox(width: 10),
+                            const MoreIconWidget(
+                              moreIconSettingMode: MoreIconSettingMode.category,
+                            ),
+                            const SizedBox(width: 8),
+                            /// 아이템을 꾹 누르지 않아도 핸들 아이콘으로 드래그 가능하게 함
+                            Icon(
+                              Icons.menu,
+                              color: appColorScheme.textLight,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -133,5 +190,3 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
     );
   }
 }
-
-

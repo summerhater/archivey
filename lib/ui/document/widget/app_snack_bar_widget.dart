@@ -35,16 +35,17 @@ class _CustomAppSnackBarState extends State<CustomAppSnackBar>
       reverseDuration: const Duration(milliseconds: 1000),
     );
 
-    _slide = Tween(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      ),
-    );
+    _slide =
+        Tween(
+          begin: const Offset(0, 1),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.easeOutCubic,
+            reverseCurve: Curves.easeInCubic,
+          ),
+        );
 
     _fade = CurvedAnimation(
       parent: _controller,
@@ -57,7 +58,9 @@ class _CustomAppSnackBarState extends State<CustomAppSnackBar>
     Future.delayed(widget.duration, () async {
       if (!mounted) return;
       await _controller.reverse();
-      widget.onDismissed(); ///애니메이션 끝난 후 제거
+      widget.onDismissed();
+
+      ///애니메이션 끝난 후 제거
     });
   }
 
@@ -96,13 +99,14 @@ class _CustomAppSnackBarState extends State<CustomAppSnackBar>
   }
 }
 
-
 extension AppSnackBar on BuildContext {
   void showAppSnackBar({
     required Widget content,
     Duration duration = const Duration(seconds: 2),
   }) {
-    final overlay = Overlay.of(this, rootOverlay: true); ///상위 위젯 기준이 아닌 기기 기준으로 위치 잡기
+    final overlay = Overlay.of(this, rootOverlay: true);
+
+    ///상위 위젯 기준이 아닌 기기 기준으로 위치 잡기
     late final OverlayEntry entry;
 
     entry = OverlayEntry(
@@ -110,7 +114,9 @@ extension AppSnackBar on BuildContext {
         content: content,
         duration: duration,
         onDismissed: () {
-          entry.remove(); /// 애니메이션 중 OverlayEntry를 제거해서 생긴 프레임 컷 문제때매 여기서만 제거(버벅임 문제)
+          entry.remove();
+
+          /// 애니메이션 중 OverlayEntry를 제거해서 생긴 프레임 컷 문제때매 여기서만 제거(버벅임 문제)
         },
       ),
     );

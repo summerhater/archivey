@@ -17,8 +17,7 @@ class BottomSheetShareWidget extends StatefulWidget {
   });
 
   @override
-  State<BottomSheetShareWidget> createState() =>
-      _BottomSheetShareWidgetState();
+  State<BottomSheetShareWidget> createState() => _BottomSheetShareWidgetState();
 }
 
 class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
@@ -39,8 +38,6 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
 
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
-
-      ///키보드 대응 핵심
       child: Container(
         decoration: BoxDecoration(
           color: appColorScheme.primaryDark,
@@ -55,11 +52,9 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
           ),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,///컨텐츠 내용만큼만으로 바텀시트 높이 제어
+          mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 16),
-
-            ///바텀시트 핸들
             Container(
               width: 40,
               height: 4,
@@ -74,15 +69,16 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 24),
-                  child: Text(widget.shareSettingMode == ShareSettingMode.category
-                      ? '카테고리 공유하기'
-                      : '수집물 공유하기',
+                  child: Text(
+                    widget.shareSettingMode == ShareSettingMode.category
+                        ? '카테고리 공유하기'
+                        : '수집물 공유하기',
                     style: appTextTheme.headlineSmallKo.copyWith(
                       fontWeight: FontWeight.w500,
                       color: appColorScheme.primaryLight,
                     ),
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 30),
@@ -111,7 +107,9 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                                   color: appColorScheme.primaryLight,
                                 ),
                               ),
-                              const TextSpan(text: ' 카테고리 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻'),
+                              const TextSpan(
+                                text: ' 카테고리 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
+                              ),
                             ],
                             style: appTextTheme.bodySmall.copyWith(
                               height: 1.8,
@@ -123,7 +121,8 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                     } else {
                       ///todo: 1개의 수집물(도큐먼트) 일 시 처리할 링크 복사 로직
                       context.showAppSnackBar(
-                        content: Text('수집물 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
+                        content: Text(
+                          '수집물 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
                           style: appTextTheme.bodySmall.copyWith(
                             height: 1.8,
                             color: appColorScheme.primaryLight,
@@ -134,8 +133,8 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                    splashFactory: NoSplash.splashFactory,/// 탭할 시 애니메이션 제거
-                    overlayColor: Colors.transparent,///탭할 시 하이라이트 제거
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor: Colors.transparent,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -160,12 +159,13 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                     ///todo: 카테고리 공유하는 링크 생성 및 카카오톡 보내기 바텀시트
                   } else {
                     ///todo: 카카오톡 보내기 바텀시트
-                  };
+                  }
+                  ;
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                  splashFactory: NoSplash.splashFactory,/// 탭할 시 애니메이션 제거
-                  overlayColor: Colors.transparent,///탭할 시 하이라이트 제거
+                  splashFactory: NoSplash.splashFactory,
+                  overlayColor: Colors.transparent,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
