@@ -111,7 +111,7 @@ class VerticalTabNavigation extends StatelessWidget {
                   ),
                   left: isOnSettingPage ? BorderSide(
                     color: appColorScheme.primaryDark,
-                    width: .5,
+                    width: .3,
                   ) : BorderSide.none,
                 ),
                 color: isOnSettingPage ? appColorScheme.primaryLight : appColorScheme.primaryDark,
@@ -120,7 +120,7 @@ class VerticalTabNavigation extends StatelessWidget {
                 child: IconButton(
                   onPressed: () {
                     context.go('/settings');
-                    print('here');
+                    // print('here');
                     onTapChanged(-1);
                   },
                   padding: EdgeInsets.zero,

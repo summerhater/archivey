@@ -127,7 +127,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                           cursorHeight: 18,
                           decoration: InputDecoration(
                             hintText: 'https://example.com',
-                            hintStyle: TextStyle(
+                            hintStyle: appTextTheme.bodyMedium.copyWith(
                               color: appColorScheme.textLight,
                             ),
                             prefixIcon: Icon(
@@ -247,7 +247,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                                     appColorScheme.strokeLight,
                                               ),
                                             ),
-                                            labelStyle: TextStyle(
+                                            labelStyle: appTextTheme.bodyLarge.copyWith(
                                               color: isSubSelected
                                                   ? appColorScheme.primaryLight
                                                   : appColorScheme.primaryDark,
@@ -311,7 +311,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                         cursorHeight: 18,
                         decoration: InputDecoration(
                           hintText: '이 수집물에 대한 메모를 작성해보세요..',
-                          hintStyle: TextStyle(color: appColorScheme.textLight),
+                          hintStyle: appTextTheme.bodyMedium.copyWith(color: appColorScheme.textLight),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.all(16),
                           counterText: '',
