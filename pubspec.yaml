@@ -41,6 +41,11 @@ dependencies:
   cloud_firestore: ^6.1.1
   flutter_sharing_intent: ^2.0.4
   flutter_svg: ^2.2.3
+  http: ^1.6.0
+  html: ^0.15.6
+  firebase_ai: ^3.6.1
+  metadata_fetch: ^0.4.2
+  youtube_explode_dart: ^3.0.5
 
 
 dev_dependencies:

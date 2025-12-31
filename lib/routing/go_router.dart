@@ -12,6 +12,8 @@ import 'package:archivey/ui/onboarding/on_boarding_page.dart';
 import 'package:archivey/ui/setting/settings_page.dart';
 import 'package:go_router/go_router.dart';
 import '../domain/model/document_model.dart';
+import '../ui/document/ai_summary_example.dart';
+import '../ui/document/ai_summary_test.dart';
 import '../ui/document/document_shell_page.dart';
 import '../ui/document/document_all_page.dart';
 import 'package:flutter/material.dart';
@@ -70,16 +72,16 @@ final GoRouter goRouter = GoRouter(
               contentPage: DocumentAllTotalPage(),
             ),
           ),
-          routes: [
-            GoRoute(
-              path: 'detail',
-              parentNavigatorKey: _rootNavigatorKey,
-              builder: (context, state) {
-                final document = state.extra as DocumentModel;
-                return DocumentDetailPage(document: document);
-              },
-            ),
-          ],
+          // routes: [
+          //   GoRoute(
+          //     path: 'detail',
+          //     parentNavigatorKey: _rootNavigatorKey,
+          //     builder: (context, state) {
+          //       final document = state.extra as DocumentModel;
+          //       return DocumentDetailPage(document: document);
+          //     },
+          //   ),
+          // ],
         ),
         GoRoute(
           path: '/document_all_index',
@@ -116,7 +118,9 @@ final GoRouter goRouter = GoRouter(
     /// document 추가 페이지
     GoRoute(
       path: '/document_add',
-      builder: (context, state) => DocumentAddPage(),
+      // builder: (context, state) => DocumentAddPage(),
+      // builder: (context, state) => AiSummaryTest(),
+      builder: (context, state) => AIValidationPage(),
     ),
   ],
 );
