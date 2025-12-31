@@ -5,8 +5,8 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   final Color textDark;
   final Color textLight;
 
-  final Color primaryLight;
-  final Color primaryDark;
+  final Color primary;
+  final Color primaryStrong;
 
   final Color searchBackground;
 
@@ -22,8 +22,8 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   const AppColorScheme({
     this.textDark = const Color(0xFF333333),
     this.textLight = const Color(0xFFAEAEAE),
-    this.primaryLight = const Color(0xFFFFFFFF),
-    this.primaryDark = const Color(0xFF111111),
+    this.primary = const Color(0xFFFFFFFF),
+    this.primaryStrong = const Color(0xFF111111),
     this.searchBackground = const Color(0xFFE8E8E8),
     this.error = const Color(0xFFED7A7A),
     this.errorBg = const Color(0xFFFFE8E6),
@@ -49,8 +49,8 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     return AppColorScheme(
       textDark: Color.lerp(textDark, other.textDark, t)!,
       textLight: Color.lerp(textLight, other.textLight, t)!,
-      primaryLight: Color.lerp(primaryLight, other.primaryLight, t)!,
-      primaryDark: Color.lerp(primaryDark, other.primaryDark, t)!,
+      primary: Color.lerp(primary, other.primary, t)!,
+      primaryStrong: Color.lerp(primaryStrong, other.primaryStrong, t)!,
       searchBackground: Color.lerp(
         searchBackground,
         other.searchBackground,

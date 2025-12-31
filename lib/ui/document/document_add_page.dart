@@ -33,16 +33,6 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _memoController.addListener(() {
-      setState(() {});
-
-      ///글자수 세기 용도
-    });
-  }
-
-  @override
   void dispose() {
     _urlController.dispose();
     _memoController.dispose();
@@ -64,14 +54,14 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
-    final memoLength = _memoController.text.length;
+    var memoLength = _memoController.text.length;
     final isFormValid =
         _urlController.text.isNotEmpty &&
         _selectedCategory != null &&
         memoLength <= _maxMemoLength;
 
     return Scaffold(
-      backgroundColor: appColorScheme.primaryLight,
+      backgroundColor: appColorScheme.primary,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 32),
@@ -120,7 +110,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                         child: TextFormField(
                           controller: _urlController,
                           style: appTextTheme.bodyMedium.copyWith(
-                            color: appColorScheme.primaryLight,
+                            color: appColorScheme.primary,
                           ),
                           cursorColor: appColorScheme.strokeLight,
                           cursorWidth: 1.0,
@@ -146,7 +136,6 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                             }
                             return null;
                           },
-                          onChanged: (_) => setState(() {}),
                         ),
                       ),
                     ],
@@ -182,12 +171,12 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                               _selectedSubIndex = 0;
                             });
                           },
-                          backgroundColor: appColorScheme.primaryLight,
-                          selectedColor: appColorScheme.primaryDark,
+                          backgroundColor: appColorScheme.primary,
+                          selectedColor: appColorScheme.primaryStrong,
                           labelStyle: appTextTheme.labelLarge.copyWith(
                             color: isSelected
-                                ? appColorScheme.primaryLight
-                                : appColorScheme.primaryDark,
+                                ? appColorScheme.primary
+                                : appColorScheme.primaryStrong,
                           ),
                         );
                       }).toList(),
@@ -238,9 +227,9 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                               });
                                             },
                                             backgroundColor:
-                                                appColorScheme.primaryLight,
+                                                appColorScheme.primary,
                                             selectedColor:
-                                                appColorScheme.primaryDark,
+                                                appColorScheme.primaryStrong,
                                             shape: StadiumBorder(
                                               side: BorderSide(
                                                 color:
@@ -249,8 +238,8 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                             ),
                                             labelStyle: appTextTheme.bodyLarge.copyWith(
                                               color: isSubSelected
-                                                  ? appColorScheme.primaryLight
-                                                  : appColorScheme.primaryDark,
+                                                  ? appColorScheme.primary
+                                                  : appColorScheme.primaryStrong,
                                             ),
                                           );
                                         },
@@ -300,11 +289,14 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                         border: Border.all(color: appColorScheme.strokeLight),
                       ),
                       child: TextFormField(
+                        onChanged: (value){
+                          setState(() {});
+                        },
                         controller: _memoController,
                         maxLength: _maxMemoLength,
                         maxLines: 5,
                         style: appTextTheme.bodyMedium.copyWith(
-                          color: appColorScheme.primaryLight,
+                          color: appColorScheme.primary,
                         ),
                         cursorColor: appColorScheme.strokeLight,
                         cursorWidth: 1.0,
@@ -334,7 +326,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                               content: Text(
                                 '수집물이 추가되었습니다',
                                 style: appTextTheme.bodySmall.copyWith(
-                                  color: appColorScheme.primaryLight,
+                                  color: appColorScheme.primary,
                                 ),
                               ),
                             );
@@ -342,8 +334,8 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: appColorScheme.primaryDark,
-                      foregroundColor: appColorScheme.primaryLight,
+                      backgroundColor: appColorScheme.primaryStrong,
+                      foregroundColor: appColorScheme.primary,
                       disabledBackgroundColor: appColorScheme.strokeLight,
                       disabledForegroundColor: appColorScheme.snackBarBg,
                       shape: RoundedRectangleBorder(

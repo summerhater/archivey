@@ -17,11 +17,13 @@ class DocumentAllIndexPage extends StatefulWidget {
 }
 
 class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
-  late List<String> _displayCategories; ///all을 제외한 나머지 편집 가능한 카테고리
+  List<String> _displayCategories = []; ///all을 제외한 나머지 편집 가능한 카테고리
 
-  void _loadCategories() {
+  Future<void> _loadCategories() async {
+    final categories = await DocumentDummyData.getManageableCategories();
+
     setState(() {
-      _displayCategories = DocumentDummyData.getManageableCategories();
+      _displayCategories = categories;
     });
   }
 
@@ -53,7 +55,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
               const TextSpan(text: ' 카테고리가 추가 되었습니다 ☻'),
             ],
             style: appTextTheme.bodySmall.copyWith(
-              color: appColorScheme.primaryLight,
+              color: appColorScheme.primary,
             ),
           ),
         ),
@@ -77,8 +79,8 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
         height: 43,
         child: FloatingActionButton.extended(
           onPressed: _onAddCategoryPressed,
-          backgroundColor: appColorScheme.primaryDark,
-          foregroundColor: appColorScheme.primaryLight,
+          backgroundColor: appColorScheme.primaryStrong,
+          foregroundColor: appColorScheme.primary,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
@@ -92,7 +94,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
             width: 12,
             height: 12,
             colorFilter: ColorFilter.mode(
-              appColorScheme.primaryLight,
+              appColorScheme.primary,
               BlendMode.srcIn,
             ),
           ),
@@ -111,7 +113,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                     final double elevation = Curves.easeInOut.transform(animation.value) * 8;
                     return Material(
                       elevation: elevation,
-                      shadowColor: appColorScheme.primaryDark.withValues(alpha:0.3),
+                      shadowColor: appColorScheme.primaryStrong.withValues(alpha:0.3),
                       color: appColorScheme.documentDetailBg.withValues(alpha:0.9),
                       child: child,
                     );
@@ -120,13 +122,15 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                 );
               },
               itemCount: _displayCategories.length,
-              onReorder: (oldIndex, newIndex) {
+              onReorder: (oldIndex, newIndex) async {
+                var updated = List<String>.from(_displayCategories);
+                updated = await DocumentDummyData.getManageableCategories();
                 setState(() {
                   ///카테고리 리스트 아이템 롱탭 - 드래그앤드랍으로 순서 변경하기
                   ///1. 전역 데이터 순서 변경 (임시로 static 선언해 놓음)
                   DocumentDummyData.reorderCategories(oldIndex, newIndex);
                   ///2. 현재 화면 리스트 갱신
-                  _displayCategories = DocumentDummyData.getManageableCategories();
+                  _displayCategories = updated;
                 });
 
                 ///contentpage가 gorouter에서 주입되고 있어서 vertical navigation bar 감싸고 있는 DocumentShellPage에 콜백 주기가 애매해져버렸다.

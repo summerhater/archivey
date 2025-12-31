@@ -14,7 +14,7 @@ class DocumentAllIndexPostCountWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       decoration: BoxDecoration(
-        color: appColorScheme.primaryDark,
+        color: appColorScheme.primaryStrong,
         borderRadius: BorderRadius.circular(18.0),
       ),
       child: Row(
@@ -23,7 +23,7 @@ class DocumentAllIndexPostCountWidget extends StatelessWidget {
             ///todo: 해당 카테고리에 저장된 수집물 갯수 가져오기
             '32',
             style: appTextTheme.bodyLarge.copyWith(
-              color: appColorScheme.primaryLight,
+              color: appColorScheme.primary,
             ),
           ),
           SizedBox(
@@ -32,7 +32,7 @@ class DocumentAllIndexPostCountWidget extends StatelessWidget {
           SvgPicture.asset(
             'assets/images/logo_variation_asterisk.svg',
             colorFilter: ColorFilter.mode(
-              appColorScheme.primaryLight,
+              appColorScheme.primary,
               BlendMode.srcIn,
             ),
             width: 18,

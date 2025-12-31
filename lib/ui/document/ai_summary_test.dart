@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
 import 'package:metadata_fetch/metadata_fetch.dart';
-import 'package:firebase_ai/firebase_ai.dart'; // 프로젝트 설정에 맞춰 확인 필요
+import 'package:firebase_ai/firebase_ai.dart';
 
 class AiSummaryTest extends StatefulWidget {
   const AiSummaryTest({super.key});
@@ -13,7 +13,6 @@ class AiSummaryTest extends StatefulWidget {
 }
 
 class _AiSummaryTestState extends State<AiSummaryTest> {
-  // 1. 테스트 URL 리스트
   final List<String> urlList = [
     'https://api-shein.shein.com/h5/sharejump/appjump?link=lorEeS6nUwg_8&localcountry=KR&url_from=GM76053970465',
     'https://a.aliexpress.com/_c4X3Qfnr',
@@ -41,7 +40,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
   Map<String, dynamic> testResults = {};
   bool isTesting = false;
 
-  // 2. 단축 URL 해제 (Redirect 추적)
   Future<String> getFinalUrl(String url) async {
     try {
       final client = http.Client();
@@ -58,7 +56,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
     return url;
   }
 
-  // 3. 핵심 파이프라인: Metadata -> Data Quality Check -> Gemini Fallback
   Future<void> runValidation() async {
     setState(() {
       isTesting = true;
@@ -68,13 +65,12 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
     for (String url in urlList) {
       String finalUrl = await getFinalUrl(url);
 
-      // [1단계] Metadata 추출
+
       var data = await MetadataFetch.extract(finalUrl);
 
       String title = data?.title ?? "No Title";
       String? imageUrl = data?.image;
 
-      // [2단계] 데이터 질 판별 (SPA나 보안 페이지 특징 필터링)
       bool isPoor = title.length < 10 ||
           title.contains("Challenge") ||
           title.toLowerCase() == "shein" ||
@@ -83,9 +79,7 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
       String finalAnalysis = "";
 
       if (isPoor && imageUrl != null) {
-        // [3단계] Gemini Multimodal (이론상 호출 부분)
         finalAnalysis = "[AI 분석 필요] 이미지($imageUrl)와 플랫폼명($title)으로 분석 수행 예정";
-        // 실제 연동 시: await callGeminiVision(imageUrl, title);
       } else {
         finalAnalysis = "[정상 추출] $title";
       }
@@ -208,23 +202,21 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //   //     final htmlString = response.body;
 //   //     final document = htmlParser.parse(htmlString);
 //   //
-//   //     // 원하는 HTML 요소를 선택하고 값 추출
+//   //     // HTML 요소값 추출
 //   //     final titleElement = document.querySelector('title');
 //   //     final title = titleElement?.text ?? '';
 //   //
 //   //     setState(() {
-//   //       parsedTitle = title; // 원하는 정보로 변경
+//   //       parsedTitle = title;
 //   //     });
 //   //   } else {
-//   //     // HTTP 요청이 실패한 경우 예외 처리를 추가
+//   //     // HTTP 요청이 실패한 경우 예외 처리
 //   //     print('Failed to load HTML');
 //   //   }
 //   // }
 //
 //   Future<String?> getHtmlContent(String url) async {
 //     try {
-//       // 1. 단순하게 HTML 텍스트만 바로 읽어오기
-//       // (리디렉션이 모두 완료된 최종 URL을 넣는 것이 좋습니다)
 //
 //       final String html = await http.read(Uri.parse(url));
 //       return html;
@@ -253,7 +245,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //             .querySelector('meta[name="twitter:image"]')
 //             ?.attributes['content'];
 //
-//     // 전략 B: 메타 태그에 없으면 본문의 첫 번째 큰 이미지
 //     if (imageUrl == null || imageUrl.isEmpty) {
 //       var firstImg = document.querySelector(
 //         'img[src^="http"]',
@@ -261,9 +252,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //       print('firstImg : $firstImg');
 //       imageUrl = firstImg?.attributes['src'];
 //     }
-//
-//     // 2. 유의미한 텍스트 추출 (청소 로직)
-//     // 분석에 방해되는 태그들 완전히 제거
 //     document
 //         .querySelectorAll(
 //           'script, style, noscript, head, header, footer, nav, iframe',
@@ -276,7 +264,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //     String cleanText = rawText.replaceAll(RegExp(r'\s+'), ' ').trim();
 //     print('cleanText : $cleanText');
 //
-//     // 3. 텍스트가 너무 길면 Gemini 토큰 제한을 위해 자르기 (약 5000자 권장)
 //     if (cleanText.length > 5000) {
 //       cleanText = cleanText.substring(0, 5000) + "...(이하 생략)";
 //     }
@@ -291,20 +278,16 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //   }
 //
 //   Future<String?> getResponseFromGemini(String html) async {
-//     ///1. 퓨어한 unshortening url 알아내기
 //     unshorteningUrl = await getFinalUrl(html);
 //     print('unshorteningURL : $unshorteningUrl');
 //
-//     ///2. url의 html 받아오기
 //     String? unfilteredHTML = await getHtmlContent(unshorteningUrl);
 //     if (unfilteredHTML == null) {
 //       print('unfilteredHTML이 null입니다.');
 //     }
 //
-//     ///3. html 코드에서 불필요한 부분을 잘라내기
 //     String filteredHTML = cleanHtml(unfilteredHTML!);
 //
-//     ///4. 필터링한 cleanHTML을 gemini에게 넘기고 분석 요청하기
 //
 //     return filteredHTML;
 //     // Initialize the Gemini Developer API backend service
@@ -324,7 +307,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //   HeadlessInAppWebView? headlessWebView;
 //
 //   Future<String?> getHtmlGoodExample(String url) async {
-//     // 1. "완료될 때까지 기다려!"라고 선언하는 박스 생성
 //     final Completer<String?> completer = Completer<String?>();
 //
 //     headlessWebView = HeadlessInAppWebView(
@@ -346,7 +328,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //       onLoadStop: (controller, url) async {
 //         await Future.delayed(Duration(seconds: 2));
 //         String? html = await controller.getHtml();
-//         // 2. 데이터가 도착하면 박스를 채우고 '완료' 신호를 보냄
 //         completer.complete(html);
 //         headlessWebView?.dispose();
 //       },
@@ -354,7 +335,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //
 //     await headlessWebView?.run();
 //
-//     // 3. 박스가 채워질 때까지 리턴하지 않고 여기서 기다림(await)
 //     return completer.future;
 //   }
 //
@@ -579,16 +559,13 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //             //   onPressed: _isLoading
 //             //       ? null // 로딩 중에는 버튼 비활성화
 //             //       : () async {
-//             //     // 2. 로딩 시작 상태로 변경
 //             //     setState(() {
 //             //       _isLoading = true;
 //             //       _displayText = 'AI가 분석 중입니다...';
 //             //     });
 //             //
 //             //     try {
-//             //       // 3. 비동기 함수 호출 (await 사용)
 //             //       final cleanHTML = await getResponseMapFromGemini('https://api-shein.shein.com/h5/sharejump/appjump?link=lorEeS6nUwg_8&localcountry=KR&url_from=GM76053970465');
-//             //       // 4. 결과 업데이트 및 로딩 종료
 //             //       setState(() {
 //             //         _displayText = cleanHTML['text'] ?? '결과를 가져오지 못했습니다.';
 //             //         _displayPhotoUrl = cleanHTML['imageUrl'] ?? '사진 결과를 가져오지 못했습니다.';
@@ -606,7 +583,6 @@ class _AiSummaryTestState extends State<AiSummaryTest> {
 //             //       : const Text('클린 html 보기'),
 //             // ),
 //             // const Divider(height: 40),
-//             // 5. 결과물 출력 부분
 //             // Padding(
 //             //   padding: const EdgeInsets.all(16.0),
 //             //   child: Container(

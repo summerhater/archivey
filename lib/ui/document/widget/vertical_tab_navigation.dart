@@ -32,8 +32,8 @@ class VerticalTabNavigation extends StatelessWidget {
       child: Container(
         ///all탭 선택 시 상단 패딩 배경 색
         color: isOnAllPage
-            ? appColorScheme.primaryLight
-            : appColorScheme.primaryDark,
+            ? appColorScheme.primary
+            : appColorScheme.primaryStrong,
         child: Column(
           children: [
             Expanded(
@@ -41,7 +41,7 @@ class VerticalTabNavigation extends StatelessWidget {
                 decoration: BoxDecoration(
                   border: Border(
                     right: BorderSide(
-                      color: appColorScheme.primaryLight,
+                      color: appColorScheme.primary,
                       width: .5,
                     ),
                   ),
@@ -54,7 +54,7 @@ class VerticalTabNavigation extends StatelessWidget {
                     top: 30,
                   ),
                   child: Container(
-                    color: appColorScheme.primaryDark,
+                    color: appColorScheme.primaryStrong,
 
                     ///탭 개수에 따른 전체 길이 설정
                     height: (categories.length * tabHeight) - 40,
@@ -70,15 +70,15 @@ class VerticalTabNavigation extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                    color: appColorScheme.primaryLight,
+                    color: appColorScheme.primary,
                     width: .5,
                   ),
                   right: BorderSide(
-                    color: appColorScheme.primaryLight,
+                    color: appColorScheme.primary,
                     width: .5,
                   ),
                 ),
-                color: appColorScheme.primaryDark,
+                color: appColorScheme.primaryStrong,
               ),
               child: Center(
                 child: IconButton(
@@ -88,7 +88,7 @@ class VerticalTabNavigation extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   icon: Icon(
                     Icons.add,
-                    color: appColorScheme.primaryLight,
+                    color: appColorScheme.primary,
                     size: 20,
                   ),
                 ),
@@ -102,19 +102,19 @@ class VerticalTabNavigation extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                    color: appColorScheme.primaryLight,
+                    color: appColorScheme.primary,
                     width: .5,
                   ),
                   right: BorderSide(
-                    color: appColorScheme.primaryLight,
+                    color: appColorScheme.primary,
                     width: .5,
                   ),
                   left: isOnSettingPage ? BorderSide(
-                    color: appColorScheme.primaryDark,
+                    color: appColorScheme.primaryStrong,
                     width: .3,
                   ) : BorderSide.none,
                 ),
-                color: isOnSettingPage ? appColorScheme.primaryLight : appColorScheme.primaryDark,
+                color: isOnSettingPage ? appColorScheme.primary : appColorScheme.primaryStrong,
               ),
               child: Center(
                 child: IconButton(
@@ -126,7 +126,7 @@ class VerticalTabNavigation extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   icon: Icon(
                     Icons.settings_outlined,
-                    color: isOnSettingPage ? appColorScheme.primaryDark : appColorScheme.primaryLight,
+                    color: isOnSettingPage ? appColorScheme.primaryStrong : appColorScheme.primary,
                     size: 20,
                   ),
                 ),
@@ -171,11 +171,11 @@ class VerticalTabNavigation extends StatelessWidget {
       height: tabHeight,
       decoration: BoxDecoration(
         color: isSelected
-            ? appColorScheme.primaryLight
-            : appColorScheme.primaryDark,
+            ? appColorScheme.primary
+            : appColorScheme.primaryStrong,
         borderRadius: const BorderRadius.only(bottomRight: Radius.circular(12)),
         border: Border(
-          bottom: BorderSide(color: appColorScheme.primaryLight, width: .5),
+          bottom: BorderSide(color: appColorScheme.primary, width: .5),
         ),
       ),
       child: Padding(

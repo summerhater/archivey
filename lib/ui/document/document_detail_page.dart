@@ -80,7 +80,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
     return Scaffold(
       backgroundColor: appColorScheme.documentDetailBg,
       appBar: AppBar(
-        backgroundColor: appColorScheme.primaryLight,
+        backgroundColor: appColorScheme.primary,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, size: 18),
@@ -143,7 +143,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                         horizontal: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: appColorScheme.primaryLight,
+                        color: appColorScheme.primary,
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(20),
                           bottomRight: Radius.circular(20),
@@ -178,7 +178,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                       width: 253,
                       height: 1.5,
                       decoration: BoxDecoration(
-                        color: appColorScheme.primaryLight,
+                        color: appColorScheme.primary,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(20),
                         ),
@@ -228,7 +228,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                 '태그는 최대 4개까지만 등록 할 수 있어요!',
                 style: appTextTheme.bodySmall.copyWith(
                   height: 1.8,
-                  color: appColorScheme.primaryLight,
+                  color: appColorScheme.primary,
                 ),
               ),
             );

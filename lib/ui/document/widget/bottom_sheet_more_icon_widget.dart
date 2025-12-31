@@ -31,6 +31,33 @@ class _BottomSheetWithNoHeaderWidgetState
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  void deleteByTypeSettingModeFromBottomSheet(){
+    if (widget.typeSettingMode == TypeSettingMode.category) {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return DeleteDialogWidget(
+            deleteSettingMode: DeleteSettingMode.category,
+          );
+        },
+      );
+    } else {
+      ///1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
+      context.pop();
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return DeleteDialogWidget(
+            deleteSettingMode: DeleteSettingMode.document,
+          );
+        },
+      );
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -48,13 +75,13 @@ class _BottomSheetWithNoHeaderWidgetState
 
       child: Container(
         decoration: BoxDecoration(
-          color: appColorScheme.primaryDark,
+          color: appColorScheme.primaryStrong,
           borderRadius: const BorderRadius.vertical(
             top: Radius.circular(20),
           ),
           border: Border(
             top: BorderSide(
-              color: appColorScheme.primaryLight,
+              color: appColorScheme.primary,
               width: .5,
             ),
           ),
@@ -108,7 +135,7 @@ class _BottomSheetWithNoHeaderWidgetState
                       Text(
                         '공유하기',
                         style: appTextTheme.bodyMedium.copyWith(
-                          color: appColorScheme.primaryLight,
+                          color: appColorScheme.primary,
                         ),
                       ),
                     ],
@@ -164,7 +191,7 @@ class _BottomSheetWithNoHeaderWidgetState
                             ? '수집물 보기'
                             : '수정하기',
                         style: appTextTheme.bodyMedium.copyWith(
-                          color: appColorScheme.primaryLight,
+                          color: appColorScheme.primary,
                         ),
                       ),
                     ],
@@ -176,30 +203,7 @@ class _BottomSheetWithNoHeaderWidgetState
               width: double.infinity,
               child: TextButton(
                 onPressed: () {
-                  if (widget.typeSettingMode == TypeSettingMode.category) {
-                    Navigator.pop(context);
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return DeleteDialogWidget(
-                          deleteSettingMode: DeleteSettingMode.category,
-                        );
-                      },
-                    );
-                  } else {
-                    ///1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
-                    context.pop();
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return DeleteDialogWidget(
-                          deleteSettingMode: DeleteSettingMode.document,
-                        );
-                      },
-                    );
-                  }
+                  deleteByTypeSettingModeFromBottomSheet();
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),

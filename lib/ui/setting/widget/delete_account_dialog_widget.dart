@@ -16,7 +16,7 @@ class DeleteAccountDialogWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
         decoration: BoxDecoration(
-          color: appColorScheme.primaryDark,
+          color: appColorScheme.primaryStrong,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -26,14 +26,14 @@ class DeleteAccountDialogWidget extends StatelessWidget {
             Text(
               '정말 탈퇴 하시겠어요?',
               style: appTextTheme.headlineSmallKo.copyWith(
-                color: appColorScheme.primaryLight,
+                color: appColorScheme.primary,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               '탈퇴하시면 계정은 삭제되며,\n복구되지 않습니다.',
               style: appTextTheme.bodyMedium.copyWith(
-                color: appColorScheme.primaryLight,
+                color: appColorScheme.primary,
                 height: 1.6,
               ),
             ),
@@ -48,7 +48,7 @@ class DeleteAccountDialogWidget extends StatelessWidget {
                       splashFactory: NoSplash.splashFactory,
                       overlayColor: Colors.transparent,
                       side: BorderSide(
-                        color: appColorScheme.primaryLight,
+                        color: appColorScheme.primary,
                         width: .5,
                       ),
                       backgroundColor: Colors.transparent,
@@ -60,7 +60,7 @@ class DeleteAccountDialogWidget extends StatelessWidget {
                     child: Text(
                       '취소',
                       style: appTextTheme.bodyMedium.copyWith(
-                        color: appColorScheme.primaryLight,
+                        color: appColorScheme.primary,
                       ),
                     ),
                   ),
