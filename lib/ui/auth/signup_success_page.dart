@@ -15,7 +15,7 @@ class SignupSuccessPage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: appColor.primaryLight,
+        backgroundColor: appColor.primary,
         appBar: CustomAppbar(progressText: ''),
         body: Padding(
           padding: const EdgeInsets.all(25.0),
@@ -28,34 +28,34 @@ class SignupSuccessPage extends StatelessWidget {
                     TextSpan(
                       text: '환영해요! ',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '가입을 ',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     TextSpan(
                       text: '완료',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '했어요.\n로그인 후 발견을 저장하고,\n취향을 쌓아보세요. ',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     WidgetSpan( // TODO TextSpan 안에 svg 이미지를 넣고 싶을 때, 어떻게 해야 하는지 문서
                       child: SvgPicture.asset(
                         'assets/icons/archivey_white.svg',
                         colorFilter: ColorFilter.mode(
-                          appColor.primaryDark,
+                          appColor.primaryStrong,
                           BlendMode.srcIn,
                         ),
                         height: appText.labelSmall.fontSize,

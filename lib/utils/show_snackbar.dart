@@ -9,7 +9,7 @@ void showSnackBar(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(text, style: appText.bodySmall.copyWith(
-        color: appColor.primaryLight,
+        color: appColor.primary,
       ),),
       backgroundColor: appColor.snackBarBg,
     )

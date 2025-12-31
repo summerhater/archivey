@@ -5,7 +5,7 @@ import 'package:archivey/config/text_theme_extension.dart';
 import '../../domain/model/document_model.dart';
 import 'document_shell_page.dart';
 import 'package:archivey/ui/document/widget/more_icon_widget.dart';
-import 'package:archivey/ui/document/widget/app_snack_bar_widget.dart';
+import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
 import 'package:archivey/ui/document/widget/document_all_index_post_count_widget.dart';
 

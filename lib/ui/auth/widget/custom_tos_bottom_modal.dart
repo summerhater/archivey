@@ -56,20 +56,20 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
                 TextSpan(
                   text: '아카이비 이용을 위해\n',
                   style: appText.bodyLarge.copyWith(
-                    color: appColor.primaryDark,
+                    color: appColor.primaryStrong,
                   ),
                 ),
                 TextSpan(
                   text: '동의',
                   style: appText.bodyLarge.copyWith(
-                    color: appColor.primaryDark,
+                    color: appColor.primaryStrong,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 TextSpan(
                   text: '가 필요해요.',
                   style: appText.bodyLarge.copyWith(
-                    color: appColor.primaryDark,
+                    color: appColor.primaryStrong,
                   ),
                 ),
               ],
@@ -93,14 +93,14 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
                     Icons.check,
                     size: appText.headlineSmallEn.fontSize,
                     color: checkAll
-                        ? appColor.primaryDark
+                        ? appColor.primaryStrong
                         : appColor.strokeLight,
                   ),
                 ),
                 Text(
                   '모두 동의합니다.',
                   style: appText.bodySmall.copyWith(
-                    color: appColor.primaryDark,
+                    color: appColor.primaryStrong,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -128,7 +128,7 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
                           Icons.check,
                           size: appText.headlineSmallEn.fontSize,
                           color: checkList[i]
-                              ? appColor.primaryDark
+                              ? appColor.primaryStrong
                               : appColor.strokeLight,
                         ),
                       ),
@@ -140,7 +140,7 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
                       child: Text(
                         checkGuide[i],
                         style: appText.bodySmall.copyWith(
-                          color: appColor.primaryDark,
+                          color: appColor.primaryStrong,
                         ),
                       ),
                     ),
@@ -167,16 +167,16 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                   side: BorderSide(
-                    color: appColor.primaryLight,
+                    color: appColor.primary,
                   ),
                 ),
-                backgroundColor: appColor.primaryDark,
+                backgroundColor: appColor.primaryStrong,
                 padding: EdgeInsets.all(20),
               ),
               child: Text(
                 '약관 동의 완료',
                 style: appText.bodyMedium.copyWith(
-                  color: appColor.primaryLight,
+                  color: appColor.primary,
                 ),
               ),
             ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../config/color_scheme_extension.dart';
+import '../config/color_scheme_extension.dart';
 
 ///슬라이드아웃 + 페이드아웃 되지않고 뚝 사라지는 UI 때문에 커스텀 스낵바 제작.
 

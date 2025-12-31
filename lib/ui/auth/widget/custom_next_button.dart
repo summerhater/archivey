@@ -40,14 +40,14 @@ class CustomNextButton extends StatelessWidget {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: appColor.primaryDark,
+          backgroundColor: appColor.primaryStrong,
           shape: BeveledRectangleBorder(),
         ),
         child: Center(
           child: Text(
             guide,
             style: appText.headlineSmallKo.copyWith(
-              color: appColor.primaryLight,
+              color: appColor.primary,
             )
           ),
         ),

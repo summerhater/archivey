@@ -26,7 +26,7 @@ class SignInCustomTextButton extends StatelessWidget {
       child: Text(
         guide,
         style: appText.labelLarge.copyWith(
-          color: appColor.primaryLight,
+          color: appColor.primary,
         ),
       ),
     );

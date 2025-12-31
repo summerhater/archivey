@@ -41,7 +41,7 @@ class CustomElevatedButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(
-              color: appColor.primaryLight,
+              color: appColor.primary,
             ),
           ),
           backgroundColor: backgroundColor,
@@ -50,7 +50,7 @@ class CustomElevatedButton extends StatelessWidget {
         child: Text(
           guide,
           style: TextStyle(
-            color: appColor.primaryLight,
+            color: appColor.primary,
             fontSize: fontSize,
           ),
         ),

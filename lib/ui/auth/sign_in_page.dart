@@ -68,7 +68,7 @@ class _SignInPageState extends State<SignInPage> {
                   CustomElevatedButton(
                     path: '/document-index',
                     guide: '로그인',
-                    backgroundColor: appColor.primaryDark,
+                    backgroundColor: appColor.primaryStrong,
                     fontSize: appText.bodyMedium.fontSize,
                     asyncFunction: () async => await context
                         .read<AuthViewModel>()
@@ -100,7 +100,7 @@ class _SignInPageState extends State<SignInPage> {
                           height: appText.labelLarge.fontSize,
                           child: VerticalDivider(
                             // TODO 트러블 슈팅 -> 세로 구분선은 범위를 지정해 줘야 함 ex. sizedbox, container
-                            color: appColor.primaryLight,
+                            color: appColor.primary,
                             width: 10,
                           ),
                         ),
@@ -115,7 +115,7 @@ class _SignInPageState extends State<SignInPage> {
                             builder: (context) => CustomTosBottomModal(
                               path: '/auth/signup-email',
                             ), // TODO Modal창 문서화?
-                            backgroundColor: appColor.primaryLight,
+                            backgroundColor: appColor.primary,
                             useSafeArea: true,
                           ),
                         ),
