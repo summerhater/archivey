@@ -33,38 +33,36 @@ class DocumentShellPageState extends State<DocumentShellPage> {
   @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
-    final String currentPath = GoRouterState.of(context).uri.toString();
+    final currentLocation = GoRouterState.of(context).uri.toString();
+    final bool isAllTotalDetailPage = currentLocation.contains('all_total/detail');
     final categories = DocumentDummyData.getCategories();
 
     return Scaffold(
-      backgroundColor: appColorScheme.primaryLight,
+      backgroundColor: appColorScheme.primary,
       body: Row(
         children: [
           Expanded(
-            child: Scaffold(
-              primary: true,
-              backgroundColor: Colors.transparent,
-              body: widget.contentPage,
-            ),
+            child: widget.contentPage,
           ),
-          VerticalTabNavigation(
-            selectedIndex: _getSelectedIndex(currentPath),
-            categories: DocumentDummyData.getCategories(),
-            onTapChanged: (index) {
-              if (index == -1) {
-                setState(() => selectedIndex = -1);
-                return;
-              }
+          if (!isAllTotalDetailPage)
+            VerticalTabNavigation(
+              selectedIndex: _getSelectedIndex(currentLocation),
+              categories: DocumentDummyData.getCategories(),
+              onTapChanged: (index) {
+                if (index == -1) {
+                  setState(() => selectedIndex = -1);
+                  return;
+                }
 
-              if (index == 0) { /// ALL은 무조건 idx 0번
-                context.go('/document_all_total');
-              } else {
-                final categories = DocumentDummyData.getCategories();
-                final selectedCategory = categories[index];
-                context.go('/document_category/$selectedCategory');
-              }
-            },
-          ),
+                if (index == 0) { /// ALL은 무조건 idx 0번
+                  context.go('/document_all_total');
+                } else {
+                  final categories = DocumentDummyData.getCategories();
+                  final selectedCategory = categories[index];
+                  context.go('/document_category/$selectedCategory');
+                }
+              },
+            ),
         ],
       ),
     );

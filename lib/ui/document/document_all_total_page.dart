@@ -16,22 +16,16 @@ class DocumentAllTotalPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: documents.length,
-              itemBuilder: (context, index) {
-                return DocumentCard(
-                  document: documents[index],
-                  isFirstItem: index == 0,
-                  isDetailPage: false,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+      body: ListView.builder(
+          itemCount: documents.length,
+          itemBuilder: (context, index) {
+            return DocumentCard(
+              document: documents[index],
+              isFirstItem: index == 0,
+              isDetailPage: false,
+            );
+          },
+        ),
     );
   }
 }

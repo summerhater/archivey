@@ -63,7 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   width: 56,
                                   height: 56,
                                   decoration: BoxDecoration(
-                                    color: appColorScheme.primaryDark,
+                                    color: appColorScheme.primaryStrong,
                                     borderRadius: BorderRadius.circular(32),
                                   ),
                                   child: Icon(
@@ -108,7 +108,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     ),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor:
-                                          appColorScheme.primaryDark,
+                                          appColorScheme.primaryStrong,
                                       side: BorderSide(
                                         color: appColorScheme.strokeLight,
                                       ),
@@ -120,9 +120,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                     label: Text('이메일로 로그인'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          appColorScheme.primaryDark,
+                                          appColorScheme.primaryStrong,
                                       foregroundColor:
-                                          appColorScheme.primaryLight,
+                                          appColorScheme.primary,
                                     ),
                                   ),
                           ],
@@ -140,7 +140,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   Text(
                                     'AI 요약',
                                     style: appTextTheme.bodyMedium.copyWith(
-                                      color: appColorScheme.primaryDark,
+                                      color: appColorScheme.primaryStrong,
                                     ),
                                   ),
                                   SizedBox(height: 8),
@@ -191,7 +191,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               Text(
                                 '1.0.0',
                                 style: appTextTheme.bodySmall.copyWith(
-                                  color: appColorScheme.primaryDark,
+                                  color: appColorScheme.primaryStrong,
                                 ),
                               ),
                               SizedBox(width: 10),

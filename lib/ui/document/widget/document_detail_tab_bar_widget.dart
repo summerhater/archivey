@@ -28,10 +28,10 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      child: SizedBox(
         height: 40,
         child: Stack(
-          children: _buildStackedTabs(context, appColorScheme, appTextTheme),
+          children: _buildStackedTabs(context),
         ),
       ),
     );
@@ -39,8 +39,6 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
 
   List<Widget> _buildStackedTabs(
     BuildContext context,
-    AppColorScheme appColorScheme,
-    AppTextTheme appTextTheme,
   ) {
     return tabs
         .asMap()
@@ -57,8 +55,6 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
                 context,
                 entry.value,
                 isSelected,
-                appColorScheme,
-                appTextTheme,
               ),
             ),
           );
@@ -72,16 +68,17 @@ class DocumentDetailTabBarWidget extends StatelessWidget {
     BuildContext context,
     String title,
     bool isSelected,
-    AppColorScheme appColorScheme,
-    AppTextTheme appTextTheme,
   ) {
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+
     return Container(
       height: tabHeight,
       width: tabWidth,
       decoration: BoxDecoration(
         color: isSelected
-            ? appColorScheme.primaryLight
-            : appColorScheme.primaryDark,
+            ? appColorScheme.primary
+            : appColorScheme.primaryStrong,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(14),
           topRight: Radius.circular(14),

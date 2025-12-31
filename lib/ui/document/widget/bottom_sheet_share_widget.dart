@@ -24,6 +24,48 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  void shareByShareSettingModeFromBottomSheet(){
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+    if (widget.shareSettingMode == ShareSettingMode.category) {
+      ///todo: 카테고리 일 시 처리할 링크 생성+복사 로직
+      context.showAppSnackBar(
+        content: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                // text: '\'$newCategoryName\'',
+                text: 'newCategoryName',
+                style: appTextTheme.bodySmall.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: appColorScheme.primary,
+                ),
+              ),
+              const TextSpan(
+                text: ' 카테고리 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
+              ),
+            ],
+            style: appTextTheme.bodySmall.copyWith(
+              height: 1.8,
+              color: appColorScheme.primary,
+            ),
+          ),
+        ),
+      );
+    } else {
+      ///todo: 1개의 수집물(도큐먼트) 일 시 처리할 링크 복사 로직
+      context.showAppSnackBar(
+        content: Text(
+          '수집물 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
+          style: appTextTheme.bodySmall.copyWith(
+            height: 1.8,
+            color: appColorScheme.primary,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -40,13 +82,13 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
       padding: MediaQuery.of(context).viewInsets,
       child: Container(
         decoration: BoxDecoration(
-          color: appColorScheme.primaryDark,
+          color: appColorScheme.primaryStrong,
           borderRadius: const BorderRadius.vertical(
             top: Radius.circular(20),
           ),
           border: Border(
             top: BorderSide(
-              color: appColorScheme.primaryLight,
+              color: appColorScheme.primary,
               width: .5,
             ),
           ),
@@ -75,7 +117,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                         : '수집물 공유하기',
                     style: appTextTheme.headlineSmallKo.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: appColorScheme.primaryLight,
+                      color: appColorScheme.primary,
                     ),
                   ),
                 ),
@@ -93,43 +135,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                 child: TextButton(
                   onPressed: () {
                     context.pop();
-                    if (widget.shareSettingMode == ShareSettingMode.category) {
-                      ///todo: 카테고리 일 시 처리할 링크 생성+복사 로직
-                      context.showAppSnackBar(
-                        content: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                // text: '\'$newCategoryName\'',
-                                text: 'newCategoryName',
-                                style: appTextTheme.bodySmall.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: appColorScheme.primaryLight,
-                                ),
-                              ),
-                              const TextSpan(
-                                text: ' 카테고리 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
-                              ),
-                            ],
-                            style: appTextTheme.bodySmall.copyWith(
-                              height: 1.8,
-                              color: appColorScheme.primaryLight,
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      ///todo: 1개의 수집물(도큐먼트) 일 시 처리할 링크 복사 로직
-                      context.showAppSnackBar(
-                        content: Text(
-                          '수집물 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
-                          style: appTextTheme.bodySmall.copyWith(
-                            height: 1.8,
-                            color: appColorScheme.primaryLight,
-                          ),
-                        ),
-                      );
-                    }
+                    shareByShareSettingModeFromBottomSheet();
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
@@ -142,7 +148,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                       Text(
                         '링크 복사하기',
                         style: appTextTheme.bodyMedium.copyWith(
-                          color: appColorScheme.primaryLight,
+                          color: appColorScheme.primary,
                         ),
                       ),
                     ],
@@ -173,7 +179,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                     Text(
                       '카카오톡으로 공유하기',
                       style: appTextTheme.bodyMedium.copyWith(
-                        color: appColorScheme.primaryLight,
+                        color: appColorScheme.primary,
                       ),
                     ),
                   ],

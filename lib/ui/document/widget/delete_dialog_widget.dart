@@ -27,7 +27,7 @@ class DeleteDialogWidget extends StatelessWidget {
         width: 300,
         padding: EdgeInsets.symmetric(vertical: 30, horizontal: 24),
         decoration: BoxDecoration(
-          color: appColorScheme.primaryDark,
+          color: appColorScheme.primaryStrong,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -38,7 +38,7 @@ class DeleteDialogWidget extends StatelessWidget {
               children: [
                 Text.rich(
                   style: appTextTheme.headlineSmallKo.copyWith(
-                    color: appColorScheme.primaryLight,
+                    color: appColorScheme.primary,
                   ),
                   TextSpan(
                     children: [
@@ -61,7 +61,7 @@ class DeleteDialogWidget extends StatelessWidget {
                   ? '삭제 시 categoryname에 수집된 내용은 모두 삭제되며 복구할 수 없습니다.'
                   : '삭제 시 해당 수집물은 삭제되며, 삭제 후 복구할 수 없습니다.',
               style: appTextTheme.bodyMedium.copyWith(
-                color: appColorScheme.primaryLight,
+                color: appColorScheme.primary,
                 height: 1.6,
               ),
             ),
@@ -80,7 +80,7 @@ class DeleteDialogWidget extends StatelessWidget {
                       splashFactory: NoSplash.splashFactory,
                       overlayColor: Colors.transparent,
                       side: BorderSide(
-                        color: appColorScheme.primaryLight,
+                        color: appColorScheme.primary,
                         width: .5,
                       ),
                       backgroundColor: Colors.transparent,
@@ -92,7 +92,7 @@ class DeleteDialogWidget extends StatelessWidget {
                     child: Text(
                       '취소',
                       style: appTextTheme.bodyMedium.copyWith(
-                        color: appColorScheme.primaryLight,
+                        color: appColorScheme.primary,
                       ),
                     ),
                   ),

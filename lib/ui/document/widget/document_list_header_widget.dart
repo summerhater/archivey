@@ -108,29 +108,30 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                   ],
                 ),
         ),
+
         /// subCategories 칩 버튼 선택
         if (!widget.isOnAllPage)
           Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: List<Widget>.generate(subCategories.length, (
-                  int index,
-                ) {
-                  bool isSelected = _selectedIndex == index;
+            child: SizedBox(
+              height: 40, // ChoiceChip 높이에 맞게
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: subCategories.length,
+                itemBuilder: (context, index) {
+                  final bool isSelected = _selectedIndex == index;
+
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: ChoiceChip(
                       showCheckmark: false,
-                      backgroundColor: appColorScheme.primaryLight,
-                      selectedColor: appColorScheme.primaryDark,
+                      backgroundColor: appColorScheme.primary,
+                      selectedColor: appColorScheme.primaryStrong,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                         side: BorderSide(
                           color: isSelected
-                              ? appColorScheme.primaryDark
+                              ? appColorScheme.primaryStrong
                               : appColorScheme.strokeLight,
                         ),
                       ),
@@ -138,8 +139,8 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                         subCategories[index],
                         style: appTextTheme.bodySmall.copyWith(
                           color: isSelected
-                              ? appColorScheme.primaryLight
-                              : appColorScheme.primaryDark,
+                              ? appColorScheme.primary
+                              : appColorScheme.primaryStrong,
                         ),
                       ),
                       selected: isSelected,
@@ -150,10 +151,11 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                       },
                     ),
                   );
-                }).toList(),
+                },
               ),
             ),
           ),
+
         SizedBox(
           height: 4,
         ),

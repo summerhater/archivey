@@ -46,13 +46,13 @@ class _BottomSheetCategoryAddEditWidgetState
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: appColorScheme.primaryDark,
+          color: appColorScheme.primaryStrong,
           borderRadius: const BorderRadius.vertical(
             top: Radius.circular(20),
           ),
           border: Border(
             top: BorderSide(
-              color: appColorScheme.primaryLight,
+              color: appColorScheme.primary,
               width: .5,
             ),
           ),
@@ -79,7 +79,7 @@ class _BottomSheetCategoryAddEditWidgetState
                       ? '새 카테고리 추가'
                       : '카테고리 수정',
                   style: appTextTheme.headlineSmallKo.copyWith(
-                    color: appColorScheme.primaryLight,
+                    color: appColorScheme.primary,
                   ),
                 ),
               ],
@@ -100,12 +100,12 @@ class _BottomSheetCategoryAddEditWidgetState
               focusNode: _focusNode,
               autofocus: true,
               maxLength: 15,
-              cursorColor: appColorScheme.primaryLight,
+              cursorColor: appColorScheme.primary,
               cursorWidth: 1.0,
               cursorHeight: 18,
               style: appTextTheme.headlineSmallKo.copyWith(
                 fontWeight: FontWeight.w400,
-                color: appColorScheme.primaryLight,
+                color: appColorScheme.primary,
               ),
               decoration: InputDecoration(
                 counterText: '',
@@ -126,7 +126,7 @@ class _BottomSheetCategoryAddEditWidgetState
                   borderSide: BorderSide(
                     color: isError
                         ? appColorScheme.error
-                        : appColorScheme.primaryLight,
+                        : appColorScheme.primary,
                     width: .5,
                   ),
                 ),
@@ -134,7 +134,7 @@ class _BottomSheetCategoryAddEditWidgetState
                   borderSide: BorderSide(
                     color: isError
                         ? appColorScheme.error
-                        : appColorScheme.primaryLight,
+                        : appColorScheme.primary,
                     width: 1,
                   ),
                 ),
@@ -162,14 +162,14 @@ class _BottomSheetCategoryAddEditWidgetState
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  backgroundColor: appColorScheme.primaryLight,
+                  backgroundColor: appColorScheme.primary,
                   padding: EdgeInsets.symmetric(vertical: 14),
                   overlayColor: Colors.transparent,
                 ),
                 child: Text(
                   '저장',
                   style: appTextTheme.bodyMedium.copyWith(
-                    color: appColorScheme.primaryDark,
+                    color: appColorScheme.primaryStrong,
                     fontWeight: FontWeight.w400,
                   ),
                 ),

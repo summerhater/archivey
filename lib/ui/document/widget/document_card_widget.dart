@@ -32,7 +32,7 @@ class DocumentCard extends StatelessWidget {
           : EdgeInsets.only(bottom: 10, left: 16, right: 16),
       decoration: isDetailPage
           ? BoxDecoration(
-              color: appColorScheme.primaryLight,
+              color: appColorScheme.primary,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: appColorScheme.strokeLight,
@@ -174,7 +174,7 @@ class DocumentCard extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: appColorScheme.primaryDark,
+                              color: appColorScheme.primaryStrong,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(

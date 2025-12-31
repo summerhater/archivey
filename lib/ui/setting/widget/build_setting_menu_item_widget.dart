@@ -34,13 +34,13 @@ class SettingMenuItemWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     if (icon != null)
-                      Icon(icon, size: 20, color: appColorScheme.primaryDark),
+                      Icon(icon, size: 20, color: appColorScheme.primaryStrong),
                     if (icon != null) SizedBox(width: 12),
                     Text(
                       label,
                       style: appTextTheme.bodyMedium.copyWith(
                         color: icon != null
-                            ? appColorScheme.primaryDark
+                            ? appColorScheme.primaryStrong
                             : appColorScheme.textLight,
                       ),
                     ),

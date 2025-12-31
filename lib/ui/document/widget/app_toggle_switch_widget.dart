@@ -18,7 +18,7 @@ class AppToggleSwitchWidget extends StatelessWidget {
     return Switch(
       value: value,
       onChanged: onChanged,
-      activeThumbColor: appColorScheme.primaryDark,
+      activeThumbColor: appColorScheme.primaryStrong,
       inactiveThumbColor: appColorScheme.textLight,
       inactiveTrackColor: appColorScheme.documentDetailBg,
       trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
@@ -26,7 +26,7 @@ class AppToggleSwitchWidget extends StatelessWidget {
           if (!value) {
             return appColorScheme.strokeLight;
           }
-          return appColorScheme.primaryDark;
+          return appColorScheme.primaryStrong;
         },
       ),
       trackOutlineWidth: WidgetStateProperty.resolveWith<double?>(

@@ -91,24 +91,39 @@ class DocumentDummyData {
   }
 
   ///ALL을 제외한 실제 순서 바꿀 수 있는 관리용 카테고리만 반환
-  static List<String> getManageableCategories() {
+  static Future<List<String>> getManageableCategories() async {
     final all = getCategories();
     return all.where((c) => c != 'ALL').toList();
   }
 
   ///카테고리 순서 변경 로직
-  static void reorderCategories(int oldIndex, int newIndex) {
-    /// getManageableCategories 기준의 idx를 실제 _cachedCategories idx로 치환
-    ///ALL이 인덱스 0번에 고정이라 1을 더해줌.
-    int oldIdx = oldIndex + 1;
-    int newIdx = newIndex + 1;
+  ///UI에서 전달된 index 기준으로 cachedCategories 재정렬
+  static void reorderCategories(int uiOldIndex, int uiNewIndex) {
+    // ALL 이 0번에 고정되어 있으므로 +1
+    int oldIdx = uiOldIndex + 1;
+    int newIdx = uiNewIndex + 1;
 
     if (newIdx > oldIdx) newIdx -= 1;
 
     if (oldIdx < 0 || oldIdx >= _cachedCategories.length) return;
     if (newIdx < 0 || newIdx >= _cachedCategories.length) return;
 
-    final String item = _cachedCategories.removeAt(oldIdx);
+    final item = _cachedCategories.removeAt(oldIdx);
     _cachedCategories.insert(newIdx, item);
   }
+
+// static void reorderCategories(int oldIndex, int newIndex) {
+  //   /// getManageableCategories 기준의 idx를 실제 _cachedCategories idx로 치환
+  //   ///ALL이 인덱스 0번에 고정이라 1을 더해줌.
+  //   int oldIdx = oldIndex + 1;
+  //   int newIdx = newIndex + 1;
+  //
+  //   if (newIdx > oldIdx) newIdx -= 1;
+  //
+  //   if (oldIdx < 0 || oldIdx >= _cachedCategories.length) return;
+  //   if (newIdx < 0 || newIdx >= _cachedCategories.length) return;
+  //
+  //   final String item = _cachedCategories.removeAt(oldIdx);
+  //   _cachedCategories.insert(newIdx, item);
+  // }
 }
