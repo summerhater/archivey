@@ -71,4 +71,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'archivey-4d62f.firebasestorage.app',
     iosBundleId: 'com.archivey.archivey',
   );
+
 }
