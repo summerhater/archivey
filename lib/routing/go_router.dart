@@ -1,49 +1,62 @@
+import 'package:archivey/ui/auth/find_email_password_page.dart';
+import 'package:archivey/ui/auth/auth_page.dart';
+import 'package:archivey/ui/auth/sign_in_page.dart';
+import 'package:archivey/ui/auth/signup_email_page.dart';
+import 'package:archivey/ui/auth/signup_email_verify_page.dart';
+import 'package:archivey/ui/auth/signup_password_page.dart';
+import 'package:archivey/ui/auth/signup_success_page.dart';
 import 'package:archivey/ui/document/document_detail_page.dart';
 import 'package:archivey/ui/document/document_index_page.dart';
 import 'package:archivey/ui/document/document_list_page.dart';
-import 'package:archivey/ui/login/login_page.dart';
-import 'package:archivey/ui/login/signup_email_page.dart';
-import 'package:archivey/ui/login/signup_email_verify_page.dart';
-import 'package:archivey/ui/login/signup_password_page.dart';
-import 'package:archivey/ui/login/signup_success_page.dart';
+
 import 'package:archivey/ui/onboarding/on_boarding_page.dart';
 import 'package:archivey/ui/setting/settings_page.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter goRouter = GoRouter(
-  initialLocation: '/',
+  // initialLocation: '/auth/signup-success/',
+  initialLocation: '/auth',
   routes: [
     GoRoute(
       path: '/',
       builder: (context, state) => OnBoardingPage(),
     ),
     GoRoute(
-      path: '/login',
-      builder: (context, state) => LoginPage(),
+      path: '/auth',
+      builder: (context, state) => AuthPage(),
+      redirect: (context, state) {},
       routes: [
+        GoRoute(
+          path: 'sign-in',
+          builder: (context, state) => SignInPage(),
+          routes: [
+            GoRoute(
+              path: 'find',
+              builder: (context, state) => FindEmailPasswordPage(),
+            ),
+          ],
+        ),
         GoRoute(
           path: 'signup-email',
           builder: (context, state) => SignupEmailPage(),
           routes: [
             GoRoute(
-              path: 'signup-email-verify',
-              builder: (context, state) => SignupEmailVerifyPage(),
-              routes:[
+              path: 'signup-password',
+              builder: (context, state) => SignupPasswordPage(),
+              routes: [
                 GoRoute(
-                  path: 'signup-password',
-                  builder: (context, state) => SignupPasswordPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'signup-success',
-                      builder: (context, state) => SignupSuccessPage(),
-                    )
-                  ],
-                )
-              ]
-            )
-          ]
-        )
-      ]
+                  path: 'signup-email-verify',
+                  builder: (context, state) => SignupEmailVerifyPage(),
+                ),
+              ],
+            ),
+          ],
+        ),
+        GoRoute(
+          path: 'signup-success',
+          builder: (context, state) => SignupSuccessPage(),
+        ),
+      ],
     ),
     GoRoute(
       path: '/document-index',
@@ -51,19 +64,21 @@ final GoRouter goRouter = GoRouter(
       routes: [
         GoRoute(
           path: 'list',
-          builder: (context, state) => DocumentListPage(category: state.pathParameters['category']),
-          routes:[
+          builder: (context, state) =>
+              DocumentListPage(category: state.pathParameters['category']),
+          routes: [
             GoRoute(
               path: 'detail',
-              builder: (context, state) => DocumentDetailPage(docId: state.pathParameters['docId']),
-            )
-          ]
-        )
-      ]
+              builder: (context, state) =>
+                  DocumentDetailPage(docId: state.pathParameters['docId']),
+            ),
+          ],
+        ),
+      ],
     ),
     GoRoute(
       path: '/settings',
       builder: (context, state) => SettingsPage(),
-    )
-  ]
+    ),
+  ],
 );
