@@ -75,6 +75,7 @@ class _ArchiveyState extends State<Archivey> {
       routerConfig: goRouter,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        //colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue,primary: Colors.yellow,onError:  Color(0xFFED7A7A)),
         extensions: [
           AppTextTheme(),
           AppColorScheme(),

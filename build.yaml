@@ -1,0 +1,13 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+#          database:
+#            default: lib/data/drift/app_database.dart
+          sqlite_modules:
+            - fts5
+
+          generate_value_in_json_to_companion: true
+
+          json_serialization: true

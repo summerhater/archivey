@@ -42,7 +42,9 @@ dependencies:
   flutter_svg: ^2.2.3
   flutter_sharing_intent: ^2.0.4
   drift: ^2.30.0
-  sqlite3: ^2.9.4
+  drift_flutter: ^0.2.8
+#  sqlite3: ^2.9.4
+  sqlite3_flutter_libs: ^0.5.41
   path: ^1.9.1
   path_provider: ^2.1.5
 
