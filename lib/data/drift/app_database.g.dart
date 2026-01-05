@@ -8,27 +8,57 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Documents(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  late final GeneratedColumn<String> uid = GeneratedColumn<String>(
+    'uid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
     aliasedName,
     false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
   );
-  static const VerificationMeta _createAtMeta = const VerificationMeta(
-    'createAt',
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
   );
-  late final GeneratedColumn<DateTime> createAt = GeneratedColumn<DateTime>(
-    'create_at',
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
     aliasedName,
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
     $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
     defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _userMemoMeta = const VerificationMeta(
+    'userMemo',
+  );
+  late final GeneratedColumn<String> userMemo = GeneratedColumn<String>(
+    'user_memo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -39,31 +69,20 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _linkUrlMeta = const VerificationMeta(
-    'linkUrl',
-  );
-  late final GeneratedColumn<String> linkUrl = GeneratedColumn<String>(
-    'link_url',
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _imgUrlMeta = const VerificationMeta('imgUrl');
-  late final GeneratedColumn<String> imgUrl = GeneratedColumn<String>(
-    'img_url',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
+  static const VerificationMeta _imageUrlMeta = const VerificationMeta(
+    'imageUrl',
   );
-  static const VerificationMeta _categoryMeta = const VerificationMeta(
-    'category',
-  );
-  late final GeneratedColumn<String> category = GeneratedColumn<String>(
-    'category',
+  late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
+    'image_url',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -81,37 +100,41 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _memoMeta = const VerificationMeta('memo');
-  late final GeneratedColumn<String> memo = GeneratedColumn<String>(
-    'memo',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
+  static const VerificationMeta _aiSummaryMeta = const VerificationMeta(
+    'aiSummary',
   );
-  static const VerificationMeta _summaryMeta = const VerificationMeta(
-    'summary',
-  );
-  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
-    'summary',
+  late final GeneratedColumn<String> aiSummary = GeneratedColumn<String>(
+    'ai_summary',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _aiStatusMeta = const VerificationMeta(
+    'aiStatus',
+  );
+  late final GeneratedColumn<String> aiStatus = GeneratedColumn<String>(
+    'ai_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
+    uid,
     id,
-    createAt,
-    title,
-    linkUrl,
-    imgUrl,
+    createdAt,
     category,
+    userMemo,
+    title,
+    url,
+    imageUrl,
     platform,
-    memo,
-    summary,
+    aiSummary,
+    aiStatus,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -125,38 +148,24 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_uidMeta);
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('create_at')) {
-      context.handle(
-        _createAtMeta,
-        createAt.isAcceptableOrUnknown(data['create_at']!, _createAtMeta),
-      );
-    }
-    if (data.containsKey('title')) {
-      context.handle(
-        _titleMeta,
-        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
-      );
     } else if (isInserting) {
-      context.missing(_titleMeta);
+      context.missing(_idMeta);
     }
-    if (data.containsKey('link_url')) {
+    if (data.containsKey('created_at')) {
       context.handle(
-        _linkUrlMeta,
-        linkUrl.isAcceptableOrUnknown(data['link_url']!, _linkUrlMeta),
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
-    } else if (isInserting) {
-      context.missing(_linkUrlMeta);
-    }
-    if (data.containsKey('img_url')) {
-      context.handle(
-        _imgUrlMeta,
-        imgUrl.isAcceptableOrUnknown(data['img_url']!, _imgUrlMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_imgUrlMeta);
     }
     if (data.containsKey('category')) {
       context.handle(
@@ -166,6 +175,38 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     } else if (isInserting) {
       context.missing(_categoryMeta);
     }
+    if (data.containsKey('user_memo')) {
+      context.handle(
+        _userMemoMeta,
+        userMemo.isAcceptableOrUnknown(data['user_memo']!, _userMemoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userMemoMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+        _urlMeta,
+        url.isAcceptableOrUnknown(data['url']!, _urlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_urlMeta);
+    }
+    if (data.containsKey('image_url')) {
+      context.handle(
+        _imageUrlMeta,
+        imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_imageUrlMeta);
+    }
     if (data.containsKey('platform')) {
       context.handle(
         _platformMeta,
@@ -174,17 +215,21 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     } else if (isInserting) {
       context.missing(_platformMeta);
     }
-    if (data.containsKey('memo')) {
+    if (data.containsKey('ai_summary')) {
       context.handle(
-        _memoMeta,
-        memo.isAcceptableOrUnknown(data['memo']!, _memoMeta),
+        _aiSummaryMeta,
+        aiSummary.isAcceptableOrUnknown(data['ai_summary']!, _aiSummaryMeta),
       );
+    } else if (isInserting) {
+      context.missing(_aiSummaryMeta);
     }
-    if (data.containsKey('summary')) {
+    if (data.containsKey('ai_status')) {
       context.handle(
-        _summaryMeta,
-        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+        _aiStatusMeta,
+        aiStatus.isAcceptableOrUnknown(data['ai_status']!, _aiStatusMeta),
       );
+    } else if (isInserting) {
+      context.missing(_aiStatusMeta);
     }
     return context;
   }
@@ -195,42 +240,50 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   DocumentEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DocumentEntity(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uid'],
+      )!,
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
-      createAt: attachedDatabase.typeMapping.read(
+      createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
-        data['${effectivePrefix}create_at'],
-      )!,
-      title: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}title'],
-      )!,
-      linkUrl: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}link_url'],
-      )!,
-      imgUrl: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}img_url'],
+        data['${effectivePrefix}created_at'],
       )!,
       category: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}category'],
       )!,
+      userMemo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_memo'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
+      imageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_url'],
+      )!,
       platform: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}platform'],
       )!,
-      memo: attachedDatabase.typeMapping.read(
+      aiSummary: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}memo'],
-      ),
-      summary: attachedDatabase.typeMapping.read(
+        data['${effectivePrefix}ai_summary'],
+      )!,
+      aiStatus: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}summary'],
-      ),
+        data['${effectivePrefix}ai_status'],
+      )!,
     );
   }
 
@@ -244,58 +297,62 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
 }
 
 class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
-  final int id;
-  final DateTime createAt;
-  final String title;
-  final String linkUrl;
-  final String imgUrl;
+  final String uid;
+
+  /// 필요한가? 저장 안할 이유도 없긴 하네
+  final String id;
+  final DateTime createdAt;
   final String category;
+  final String userMemo;
+  final String title;
+  final String url;
+  final String imageUrl;
   final String platform;
-  final String? memo;
-  final String? summary;
+  final String aiSummary;
+  final String aiStatus;
   const DocumentEntity({
+    required this.uid,
     required this.id,
-    required this.createAt,
-    required this.title,
-    required this.linkUrl,
-    required this.imgUrl,
+    required this.createdAt,
     required this.category,
+    required this.userMemo,
+    required this.title,
+    required this.url,
+    required this.imageUrl,
     required this.platform,
-    this.memo,
-    this.summary,
+    required this.aiSummary,
+    required this.aiStatus,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['create_at'] = Variable<DateTime>(createAt);
-    map['title'] = Variable<String>(title);
-    map['link_url'] = Variable<String>(linkUrl);
-    map['img_url'] = Variable<String>(imgUrl);
+    map['uid'] = Variable<String>(uid);
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
     map['category'] = Variable<String>(category);
+    map['user_memo'] = Variable<String>(userMemo);
+    map['title'] = Variable<String>(title);
+    map['url'] = Variable<String>(url);
+    map['image_url'] = Variable<String>(imageUrl);
     map['platform'] = Variable<String>(platform);
-    if (!nullToAbsent || memo != null) {
-      map['memo'] = Variable<String>(memo);
-    }
-    if (!nullToAbsent || summary != null) {
-      map['summary'] = Variable<String>(summary);
-    }
+    map['ai_summary'] = Variable<String>(aiSummary);
+    map['ai_status'] = Variable<String>(aiStatus);
     return map;
   }
 
   DocumentsCompanion toCompanion(bool nullToAbsent) {
     return DocumentsCompanion(
+      uid: Value(uid),
       id: Value(id),
-      createAt: Value(createAt),
-      title: Value(title),
-      linkUrl: Value(linkUrl),
-      imgUrl: Value(imgUrl),
+      createdAt: Value(createdAt),
       category: Value(category),
+      userMemo: Value(userMemo),
+      title: Value(title),
+      url: Value(url),
+      imageUrl: Value(imageUrl),
       platform: Value(platform),
-      memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
-      summary: summary == null && nullToAbsent
-          ? const Value.absent()
-          : Value(summary),
+      aiSummary: Value(aiSummary),
+      aiStatus: Value(aiStatus),
     );
   }
 
@@ -305,224 +362,275 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DocumentEntity(
-      id: serializer.fromJson<int>(json['id']),
-      createAt: serializer.fromJson<DateTime>(json['create_at']),
-      title: serializer.fromJson<String>(json['title']),
-      linkUrl: serializer.fromJson<String>(json['link_url']),
-      imgUrl: serializer.fromJson<String>(json['img_url']),
+      uid: serializer.fromJson<String>(json['uid']),
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
       category: serializer.fromJson<String>(json['category']),
+      userMemo: serializer.fromJson<String>(json['user_memo']),
+      title: serializer.fromJson<String>(json['title']),
+      url: serializer.fromJson<String>(json['url']),
+      imageUrl: serializer.fromJson<String>(json['image_url']),
       platform: serializer.fromJson<String>(json['platform']),
-      memo: serializer.fromJson<String?>(json['memo']),
-      summary: serializer.fromJson<String?>(json['summary']),
+      aiSummary: serializer.fromJson<String>(json['ai_summary']),
+      aiStatus: serializer.fromJson<String>(json['ai_status']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'create_at': serializer.toJson<DateTime>(createAt),
-      'title': serializer.toJson<String>(title),
-      'link_url': serializer.toJson<String>(linkUrl),
-      'img_url': serializer.toJson<String>(imgUrl),
+      'uid': serializer.toJson<String>(uid),
+      'id': serializer.toJson<String>(id),
+      'created_at': serializer.toJson<DateTime>(createdAt),
       'category': serializer.toJson<String>(category),
+      'user_memo': serializer.toJson<String>(userMemo),
+      'title': serializer.toJson<String>(title),
+      'url': serializer.toJson<String>(url),
+      'image_url': serializer.toJson<String>(imageUrl),
       'platform': serializer.toJson<String>(platform),
-      'memo': serializer.toJson<String?>(memo),
-      'summary': serializer.toJson<String?>(summary),
+      'ai_summary': serializer.toJson<String>(aiSummary),
+      'ai_status': serializer.toJson<String>(aiStatus),
     };
   }
 
   DocumentEntity copyWith({
-    int? id,
-    DateTime? createAt,
-    String? title,
-    String? linkUrl,
-    String? imgUrl,
+    String? uid,
+    String? id,
+    DateTime? createdAt,
     String? category,
+    String? userMemo,
+    String? title,
+    String? url,
+    String? imageUrl,
     String? platform,
-    Value<String?> memo = const Value.absent(),
-    Value<String?> summary = const Value.absent(),
+    String? aiSummary,
+    String? aiStatus,
   }) => DocumentEntity(
+    uid: uid ?? this.uid,
     id: id ?? this.id,
-    createAt: createAt ?? this.createAt,
-    title: title ?? this.title,
-    linkUrl: linkUrl ?? this.linkUrl,
-    imgUrl: imgUrl ?? this.imgUrl,
+    createdAt: createdAt ?? this.createdAt,
     category: category ?? this.category,
+    userMemo: userMemo ?? this.userMemo,
+    title: title ?? this.title,
+    url: url ?? this.url,
+    imageUrl: imageUrl ?? this.imageUrl,
     platform: platform ?? this.platform,
-    memo: memo.present ? memo.value : this.memo,
-    summary: summary.present ? summary.value : this.summary,
+    aiSummary: aiSummary ?? this.aiSummary,
+    aiStatus: aiStatus ?? this.aiStatus,
   );
   DocumentEntity copyWithCompanion(DocumentsCompanion data) {
     return DocumentEntity(
+      uid: data.uid.present ? data.uid.value : this.uid,
       id: data.id.present ? data.id.value : this.id,
-      createAt: data.createAt.present ? data.createAt.value : this.createAt,
-      title: data.title.present ? data.title.value : this.title,
-      linkUrl: data.linkUrl.present ? data.linkUrl.value : this.linkUrl,
-      imgUrl: data.imgUrl.present ? data.imgUrl.value : this.imgUrl,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       category: data.category.present ? data.category.value : this.category,
+      userMemo: data.userMemo.present ? data.userMemo.value : this.userMemo,
+      title: data.title.present ? data.title.value : this.title,
+      url: data.url.present ? data.url.value : this.url,
+      imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
       platform: data.platform.present ? data.platform.value : this.platform,
-      memo: data.memo.present ? data.memo.value : this.memo,
-      summary: data.summary.present ? data.summary.value : this.summary,
+      aiSummary: data.aiSummary.present ? data.aiSummary.value : this.aiSummary,
+      aiStatus: data.aiStatus.present ? data.aiStatus.value : this.aiStatus,
     );
   }
 
   @override
   String toString() {
     return (StringBuffer('DocumentEntity(')
+          ..write('uid: $uid, ')
           ..write('id: $id, ')
-          ..write('createAt: $createAt, ')
-          ..write('title: $title, ')
-          ..write('linkUrl: $linkUrl, ')
-          ..write('imgUrl: $imgUrl, ')
+          ..write('createdAt: $createdAt, ')
           ..write('category: $category, ')
+          ..write('userMemo: $userMemo, ')
+          ..write('title: $title, ')
+          ..write('url: $url, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('platform: $platform, ')
-          ..write('memo: $memo, ')
-          ..write('summary: $summary')
+          ..write('aiSummary: $aiSummary, ')
+          ..write('aiStatus: $aiStatus')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
+    uid,
     id,
-    createAt,
-    title,
-    linkUrl,
-    imgUrl,
+    createdAt,
     category,
+    userMemo,
+    title,
+    url,
+    imageUrl,
     platform,
-    memo,
-    summary,
+    aiSummary,
+    aiStatus,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DocumentEntity &&
+          other.uid == this.uid &&
           other.id == this.id &&
-          other.createAt == this.createAt &&
-          other.title == this.title &&
-          other.linkUrl == this.linkUrl &&
-          other.imgUrl == this.imgUrl &&
+          other.createdAt == this.createdAt &&
           other.category == this.category &&
+          other.userMemo == this.userMemo &&
+          other.title == this.title &&
+          other.url == this.url &&
+          other.imageUrl == this.imageUrl &&
           other.platform == this.platform &&
-          other.memo == this.memo &&
-          other.summary == this.summary);
+          other.aiSummary == this.aiSummary &&
+          other.aiStatus == this.aiStatus);
 }
 
 class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
-  final Value<int> id;
-  final Value<DateTime> createAt;
-  final Value<String> title;
-  final Value<String> linkUrl;
-  final Value<String> imgUrl;
+  final Value<String> uid;
+  final Value<String> id;
+  final Value<DateTime> createdAt;
   final Value<String> category;
+  final Value<String> userMemo;
+  final Value<String> title;
+  final Value<String> url;
+  final Value<String> imageUrl;
   final Value<String> platform;
-  final Value<String?> memo;
-  final Value<String?> summary;
+  final Value<String> aiSummary;
+  final Value<String> aiStatus;
+  final Value<int> rowid;
   const DocumentsCompanion({
+    this.uid = const Value.absent(),
     this.id = const Value.absent(),
-    this.createAt = const Value.absent(),
-    this.title = const Value.absent(),
-    this.linkUrl = const Value.absent(),
-    this.imgUrl = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.category = const Value.absent(),
+    this.userMemo = const Value.absent(),
+    this.title = const Value.absent(),
+    this.url = const Value.absent(),
+    this.imageUrl = const Value.absent(),
     this.platform = const Value.absent(),
-    this.memo = const Value.absent(),
-    this.summary = const Value.absent(),
+    this.aiSummary = const Value.absent(),
+    this.aiStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   DocumentsCompanion.insert({
-    this.id = const Value.absent(),
-    this.createAt = const Value.absent(),
-    required String title,
-    required String linkUrl,
-    required String imgUrl,
+    required String uid,
+    required String id,
+    this.createdAt = const Value.absent(),
     required String category,
+    required String userMemo,
+    required String title,
+    required String url,
+    required String imageUrl,
     required String platform,
-    this.memo = const Value.absent(),
-    this.summary = const Value.absent(),
-  }) : title = Value(title),
-       linkUrl = Value(linkUrl),
-       imgUrl = Value(imgUrl),
+    required String aiSummary,
+    required String aiStatus,
+    this.rowid = const Value.absent(),
+  }) : uid = Value(uid),
+       id = Value(id),
        category = Value(category),
-       platform = Value(platform);
+       userMemo = Value(userMemo),
+       title = Value(title),
+       url = Value(url),
+       imageUrl = Value(imageUrl),
+       platform = Value(platform),
+       aiSummary = Value(aiSummary),
+       aiStatus = Value(aiStatus);
   static Insertable<DocumentEntity> custom({
-    Expression<int>? id,
-    Expression<DateTime>? createAt,
-    Expression<String>? title,
-    Expression<String>? linkUrl,
-    Expression<String>? imgUrl,
+    Expression<String>? uid,
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
     Expression<String>? category,
+    Expression<String>? userMemo,
+    Expression<String>? title,
+    Expression<String>? url,
+    Expression<String>? imageUrl,
     Expression<String>? platform,
-    Expression<String>? memo,
-    Expression<String>? summary,
+    Expression<String>? aiSummary,
+    Expression<String>? aiStatus,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
       if (id != null) 'id': id,
-      if (createAt != null) 'create_at': createAt,
-      if (title != null) 'title': title,
-      if (linkUrl != null) 'link_url': linkUrl,
-      if (imgUrl != null) 'img_url': imgUrl,
+      if (createdAt != null) 'created_at': createdAt,
       if (category != null) 'category': category,
+      if (userMemo != null) 'user_memo': userMemo,
+      if (title != null) 'title': title,
+      if (url != null) 'url': url,
+      if (imageUrl != null) 'image_url': imageUrl,
       if (platform != null) 'platform': platform,
-      if (memo != null) 'memo': memo,
-      if (summary != null) 'summary': summary,
+      if (aiSummary != null) 'ai_summary': aiSummary,
+      if (aiStatus != null) 'ai_status': aiStatus,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   DocumentsCompanion copyWith({
-    Value<int>? id,
-    Value<DateTime>? createAt,
-    Value<String>? title,
-    Value<String>? linkUrl,
-    Value<String>? imgUrl,
+    Value<String>? uid,
+    Value<String>? id,
+    Value<DateTime>? createdAt,
     Value<String>? category,
+    Value<String>? userMemo,
+    Value<String>? title,
+    Value<String>? url,
+    Value<String>? imageUrl,
     Value<String>? platform,
-    Value<String?>? memo,
-    Value<String?>? summary,
+    Value<String>? aiSummary,
+    Value<String>? aiStatus,
+    Value<int>? rowid,
   }) {
     return DocumentsCompanion(
+      uid: uid ?? this.uid,
       id: id ?? this.id,
-      createAt: createAt ?? this.createAt,
-      title: title ?? this.title,
-      linkUrl: linkUrl ?? this.linkUrl,
-      imgUrl: imgUrl ?? this.imgUrl,
+      createdAt: createdAt ?? this.createdAt,
       category: category ?? this.category,
+      userMemo: userMemo ?? this.userMemo,
+      title: title ?? this.title,
+      url: url ?? this.url,
+      imageUrl: imageUrl ?? this.imageUrl,
       platform: platform ?? this.platform,
-      memo: memo ?? this.memo,
-      summary: summary ?? this.summary,
+      aiSummary: aiSummary ?? this.aiSummary,
+      aiStatus: aiStatus ?? this.aiStatus,
+      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
+    }
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
-    if (createAt.present) {
-      map['create_at'] = Variable<DateTime>(createAt.value);
-    }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
-    }
-    if (linkUrl.present) {
-      map['link_url'] = Variable<String>(linkUrl.value);
-    }
-    if (imgUrl.present) {
-      map['img_url'] = Variable<String>(imgUrl.value);
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (category.present) {
       map['category'] = Variable<String>(category.value);
     }
+    if (userMemo.present) {
+      map['user_memo'] = Variable<String>(userMemo.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
+    }
     if (platform.present) {
       map['platform'] = Variable<String>(platform.value);
     }
-    if (memo.present) {
-      map['memo'] = Variable<String>(memo.value);
+    if (aiSummary.present) {
+      map['ai_summary'] = Variable<String>(aiSummary.value);
     }
-    if (summary.present) {
-      map['summary'] = Variable<String>(summary.value);
+    if (aiStatus.present) {
+      map['ai_status'] = Variable<String>(aiStatus.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -530,15 +638,18 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
   @override
   String toString() {
     return (StringBuffer('DocumentsCompanion(')
+          ..write('uid: $uid, ')
           ..write('id: $id, ')
-          ..write('createAt: $createAt, ')
-          ..write('title: $title, ')
-          ..write('linkUrl: $linkUrl, ')
-          ..write('imgUrl: $imgUrl, ')
+          ..write('createdAt: $createdAt, ')
           ..write('category: $category, ')
+          ..write('userMemo: $userMemo, ')
+          ..write('title: $title, ')
+          ..write('url: $url, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('platform: $platform, ')
-          ..write('memo: $memo, ')
-          ..write('summary: $summary')
+          ..write('aiSummary: $aiSummary, ')
+          ..write('aiStatus: $aiStatus, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -736,11 +847,11 @@ class DocumentTags extends Table with TableInfo<DocumentTags, DocumentTag> {
   static const VerificationMeta _documentIdMeta = const VerificationMeta(
     'documentId',
   );
-  late final GeneratedColumn<int> documentId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
     'document_id',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL REFERENCES documents(id)ON DELETE CASCADE',
   );
@@ -793,7 +904,7 @@ class DocumentTags extends Table with TableInfo<DocumentTags, DocumentTag> {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DocumentTag(
       documentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}document_id'],
       )!,
       tagId: attachedDatabase.typeMapping.read(
@@ -817,13 +928,13 @@ class DocumentTags extends Table with TableInfo<DocumentTags, DocumentTag> {
 }
 
 class DocumentTag extends DataClass implements Insertable<DocumentTag> {
-  final int documentId;
+  final String documentId;
   final int tagId;
   const DocumentTag({required this.documentId, required this.tagId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['document_id'] = Variable<int>(documentId);
+    map['document_id'] = Variable<String>(documentId);
     map['tag_id'] = Variable<int>(tagId);
     return map;
   }
@@ -841,7 +952,7 @@ class DocumentTag extends DataClass implements Insertable<DocumentTag> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DocumentTag(
-      documentId: serializer.fromJson<int>(json['document_id']),
+      documentId: serializer.fromJson<String>(json['document_id']),
       tagId: serializer.fromJson<int>(json['tag_id']),
     );
   }
@@ -849,12 +960,12 @@ class DocumentTag extends DataClass implements Insertable<DocumentTag> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'document_id': serializer.toJson<int>(documentId),
+      'document_id': serializer.toJson<String>(documentId),
       'tag_id': serializer.toJson<int>(tagId),
     };
   }
 
-  DocumentTag copyWith({int? documentId, int? tagId}) => DocumentTag(
+  DocumentTag copyWith({String? documentId, int? tagId}) => DocumentTag(
     documentId: documentId ?? this.documentId,
     tagId: tagId ?? this.tagId,
   );
@@ -887,7 +998,7 @@ class DocumentTag extends DataClass implements Insertable<DocumentTag> {
 }
 
 class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
-  final Value<int> documentId;
+  final Value<String> documentId;
   final Value<int> tagId;
   final Value<int> rowid;
   const DocumentTagsCompanion({
@@ -896,13 +1007,13 @@ class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
     this.rowid = const Value.absent(),
   });
   DocumentTagsCompanion.insert({
-    required int documentId,
+    required String documentId,
     required int tagId,
     this.rowid = const Value.absent(),
   }) : documentId = Value(documentId),
        tagId = Value(tagId);
   static Insertable<DocumentTag> custom({
-    Expression<int>? documentId,
+    Expression<String>? documentId,
     Expression<int>? tagId,
     Expression<int>? rowid,
   }) {
@@ -914,7 +1025,7 @@ class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
   }
 
   DocumentTagsCompanion copyWith({
-    Value<int>? documentId,
+    Value<String>? documentId,
     Value<int>? tagId,
     Value<int>? rowid,
   }) {
@@ -929,7 +1040,7 @@ class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (documentId.present) {
-      map['document_id'] = Variable<int>(documentId.value);
+      map['document_id'] = Variable<String>(documentId.value);
     }
     if (tagId.present) {
       map['tag_id'] = Variable<int>(tagId.value);
@@ -979,20 +1090,22 @@ class DocumentsFts extends Table
     requiredDuringInsert: true,
     $customConstraints: '',
   );
-  static const VerificationMeta _memoMeta = const VerificationMeta('memo');
-  late final GeneratedColumn<String> memo = GeneratedColumn<String>(
-    'memo',
+  static const VerificationMeta _userMemoMeta = const VerificationMeta(
+    'userMemo',
+  );
+  late final GeneratedColumn<String> userMemo = GeneratedColumn<String>(
+    'user_memo',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: '',
   );
-  static const VerificationMeta _summaryMeta = const VerificationMeta(
-    'summary',
+  static const VerificationMeta _aiSummaryMeta = const VerificationMeta(
+    'aiSummary',
   );
-  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
-    'summary',
+  late final GeneratedColumn<String> aiSummary = GeneratedColumn<String>(
+    'ai_summary',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -1000,7 +1113,7 @@ class DocumentsFts extends Table
     $customConstraints: '',
   );
   @override
-  List<GeneratedColumn> get $columns => [title, category, memo, summary];
+  List<GeneratedColumn> get $columns => [title, category, userMemo, aiSummary];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1029,21 +1142,21 @@ class DocumentsFts extends Table
     } else if (isInserting) {
       context.missing(_categoryMeta);
     }
-    if (data.containsKey('memo')) {
+    if (data.containsKey('user_memo')) {
       context.handle(
-        _memoMeta,
-        memo.isAcceptableOrUnknown(data['memo']!, _memoMeta),
+        _userMemoMeta,
+        userMemo.isAcceptableOrUnknown(data['user_memo']!, _userMemoMeta),
       );
     } else if (isInserting) {
-      context.missing(_memoMeta);
+      context.missing(_userMemoMeta);
     }
-    if (data.containsKey('summary')) {
+    if (data.containsKey('ai_summary')) {
       context.handle(
-        _summaryMeta,
-        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+        _aiSummaryMeta,
+        aiSummary.isAcceptableOrUnknown(data['ai_summary']!, _aiSummaryMeta),
       );
     } else if (isInserting) {
-      context.missing(_summaryMeta);
+      context.missing(_aiSummaryMeta);
     }
     return context;
   }
@@ -1062,13 +1175,13 @@ class DocumentsFts extends Table
         DriftSqlType.string,
         data['${effectivePrefix}category'],
       )!,
-      memo: attachedDatabase.typeMapping.read(
+      userMemo: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}memo'],
+        data['${effectivePrefix}user_memo'],
       )!,
-      summary: attachedDatabase.typeMapping.read(
+      aiSummary: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}summary'],
+        data['${effectivePrefix}ai_summary'],
       )!,
     );
   }
@@ -1082,27 +1195,27 @@ class DocumentsFts extends Table
   bool get dontWriteConstraints => true;
   @override
   String get moduleAndArgs =>
-      'fts5(title, category, memo, summary, content=\'documents\', content_rowid=\'id\')';
+      'fts5(title, category, user_memo, ai_summary, content=\'documents\', content_rowid=\'id\')';
 }
 
 class DocumentsFt extends DataClass implements Insertable<DocumentsFt> {
   final String title;
   final String category;
-  final String memo;
-  final String summary;
+  final String userMemo;
+  final String aiSummary;
   const DocumentsFt({
     required this.title,
     required this.category,
-    required this.memo,
-    required this.summary,
+    required this.userMemo,
+    required this.aiSummary,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['title'] = Variable<String>(title);
     map['category'] = Variable<String>(category);
-    map['memo'] = Variable<String>(memo);
-    map['summary'] = Variable<String>(summary);
+    map['user_memo'] = Variable<String>(userMemo);
+    map['ai_summary'] = Variable<String>(aiSummary);
     return map;
   }
 
@@ -1110,8 +1223,8 @@ class DocumentsFt extends DataClass implements Insertable<DocumentsFt> {
     return DocumentsFtsCompanion(
       title: Value(title),
       category: Value(category),
-      memo: Value(memo),
-      summary: Value(summary),
+      userMemo: Value(userMemo),
+      aiSummary: Value(aiSummary),
     );
   }
 
@@ -1123,8 +1236,8 @@ class DocumentsFt extends DataClass implements Insertable<DocumentsFt> {
     return DocumentsFt(
       title: serializer.fromJson<String>(json['title']),
       category: serializer.fromJson<String>(json['category']),
-      memo: serializer.fromJson<String>(json['memo']),
-      summary: serializer.fromJson<String>(json['summary']),
+      userMemo: serializer.fromJson<String>(json['user_memo']),
+      aiSummary: serializer.fromJson<String>(json['ai_summary']),
     );
   }
   @override
@@ -1133,28 +1246,28 @@ class DocumentsFt extends DataClass implements Insertable<DocumentsFt> {
     return <String, dynamic>{
       'title': serializer.toJson<String>(title),
       'category': serializer.toJson<String>(category),
-      'memo': serializer.toJson<String>(memo),
-      'summary': serializer.toJson<String>(summary),
+      'user_memo': serializer.toJson<String>(userMemo),
+      'ai_summary': serializer.toJson<String>(aiSummary),
     };
   }
 
   DocumentsFt copyWith({
     String? title,
     String? category,
-    String? memo,
-    String? summary,
+    String? userMemo,
+    String? aiSummary,
   }) => DocumentsFt(
     title: title ?? this.title,
     category: category ?? this.category,
-    memo: memo ?? this.memo,
-    summary: summary ?? this.summary,
+    userMemo: userMemo ?? this.userMemo,
+    aiSummary: aiSummary ?? this.aiSummary,
   );
   DocumentsFt copyWithCompanion(DocumentsFtsCompanion data) {
     return DocumentsFt(
       title: data.title.present ? data.title.value : this.title,
       category: data.category.present ? data.category.value : this.category,
-      memo: data.memo.present ? data.memo.value : this.memo,
-      summary: data.summary.present ? data.summary.value : this.summary,
+      userMemo: data.userMemo.present ? data.userMemo.value : this.userMemo,
+      aiSummary: data.aiSummary.present ? data.aiSummary.value : this.aiSummary,
     );
   }
 
@@ -1163,59 +1276,59 @@ class DocumentsFt extends DataClass implements Insertable<DocumentsFt> {
     return (StringBuffer('DocumentsFt(')
           ..write('title: $title, ')
           ..write('category: $category, ')
-          ..write('memo: $memo, ')
-          ..write('summary: $summary')
+          ..write('userMemo: $userMemo, ')
+          ..write('aiSummary: $aiSummary')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(title, category, memo, summary);
+  int get hashCode => Object.hash(title, category, userMemo, aiSummary);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DocumentsFt &&
           other.title == this.title &&
           other.category == this.category &&
-          other.memo == this.memo &&
-          other.summary == this.summary);
+          other.userMemo == this.userMemo &&
+          other.aiSummary == this.aiSummary);
 }
 
 class DocumentsFtsCompanion extends UpdateCompanion<DocumentsFt> {
   final Value<String> title;
   final Value<String> category;
-  final Value<String> memo;
-  final Value<String> summary;
+  final Value<String> userMemo;
+  final Value<String> aiSummary;
   final Value<int> rowid;
   const DocumentsFtsCompanion({
     this.title = const Value.absent(),
     this.category = const Value.absent(),
-    this.memo = const Value.absent(),
-    this.summary = const Value.absent(),
+    this.userMemo = const Value.absent(),
+    this.aiSummary = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DocumentsFtsCompanion.insert({
     required String title,
     required String category,
-    required String memo,
-    required String summary,
+    required String userMemo,
+    required String aiSummary,
     this.rowid = const Value.absent(),
   }) : title = Value(title),
        category = Value(category),
-       memo = Value(memo),
-       summary = Value(summary);
+       userMemo = Value(userMemo),
+       aiSummary = Value(aiSummary);
   static Insertable<DocumentsFt> custom({
     Expression<String>? title,
     Expression<String>? category,
-    Expression<String>? memo,
-    Expression<String>? summary,
+    Expression<String>? userMemo,
+    Expression<String>? aiSummary,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (title != null) 'title': title,
       if (category != null) 'category': category,
-      if (memo != null) 'memo': memo,
-      if (summary != null) 'summary': summary,
+      if (userMemo != null) 'user_memo': userMemo,
+      if (aiSummary != null) 'ai_summary': aiSummary,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1223,15 +1336,15 @@ class DocumentsFtsCompanion extends UpdateCompanion<DocumentsFt> {
   DocumentsFtsCompanion copyWith({
     Value<String>? title,
     Value<String>? category,
-    Value<String>? memo,
-    Value<String>? summary,
+    Value<String>? userMemo,
+    Value<String>? aiSummary,
     Value<int>? rowid,
   }) {
     return DocumentsFtsCompanion(
       title: title ?? this.title,
       category: category ?? this.category,
-      memo: memo ?? this.memo,
-      summary: summary ?? this.summary,
+      userMemo: userMemo ?? this.userMemo,
+      aiSummary: aiSummary ?? this.aiSummary,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1245,11 +1358,11 @@ class DocumentsFtsCompanion extends UpdateCompanion<DocumentsFt> {
     if (category.present) {
       map['category'] = Variable<String>(category.value);
     }
-    if (memo.present) {
-      map['memo'] = Variable<String>(memo.value);
+    if (userMemo.present) {
+      map['user_memo'] = Variable<String>(userMemo.value);
     }
-    if (summary.present) {
-      map['summary'] = Variable<String>(summary.value);
+    if (aiSummary.present) {
+      map['ai_summary'] = Variable<String>(aiSummary.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1262,8 +1375,8 @@ class DocumentsFtsCompanion extends UpdateCompanion<DocumentsFt> {
     return (StringBuffer('DocumentsFtsCompanion(')
           ..write('title: $title, ')
           ..write('category: $category, ')
-          ..write('memo: $memo, ')
-          ..write('summary: $summary, ')
+          ..write('userMemo: $userMemo, ')
+          ..write('aiSummary: $aiSummary, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1278,15 +1391,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final DocumentTags documentTags = DocumentTags(this);
   late final DocumentsFts documentsFts = DocumentsFts(this);
   late final Trigger documentsInsert = Trigger(
-    'CREATE TRIGGER documents_insert AFTER INSERT ON documents BEGIN INSERT INTO documents_fts ("rowid", title, category, memo, summary) VALUES (new.id, new.title, new.category, new.memo, new.summary);END',
+    'CREATE TRIGGER documents_insert AFTER INSERT ON documents BEGIN INSERT INTO documents_fts ("rowid", title, category, user_memo, ai_summary) VALUES (new.id, new.title, new.category, new.user_memo, new.ai_summary);END',
     'documents_insert',
   );
   late final Trigger documentsDelete = Trigger(
-    'CREATE TRIGGER documents_delete AFTER DELETE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, memo, summary) VALUES (\'delete\', old.id, old.title, old.category, old.memo, old.summary);END',
+    'CREATE TRIGGER documents_delete AFTER DELETE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, user_memo, ai_summary) VALUES (\'delete\', old.id, old.title, old.category, old.user_memo, old.ai_summary);END',
     'documents_delete',
   );
   late final Trigger documentsUpdate = Trigger(
-    'CREATE TRIGGER documents_update AFTER UPDATE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, memo, summary) VALUES (\'delete\', old.id, old.title, old.category, old.memo, old.summary);INSERT INTO documents_fts ("rowid", title, category, memo, summary) VALUES (new.id, new.title, new.category, new.memo, new.summary);END',
+    'CREATE TRIGGER documents_update AFTER UPDATE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, user_memo, ai_summary) VALUES (\'delete\', old.id, old.title, old.category, old.user_memo, old.ai_summary);INSERT INTO documents_fts ("rowid", title, category, user_memo, ai_summary) VALUES (new.id, new.title, new.category, new.user_memo, new.ai_summary);END',
     'documents_update',
   );
   @override
@@ -1344,27 +1457,33 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $DocumentsCreateCompanionBuilder =
     DocumentsCompanion Function({
-      Value<int> id,
-      Value<DateTime> createAt,
-      required String title,
-      required String linkUrl,
-      required String imgUrl,
+      required String uid,
+      required String id,
+      Value<DateTime> createdAt,
       required String category,
+      required String userMemo,
+      required String title,
+      required String url,
+      required String imageUrl,
       required String platform,
-      Value<String?> memo,
-      Value<String?> summary,
+      required String aiSummary,
+      required String aiStatus,
+      Value<int> rowid,
     });
 typedef $DocumentsUpdateCompanionBuilder =
     DocumentsCompanion Function({
-      Value<int> id,
-      Value<DateTime> createAt,
-      Value<String> title,
-      Value<String> linkUrl,
-      Value<String> imgUrl,
+      Value<String> uid,
+      Value<String> id,
+      Value<DateTime> createdAt,
       Value<String> category,
+      Value<String> userMemo,
+      Value<String> title,
+      Value<String> url,
+      Value<String> imageUrl,
       Value<String> platform,
-      Value<String?> memo,
-      Value<String?> summary,
+      Value<String> aiSummary,
+      Value<String> aiStatus,
+      Value<int> rowid,
     });
 
 final class $DocumentsReferences
@@ -1384,7 +1503,7 @@ final class $DocumentsReferences
     final manager = $DocumentTagsTableManager(
       $_db,
       $_db.documentTags,
-    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<int>('id')!));
+    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_documentTagsRefsTable($_db));
     return ProcessedTableManager(
@@ -1401,28 +1520,18 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
+  ColumnFilters<String> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get createAt => $composableBuilder(
-    column: $table.createAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get title => $composableBuilder(
-    column: $table.title,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get linkUrl => $composableBuilder(
-    column: $table.linkUrl,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get imgUrl => $composableBuilder(
-    column: $table.imgUrl,
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1431,18 +1540,38 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get userMemo => $composableBuilder(
+    column: $table.userMemo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get platform => $composableBuilder(
     column: $table.platform,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get memo => $composableBuilder(
-    column: $table.memo,
+  ColumnFilters<String> get aiSummary => $composableBuilder(
+    column: $table.aiSummary,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get summary => $composableBuilder(
-    column: $table.summary,
+  ColumnFilters<String> get aiStatus => $composableBuilder(
+    column: $table.aiStatus,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1480,28 +1609,18 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
+  ColumnOrderings<String> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get createAt => $composableBuilder(
-    column: $table.createAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get title => $composableBuilder(
-    column: $table.title,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get linkUrl => $composableBuilder(
-    column: $table.linkUrl,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get imgUrl => $composableBuilder(
-    column: $table.imgUrl,
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1510,18 +1629,38 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get userMemo => $composableBuilder(
+    column: $table.userMemo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get platform => $composableBuilder(
     column: $table.platform,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get memo => $composableBuilder(
-    column: $table.memo,
+  ColumnOrderings<String> get aiSummary => $composableBuilder(
+    column: $table.aiSummary,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get summary => $composableBuilder(
-    column: $table.summary,
+  ColumnOrderings<String> get aiStatus => $composableBuilder(
+    column: $table.aiStatus,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -1534,32 +1673,38 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
+  GeneratedColumn<String> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get createAt =>
-      $composableBuilder(column: $table.createAt, builder: (column) => column);
-
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
-
-  GeneratedColumn<String> get linkUrl =>
-      $composableBuilder(column: $table.linkUrl, builder: (column) => column);
-
-  GeneratedColumn<String> get imgUrl =>
-      $composableBuilder(column: $table.imgUrl, builder: (column) => column);
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
 
+  GeneratedColumn<String> get userMemo =>
+      $composableBuilder(column: $table.userMemo, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<String> get imageUrl =>
+      $composableBuilder(column: $table.imageUrl, builder: (column) => column);
+
   GeneratedColumn<String> get platform =>
       $composableBuilder(column: $table.platform, builder: (column) => column);
 
-  GeneratedColumn<String> get memo =>
-      $composableBuilder(column: $table.memo, builder: (column) => column);
+  GeneratedColumn<String> get aiSummary =>
+      $composableBuilder(column: $table.aiSummary, builder: (column) => column);
 
-  GeneratedColumn<String> get summary =>
-      $composableBuilder(column: $table.summary, builder: (column) => column);
+  GeneratedColumn<String> get aiStatus =>
+      $composableBuilder(column: $table.aiStatus, builder: (column) => column);
 
   Expression<T> documentTagsRefs<T extends Object>(
     Expression<T> Function($DocumentTagsAnnotationComposer a) f,
@@ -1615,47 +1760,59 @@ class $DocumentsTableManager
               $DocumentsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
-                Value<DateTime> createAt = const Value.absent(),
-                Value<String> title = const Value.absent(),
-                Value<String> linkUrl = const Value.absent(),
-                Value<String> imgUrl = const Value.absent(),
+                Value<String> uid = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<String> category = const Value.absent(),
+                Value<String> userMemo = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> url = const Value.absent(),
+                Value<String> imageUrl = const Value.absent(),
                 Value<String> platform = const Value.absent(),
-                Value<String?> memo = const Value.absent(),
-                Value<String?> summary = const Value.absent(),
+                Value<String> aiSummary = const Value.absent(),
+                Value<String> aiStatus = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion(
+                uid: uid,
                 id: id,
-                createAt: createAt,
-                title: title,
-                linkUrl: linkUrl,
-                imgUrl: imgUrl,
+                createdAt: createdAt,
                 category: category,
+                userMemo: userMemo,
+                title: title,
+                url: url,
+                imageUrl: imageUrl,
                 platform: platform,
-                memo: memo,
-                summary: summary,
+                aiSummary: aiSummary,
+                aiStatus: aiStatus,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
-                Value<DateTime> createAt = const Value.absent(),
-                required String title,
-                required String linkUrl,
-                required String imgUrl,
+                required String uid,
+                required String id,
+                Value<DateTime> createdAt = const Value.absent(),
                 required String category,
+                required String userMemo,
+                required String title,
+                required String url,
+                required String imageUrl,
                 required String platform,
-                Value<String?> memo = const Value.absent(),
-                Value<String?> summary = const Value.absent(),
+                required String aiSummary,
+                required String aiStatus,
+                Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion.insert(
+                uid: uid,
                 id: id,
-                createAt: createAt,
-                title: title,
-                linkUrl: linkUrl,
-                imgUrl: imgUrl,
+                createdAt: createdAt,
                 category: category,
+                userMemo: userMemo,
+                title: title,
+                url: url,
+                imageUrl: imageUrl,
                 platform: platform,
-                memo: memo,
-                summary: summary,
+                aiSummary: aiSummary,
+                aiStatus: aiStatus,
+                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -1917,13 +2074,13 @@ typedef $TagsProcessedTableManager =
     >;
 typedef $DocumentTagsCreateCompanionBuilder =
     DocumentTagsCompanion Function({
-      required int documentId,
+      required String documentId,
       required int tagId,
       Value<int> rowid,
     });
 typedef $DocumentTagsUpdateCompanionBuilder =
     DocumentTagsCompanion Function({
-      Value<int> documentId,
+      Value<String> documentId,
       Value<int> tagId,
       Value<int> rowid,
     });
@@ -1938,7 +2095,7 @@ final class $DocumentTagsReferences
       );
 
   $DocumentsProcessedTableManager get documentId {
-    final $_column = $_itemColumn<int>('document_id')!;
+    final $_column = $_itemColumn<String>('document_id')!;
 
     final manager = $DocumentsTableManager(
       $_db,
@@ -2166,7 +2323,7 @@ class $DocumentTagsTableManager
               $DocumentTagsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> documentId = const Value.absent(),
+                Value<String> documentId = const Value.absent(),
                 Value<int> tagId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentTagsCompanion(
@@ -2176,7 +2333,7 @@ class $DocumentTagsTableManager
               ),
           createCompanionCallback:
               ({
-                required int documentId,
+                required String documentId,
                 required int tagId,
                 Value<int> rowid = const Value.absent(),
               }) => DocumentTagsCompanion.insert(
@@ -2266,16 +2423,16 @@ typedef $DocumentsFtsCreateCompanionBuilder =
     DocumentsFtsCompanion Function({
       required String title,
       required String category,
-      required String memo,
-      required String summary,
+      required String userMemo,
+      required String aiSummary,
       Value<int> rowid,
     });
 typedef $DocumentsFtsUpdateCompanionBuilder =
     DocumentsFtsCompanion Function({
       Value<String> title,
       Value<String> category,
-      Value<String> memo,
-      Value<String> summary,
+      Value<String> userMemo,
+      Value<String> aiSummary,
       Value<int> rowid,
     });
 
@@ -2298,13 +2455,13 @@ class $DocumentsFtsFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get memo => $composableBuilder(
-    column: $table.memo,
+  ColumnFilters<String> get userMemo => $composableBuilder(
+    column: $table.userMemo,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get summary => $composableBuilder(
-    column: $table.summary,
+  ColumnFilters<String> get aiSummary => $composableBuilder(
+    column: $table.aiSummary,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2328,13 +2485,13 @@ class $DocumentsFtsOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get memo => $composableBuilder(
-    column: $table.memo,
+  ColumnOrderings<String> get userMemo => $composableBuilder(
+    column: $table.userMemo,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get summary => $composableBuilder(
-    column: $table.summary,
+  ColumnOrderings<String> get aiSummary => $composableBuilder(
+    column: $table.aiSummary,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -2354,11 +2511,11 @@ class $DocumentsFtsAnnotationComposer
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
 
-  GeneratedColumn<String> get memo =>
-      $composableBuilder(column: $table.memo, builder: (column) => column);
+  GeneratedColumn<String> get userMemo =>
+      $composableBuilder(column: $table.userMemo, builder: (column) => column);
 
-  GeneratedColumn<String> get summary =>
-      $composableBuilder(column: $table.summary, builder: (column) => column);
+  GeneratedColumn<String> get aiSummary =>
+      $composableBuilder(column: $table.aiSummary, builder: (column) => column);
 }
 
 class $DocumentsFtsTableManager
@@ -2394,28 +2551,28 @@ class $DocumentsFtsTableManager
               ({
                 Value<String> title = const Value.absent(),
                 Value<String> category = const Value.absent(),
-                Value<String> memo = const Value.absent(),
-                Value<String> summary = const Value.absent(),
+                Value<String> userMemo = const Value.absent(),
+                Value<String> aiSummary = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentsFtsCompanion(
                 title: title,
                 category: category,
-                memo: memo,
-                summary: summary,
+                userMemo: userMemo,
+                aiSummary: aiSummary,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String title,
                 required String category,
-                required String memo,
-                required String summary,
+                required String userMemo,
+                required String aiSummary,
                 Value<int> rowid = const Value.absent(),
               }) => DocumentsFtsCompanion.insert(
                 title: title,
                 category: category,
-                memo: memo,
-                summary: summary,
+                userMemo: userMemo,
+                aiSummary: aiSummary,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
