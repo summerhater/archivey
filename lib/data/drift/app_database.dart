@@ -21,15 +21,27 @@ class AppDatabase extends _$AppDatabase {
    * Create
    */
 
-  /// Insert Document, UUID로 pk인 document id를 지정해줄 것이기 때문에, return은 필요 없음
-  Future<void> insertDocument(DocumentsCompanion companion) async {
-    await into(documents).insert(companion);
+  /// Insert Document
+  Future<int> insertDocument(DocumentsCompanion companion) async {
+    return await into(documents).insert(companion);
   }
 
   /// Insert Or Update Tag -> 따로 Update 만들 필요 없음
   /// tags는 List형태라 Service layer에서 for in으로 반복 작업 해줘야 함
-  Future<int> insertOnConflictUpdateTag(TagsCompanion companion) async {
-    return await into(tags).insertOnConflictUpdate(companion);
+  Future<int> insertOrGetTagId(String name) async {
+    // return await into(tags).insertOnConflictUpdate(companion); // tag name이 unique 인데, id로 업데이트 하고 있어서 중복 값이 들어감. 그러면 중복 값이 들어가니 unique 에서 오류
+    await into(tags).insert(
+      TagsCompanion(name: Value(name)),
+      mode: InsertMode.insertOrIgnore,
+    ); // 이 코드는 insert가 안되면 항상 0을 return, 오류 발생할 수 있음
+
+    final tag =
+        await (select(tags)..where(
+              (tbl) => tbl.name.equals(name),
+            ))
+            .getSingle();
+
+    return tag.id;
   }
 
   /// 연결 테이블인 DocumentTags에 Insert
@@ -47,10 +59,10 @@ class AppDatabase extends _$AppDatabase {
       '''
       SELECT d.*, GROUP_CONCAT(t.name) AS tags
       FROM documents d
-      LEFT JOIN document_tags dt ON dt.document_id = d.id
+      LEFT JOIN document_tags dt ON dt.document_id = d.local_id
       LEFT JOIN tags t ON t.id = dt.tag_id
       GROUP BY d.id
-      ORDER BY d.create_at DESC
+      ORDER BY d.created_at DESC
       ''',
       readsFrom: {documents, documentTags, tags},
     );
@@ -59,7 +71,14 @@ class AppDatabase extends _$AppDatabase {
       return rows.map((row) {
         return DocumentWithTags(
           documentEntity: documents.map(row.data),
-          tags: (row.read<String>('tags')).split(',').where((e) => e.isNotEmpty).toList(),
+          tags:
+              (row.read<String?>(
+                        'tags',
+                      ) ??
+                      '')
+                  .split(',')
+                  .where((e) => e.isNotEmpty)
+                  .toList(),
         );
       }).toList();
     });
@@ -70,24 +89,28 @@ class AppDatabase extends _$AppDatabase {
     return await (select(tags)..where((tbl) => tbl.name.isIn(names))).get();
   }
 
-  /// Document Id 사용해서 Tag 조회
-  Future<List<TagEntity>> getTagsByDocumentId(String id) async {
+  /// Local Id 사용해서 Tag 조회
+  Future<List<String>> getTagsByDocumentId(int localId) async {
     final query = customSelect(
       '''
       SELECT GROUP_CONCAT(t.name) AS tags
       FROM documents d
-      LEFT JOIN document_tags dt ON dt.document_id = d.id
+      LEFT JOIN document_tags dt ON dt.document_id = d.local_id
       LEFT JOIN tags t ON t.id = dt.tag_id
+      WHERE d.local_id LIKE ?
       GROUP BY d.id
       ''',
+      variables: [Variable.withInt(localId)],
       readsFrom: {documents, documentTags, tags},
     );
 
     final rows = await query.get();
 
-    final result = rows.map((e) {
-      return TagEntity.fromJson(e.data);
-    }).toList();
+    final result = rows
+        .map((e) => e.data['tags'] as String?)
+        .where((e) => e != null && e.isNotEmpty)
+        .expand((e) => e!.split(','))
+        .toList();
 
     return result;
   }
@@ -105,12 +128,19 @@ class AppDatabase extends _$AppDatabase {
       '''
       SELECT d.*, GROUP_CONCAT(t.name) AS tags
       FROM documents d
-      JOIN documents_fts fts ON fts.rowid = d.id
-      LEFT JOIN document_tags dt ON dt.document_id = d.id
+      JOIN documents_fts fts ON fts.rowid = d.local_id
+      LEFT JOIN document_tags dt ON dt.document_id = d.local_id
       LEFT JOIN tags t ON t.id = dt.tag_id
-      WHERE fts MATCH ? OR t.name LIKE ?
+      WHERE d.local_id IN (
+        SELECT rowid FROM documents_fts WHERE documents_fts MATCH ?
+        UNION
+        SELECT dt2.document_id
+        FROM document_tags dt2
+        JOIN tags t2 ON t2.id = dt.tag_id
+        WHERE t2.name LIKE ?
+      )
       GROUP BY d.id
-      ORDER BY d.create_at DESC
+      ORDER BY d.created_at DESC
       ''',
       variables: [
         Variable.withString(ftsQuery),
@@ -123,10 +153,21 @@ class AppDatabase extends _$AppDatabase {
       return rows.map((row) {
         return DocumentWithTags(
           documentEntity: documents.map(row.data),
-          tags: (row.read<String>('tags')).split(',').where((e) => e.isNotEmpty).toList(),
+          tags: (row.read<String>(
+            'tags' ?? '',
+          )).split(',').where((e) => e.isNotEmpty).toList(),
         );
       }).toList();
     });
+  }
+
+  /// id로 local id 받아오기
+  Future<int?> getLocalIdById(String id) async {
+    return await (select(documents)..where(
+          (tbl) => tbl.id.equals(id),
+        ))
+        .map((row) => row.localId)
+        .getSingleOrNull();
   }
 
   /**
@@ -134,14 +175,14 @@ class AppDatabase extends _$AppDatabase {
    */
 
   /// Document Entity 업데이트
-  Future<bool> updateDocument({
+  Future<int> updateDocument({
     required DocumentsCompanion companion,
-    required String id,
+    required int localId,
   }) async {
     return await (update(documents)..where(
-          (tbl) => tbl.id.equals(id),
+          (tbl) => tbl.localId.equals(localId),
         ))
-        .replace(companion);
+        .write(companion);
   }
 
   /**
@@ -149,15 +190,13 @@ class AppDatabase extends _$AppDatabase {
    */
 
   /// Document 삭제, cascade로 연결해둔 DocumentTags는 자동으로 삭제됨, Tag는 그대로 둠
-  Future<void> deleteDocument(String id) async {
-    await (delete(documents)..where(
-      (tbl) => tbl.id.equals(id),
-    ));
+  Future<void> deleteDocument(int localId) async {
+    await delete(documents).delete(DocumentsCompanion(localId: Value(localId)));
   }
 
   /// documentTags에 있는 tag 삭제
   Future<void> deleteTagsInDocumentTags(
-    String docId,
+    int localId,
     List<String> tagNames,
   ) async {
     return customStatement(
@@ -168,7 +207,7 @@ class AppDatabase extends _$AppDatabase {
           SELECT id FROM tags WHERE name IN (${List.filled(tagNames.length, '?').join(',')})
         )
       ''',
-      [docId, ...tagNames],
+      [localId, ...tagNames],
     );
   }
 

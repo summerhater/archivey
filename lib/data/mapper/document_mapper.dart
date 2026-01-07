@@ -9,6 +9,8 @@ extension DocumentDomainToCompanion on DocumentModel {
   DocumentsCompanion toDocumentCompanion() {
     return DocumentsCompanion(
       uid: Value(uid),
+      id: Value(id),
+      createdAt: Value(createdAt),
       title: Value(title),
       url: Value(url),
       imageUrl: Value(imageUrl),

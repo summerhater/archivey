@@ -2,11 +2,13 @@ class CategoryModel {
   final String uid;
   final String categoryId;
   final String categoryName;
+  final int order;
 
   CategoryModel({
     required this.uid,
     required this.categoryId,
     required this.categoryName,
+    required this.order,
   });
 
   Map<String, dynamic> toMap() {
@@ -14,6 +16,7 @@ class CategoryModel {
       'uid': uid,
       'categoryId': categoryId,
       'categoryName': categoryName,
+      'order': order,
     };
   }
 
@@ -22,6 +25,7 @@ class CategoryModel {
       uid: map['uid'],
       categoryId: map['categoryId'],
       categoryName: map['categoryName'],
+      order: map['order'],
     );
   }
 }

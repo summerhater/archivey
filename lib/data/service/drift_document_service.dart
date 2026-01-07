@@ -1,15 +1,13 @@
 import 'package:archivey/data/drift/app_database.dart';
 import 'package:archivey/data/mapper/document_mapper.dart';
-import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:drift/drift.dart';
 
 class DriftDocumentService {
-  final AppDatabase _db;
-  final FirebaseCategoryService _categoryService;
+  final AppDatabase _db = AppDatabase();
 
-  DriftDocumentService(this._db, this._categoryService);
+  DriftDocumentService();
 
   /**
    * Create
@@ -19,7 +17,7 @@ class DriftDocumentService {
   Future<void> createDocument(DocumentModel document) async {
     await _db.runTransaction(() async {
       // document 저장
-      await _db.insertDocument(
+      final documentId = await _db.insertDocument(
         document.toDocumentCompanion(),
       );
 
@@ -28,7 +26,7 @@ class DriftDocumentService {
         // 연결된 테이블에 저장
         await _db.insertDocumentTag(
           DocumentTagsCompanion(
-            documentId: Value(document.id),
+            documentId: Value(documentId),
             tagId: Value(tagId),
           ),
         );
@@ -60,7 +58,7 @@ class DriftDocumentService {
   Future<List<int>> insertOrGetTagIds(List<String> tags) async {
     if (tags.isEmpty) return [];
     for (String tag in tags) {
-      await _db.insertOnConflictUpdateTag(TagsCompanion(name: Value(tag)));
+      await _db.insertOrGetTagId(tag);
     }
 
     final entities = await _db.getTagsByNames(tags);
@@ -73,16 +71,27 @@ class DriftDocumentService {
    */
 
   /// 모든 Document 가져오기
-  Stream<List<DocumentModel>> watchAllDocuments(List<CategoryModel> list) {
+  Stream<List<DocumentModel>> watchAllDocuments(
+    List<CategoryModel> categories,
+  ) {
     return _db.watchAllDocuments().map((docs) {
-      return docs.map((doc) => doc.toDomain(list)).toList();
+      return docs.map((doc) => doc.toDomain(categories)).toList();
     });
   }
-  
+
   /// 현재 선택된 document의 tag들을 전부 가져옴
-  Future<List<String>> getTagsByDocumentId(String id) async{
-    final rows = await _db.getTagsByDocumentId(id);
-    return rows.map((e) => e.name).toList();
+  Future<List<String>> getTagsByDocumentId(int localId) async {
+    return await _db.getTagsByDocumentId(localId);
+  }
+
+  /// 검색
+  Stream<List<DocumentModel>> searchDocuments(
+    String keyword,
+    List<CategoryModel> categories,
+  ) {
+    return _db.searchAll(keyword).map((docs) {
+      return docs.map((doc) => doc.toDomain(categories)).toList();
+    });
   }
 
   /**
@@ -90,44 +99,52 @@ class DriftDocumentService {
    */
 
   /// Update Document
-  Future<void> updateDocument(DocumentModel doc) async{
-    // 1. documents table update
-    await _db.updateDocument(companion: doc.toDocumentCompanion(), id: doc.id);
-    // 2. 기존 tag 목록 조회
-    await _syncTags(doc.id, doc.tags);
+  Future<void> updateDocument(DocumentModel doc) async {
+    await _db.transaction(() async {
+      // documentId로 localId 조회
+      final localId = await _db.getLocalIdById(doc.id);
 
-    // 3. 새 tag 목록과 diff 계산 -> diff는 오래된 것과 새로운 것을 비교해서 유지 삭제 추가 계산하는 것
-    // 4. 추가될 tag -> insert
-    // 5. 제거될 tag -> delete
+      if (localId == null) {
+        throw Exception("문서 찾을 수 없음. ID: ${doc.id}");
+      }
+      // document update
+      await _db.updateDocument(
+        companion: doc.toDocumentCompanion(),
+        localId: localId,
+      );
+
+      // 기존 tag 목록 조회 후 변경
+      await _syncTags(localId, doc.tags);
+    });
   }
 
   /// Tag Diff, tag의 이전 상태와 현재 상태 차이 계산 후 업데이트
-  Future<void> _syncTags(String docId, List<String> newTags) async {
+  Future<void> _syncTags(int localId, List<String> newTags) async {
     // 현재 저장되있는 tag들 가져오기
-    final oldTags = await getTagsByDocumentId(docId);
-    
+    final oldTags = await getTagsByDocumentId(localId);
+
     // 새로운 태그에서, 예전 태그들을 제거하고 남은 것들은 저장
     final toInsert = newTags.toSet().difference(oldTags.toSet());
     // 옛 태그들중, 새로운 태그에 없는 것들은 삭제
     final toDelete = oldTags.toSet().difference(newTags.toSet());
 
     // 추가할 태그가 있으면 실행
-    if(toInsert.isNotEmpty) {
+    if (toInsert.isNotEmpty) {
       final ids = await insertOrGetTagIds(toInsert.toList());
 
       for (final tagId in ids) {
         await _db.insertDocumentTag(
           DocumentTagsCompanion(
-            documentId: Value(docId),
+            documentId: Value(localId),
             tagId: Value(tagId),
           ),
         );
       }
     }
-    
+
     // 삭제할 태그가 있으면 실행
-    if(toDelete.isNotEmpty){
-      await _db.deleteTagsInDocumentTags(docId, toDelete.toList());
+    if (toDelete.isNotEmpty) {
+      await _db.deleteTagsInDocumentTags(localId, toDelete.toList());
     }
   }
 
@@ -136,7 +153,18 @@ class DriftDocumentService {
    */
 
   /// Document Delete
-  Future<void> deleteDocument(String id) async{
-    await _db.deleteDocument(id);
+  Future<void> deleteDocument(String docId) async {
+    print('############# service delete start!!!!!!!!!!!!');
+    await _db.transaction(() async {
+      final localId = await _db.getLocalIdById(docId);
+      print('local id: $localId');
+
+      if (localId == null) {
+        throw Exception("업데이트 문서 찾을 수 없음. ID: $docId");
+      }
+
+      await _db.deleteDocument(localId);
+    });
+    print('############# service delete end!!!!!!!!!!!!');
   }
 }

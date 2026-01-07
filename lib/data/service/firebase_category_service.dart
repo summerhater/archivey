@@ -1,25 +1,30 @@
-import 'package:archivey/domain/model/category_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../domain/model/category_model.dart';
 
 class FirebaseCategoryService {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final String _collectionPath = 'categories';
 
-  final String _categories = 'categories';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String get _currentUid => _auth.currentUser?.uid ?? '';
 
-  final _firestore = FirebaseFirestore.instance;
-  late final _categoryRef = _firestore.collection(_categories);
-
-  /// Category는 unique 하다고 했을 때, 이름으로 받아옴
-  Future<CategoryModel> getCategoryWithName(String name) async{
-    CategoryModel category;
-
-    final querySnapshot = await _categoryRef.where('name', isEqualTo: name).get();
-
-    final tmp =  querySnapshot.docs[0];
-
-    category = CategoryModel.fromMap(tmp.data());
-
-
-    return category;
+  Future<void> createCategory(CategoryModel category) async {
+    await _db.collection(_collectionPath).doc(category.categoryId).set(category.toMap());
   }
 
+  Future<List<CategoryModel>> readCategory() async{
+    final tmp = await _db.collection(_collectionPath)
+        .where('uid', isEqualTo: _currentUid).get();
+
+    return tmp.docs.map((e) => CategoryModel.fromMap(e.data()),).toList();
+  }
+
+  Future<void> updateCategory(CategoryModel category) async {
+    await _db.collection(_collectionPath).doc(category.categoryId).update(category.toMap());
+  }
+
+  Future<void> deleteCategory(String categoryId) async {
+    await _db.collection(_collectionPath).doc(categoryId).delete();
+  }
 }

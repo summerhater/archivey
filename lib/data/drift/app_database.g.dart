@@ -8,6 +8,27 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Documents(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _localIdMeta = const VerificationMeta(
+    'localId',
+  );
+  late final GeneratedColumn<int> localId = GeneratedColumn<int>(
+    'local_id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL UNIQUE',
+  );
   static const VerificationMeta _uidMeta = const VerificationMeta('uid');
   late final GeneratedColumn<String> uid = GeneratedColumn<String>(
     'uid',
@@ -17,15 +38,6 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL PRIMARY KEY',
-  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -34,9 +46,8 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     aliasedName,
     false,
     type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
-    defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   static const VerificationMeta _categoryMeta = const VerificationMeta(
     'category',
@@ -124,8 +135,9 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   );
   @override
   List<GeneratedColumn> get $columns => [
-    uid,
+    localId,
     id,
+    uid,
     createdAt,
     category,
     userMemo,
@@ -148,6 +160,17 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('local_id')) {
+      context.handle(
+        _localIdMeta,
+        localId.isAcceptableOrUnknown(data['local_id']!, _localIdMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
     if (data.containsKey('uid')) {
       context.handle(
         _uidMeta,
@@ -156,16 +179,13 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     } else if (isInserting) {
       context.missing(_uidMeta);
     }
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
     }
     if (data.containsKey('category')) {
       context.handle(
@@ -235,18 +255,22 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {localId};
   @override
   DocumentEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DocumentEntity(
-      uid: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}uid'],
+      localId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}local_id'],
       )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
+      )!,
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uid'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -297,10 +321,9 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
 }
 
 class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
-  final String uid;
-
-  /// 필요한가? 저장 안할 이유도 없긴 하네
+  final int localId;
   final String id;
+  final String uid;
   final DateTime createdAt;
   final String category;
   final String userMemo;
@@ -311,8 +334,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   final String aiSummary;
   final String aiStatus;
   const DocumentEntity({
-    required this.uid,
+    required this.localId,
     required this.id,
+    required this.uid,
     required this.createdAt,
     required this.category,
     required this.userMemo,
@@ -326,8 +350,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['uid'] = Variable<String>(uid);
+    map['local_id'] = Variable<int>(localId);
     map['id'] = Variable<String>(id);
+    map['uid'] = Variable<String>(uid);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['category'] = Variable<String>(category);
     map['user_memo'] = Variable<String>(userMemo);
@@ -342,8 +367,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
 
   DocumentsCompanion toCompanion(bool nullToAbsent) {
     return DocumentsCompanion(
-      uid: Value(uid),
+      localId: Value(localId),
       id: Value(id),
+      uid: Value(uid),
       createdAt: Value(createdAt),
       category: Value(category),
       userMemo: Value(userMemo),
@@ -362,8 +388,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DocumentEntity(
-      uid: serializer.fromJson<String>(json['uid']),
+      localId: serializer.fromJson<int>(json['local_id']),
       id: serializer.fromJson<String>(json['id']),
+      uid: serializer.fromJson<String>(json['uid']),
       createdAt: serializer.fromJson<DateTime>(json['created_at']),
       category: serializer.fromJson<String>(json['category']),
       userMemo: serializer.fromJson<String>(json['user_memo']),
@@ -379,8 +406,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'uid': serializer.toJson<String>(uid),
+      'local_id': serializer.toJson<int>(localId),
       'id': serializer.toJson<String>(id),
+      'uid': serializer.toJson<String>(uid),
       'created_at': serializer.toJson<DateTime>(createdAt),
       'category': serializer.toJson<String>(category),
       'user_memo': serializer.toJson<String>(userMemo),
@@ -394,8 +422,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   }
 
   DocumentEntity copyWith({
-    String? uid,
+    int? localId,
     String? id,
+    String? uid,
     DateTime? createdAt,
     String? category,
     String? userMemo,
@@ -406,8 +435,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     String? aiSummary,
     String? aiStatus,
   }) => DocumentEntity(
-    uid: uid ?? this.uid,
+    localId: localId ?? this.localId,
     id: id ?? this.id,
+    uid: uid ?? this.uid,
     createdAt: createdAt ?? this.createdAt,
     category: category ?? this.category,
     userMemo: userMemo ?? this.userMemo,
@@ -420,8 +450,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   );
   DocumentEntity copyWithCompanion(DocumentsCompanion data) {
     return DocumentEntity(
-      uid: data.uid.present ? data.uid.value : this.uid,
+      localId: data.localId.present ? data.localId.value : this.localId,
       id: data.id.present ? data.id.value : this.id,
+      uid: data.uid.present ? data.uid.value : this.uid,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       category: data.category.present ? data.category.value : this.category,
       userMemo: data.userMemo.present ? data.userMemo.value : this.userMemo,
@@ -437,8 +468,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   @override
   String toString() {
     return (StringBuffer('DocumentEntity(')
-          ..write('uid: $uid, ')
+          ..write('localId: $localId, ')
           ..write('id: $id, ')
+          ..write('uid: $uid, ')
           ..write('createdAt: $createdAt, ')
           ..write('category: $category, ')
           ..write('userMemo: $userMemo, ')
@@ -454,8 +486,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
 
   @override
   int get hashCode => Object.hash(
-    uid,
+    localId,
     id,
+    uid,
     createdAt,
     category,
     userMemo,
@@ -470,8 +503,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DocumentEntity &&
-          other.uid == this.uid &&
+          other.localId == this.localId &&
           other.id == this.id &&
+          other.uid == this.uid &&
           other.createdAt == this.createdAt &&
           other.category == this.category &&
           other.userMemo == this.userMemo &&
@@ -484,8 +518,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
 }
 
 class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
-  final Value<String> uid;
+  final Value<int> localId;
   final Value<String> id;
+  final Value<String> uid;
   final Value<DateTime> createdAt;
   final Value<String> category;
   final Value<String> userMemo;
@@ -495,10 +530,10 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
   final Value<String> platform;
   final Value<String> aiSummary;
   final Value<String> aiStatus;
-  final Value<int> rowid;
   const DocumentsCompanion({
-    this.uid = const Value.absent(),
+    this.localId = const Value.absent(),
     this.id = const Value.absent(),
+    this.uid = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.category = const Value.absent(),
     this.userMemo = const Value.absent(),
@@ -508,12 +543,12 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     this.platform = const Value.absent(),
     this.aiSummary = const Value.absent(),
     this.aiStatus = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   DocumentsCompanion.insert({
-    required String uid,
+    this.localId = const Value.absent(),
     required String id,
-    this.createdAt = const Value.absent(),
+    required String uid,
+    required DateTime createdAt,
     required String category,
     required String userMemo,
     required String title,
@@ -522,9 +557,9 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     required String platform,
     required String aiSummary,
     required String aiStatus,
-    this.rowid = const Value.absent(),
-  }) : uid = Value(uid),
-       id = Value(id),
+  }) : id = Value(id),
+       uid = Value(uid),
+       createdAt = Value(createdAt),
        category = Value(category),
        userMemo = Value(userMemo),
        title = Value(title),
@@ -534,8 +569,9 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
        aiSummary = Value(aiSummary),
        aiStatus = Value(aiStatus);
   static Insertable<DocumentEntity> custom({
-    Expression<String>? uid,
+    Expression<int>? localId,
     Expression<String>? id,
+    Expression<String>? uid,
     Expression<DateTime>? createdAt,
     Expression<String>? category,
     Expression<String>? userMemo,
@@ -545,11 +581,11 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     Expression<String>? platform,
     Expression<String>? aiSummary,
     Expression<String>? aiStatus,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (uid != null) 'uid': uid,
+      if (localId != null) 'local_id': localId,
       if (id != null) 'id': id,
+      if (uid != null) 'uid': uid,
       if (createdAt != null) 'created_at': createdAt,
       if (category != null) 'category': category,
       if (userMemo != null) 'user_memo': userMemo,
@@ -559,13 +595,13 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
       if (platform != null) 'platform': platform,
       if (aiSummary != null) 'ai_summary': aiSummary,
       if (aiStatus != null) 'ai_status': aiStatus,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   DocumentsCompanion copyWith({
-    Value<String>? uid,
+    Value<int>? localId,
     Value<String>? id,
+    Value<String>? uid,
     Value<DateTime>? createdAt,
     Value<String>? category,
     Value<String>? userMemo,
@@ -575,11 +611,11 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     Value<String>? platform,
     Value<String>? aiSummary,
     Value<String>? aiStatus,
-    Value<int>? rowid,
   }) {
     return DocumentsCompanion(
-      uid: uid ?? this.uid,
+      localId: localId ?? this.localId,
       id: id ?? this.id,
+      uid: uid ?? this.uid,
       createdAt: createdAt ?? this.createdAt,
       category: category ?? this.category,
       userMemo: userMemo ?? this.userMemo,
@@ -589,18 +625,20 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
       platform: platform ?? this.platform,
       aiSummary: aiSummary ?? this.aiSummary,
       aiStatus: aiStatus ?? this.aiStatus,
-      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (uid.present) {
-      map['uid'] = Variable<String>(uid.value);
+    if (localId.present) {
+      map['local_id'] = Variable<int>(localId.value);
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -629,17 +667,15 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     if (aiStatus.present) {
       map['ai_status'] = Variable<String>(aiStatus.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('DocumentsCompanion(')
-          ..write('uid: $uid, ')
+          ..write('localId: $localId, ')
           ..write('id: $id, ')
+          ..write('uid: $uid, ')
           ..write('createdAt: $createdAt, ')
           ..write('category: $category, ')
           ..write('userMemo: $userMemo, ')
@@ -648,8 +684,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
           ..write('imageUrl: $imageUrl, ')
           ..write('platform: $platform, ')
           ..write('aiSummary: $aiSummary, ')
-          ..write('aiStatus: $aiStatus, ')
-          ..write('rowid: $rowid')
+          ..write('aiStatus: $aiStatus')
           ..write(')'))
         .toString();
   }
@@ -847,13 +882,14 @@ class DocumentTags extends Table with TableInfo<DocumentTags, DocumentTag> {
   static const VerificationMeta _documentIdMeta = const VerificationMeta(
     'documentId',
   );
-  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+  late final GeneratedColumn<int> documentId = GeneratedColumn<int>(
     'document_id',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL REFERENCES documents(id)ON DELETE CASCADE',
+    $customConstraints:
+        'NOT NULL REFERENCES documents(local_id)ON DELETE CASCADE',
   );
   static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
   late final GeneratedColumn<int> tagId = GeneratedColumn<int>(
@@ -904,7 +940,7 @@ class DocumentTags extends Table with TableInfo<DocumentTags, DocumentTag> {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DocumentTag(
       documentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}document_id'],
       )!,
       tagId: attachedDatabase.typeMapping.read(
@@ -928,13 +964,13 @@ class DocumentTags extends Table with TableInfo<DocumentTags, DocumentTag> {
 }
 
 class DocumentTag extends DataClass implements Insertable<DocumentTag> {
-  final String documentId;
+  final int documentId;
   final int tagId;
   const DocumentTag({required this.documentId, required this.tagId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['document_id'] = Variable<String>(documentId);
+    map['document_id'] = Variable<int>(documentId);
     map['tag_id'] = Variable<int>(tagId);
     return map;
   }
@@ -952,7 +988,7 @@ class DocumentTag extends DataClass implements Insertable<DocumentTag> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DocumentTag(
-      documentId: serializer.fromJson<String>(json['document_id']),
+      documentId: serializer.fromJson<int>(json['document_id']),
       tagId: serializer.fromJson<int>(json['tag_id']),
     );
   }
@@ -960,12 +996,12 @@ class DocumentTag extends DataClass implements Insertable<DocumentTag> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'document_id': serializer.toJson<String>(documentId),
+      'document_id': serializer.toJson<int>(documentId),
       'tag_id': serializer.toJson<int>(tagId),
     };
   }
 
-  DocumentTag copyWith({String? documentId, int? tagId}) => DocumentTag(
+  DocumentTag copyWith({int? documentId, int? tagId}) => DocumentTag(
     documentId: documentId ?? this.documentId,
     tagId: tagId ?? this.tagId,
   );
@@ -998,7 +1034,7 @@ class DocumentTag extends DataClass implements Insertable<DocumentTag> {
 }
 
 class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
-  final Value<String> documentId;
+  final Value<int> documentId;
   final Value<int> tagId;
   final Value<int> rowid;
   const DocumentTagsCompanion({
@@ -1007,13 +1043,13 @@ class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
     this.rowid = const Value.absent(),
   });
   DocumentTagsCompanion.insert({
-    required String documentId,
+    required int documentId,
     required int tagId,
     this.rowid = const Value.absent(),
   }) : documentId = Value(documentId),
        tagId = Value(tagId);
   static Insertable<DocumentTag> custom({
-    Expression<String>? documentId,
+    Expression<int>? documentId,
     Expression<int>? tagId,
     Expression<int>? rowid,
   }) {
@@ -1025,7 +1061,7 @@ class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
   }
 
   DocumentTagsCompanion copyWith({
-    Value<String>? documentId,
+    Value<int>? documentId,
     Value<int>? tagId,
     Value<int>? rowid,
   }) {
@@ -1040,7 +1076,7 @@ class DocumentTagsCompanion extends UpdateCompanion<DocumentTag> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (documentId.present) {
-      map['document_id'] = Variable<String>(documentId.value);
+      map['document_id'] = Variable<int>(documentId.value);
     }
     if (tagId.present) {
       map['tag_id'] = Variable<int>(tagId.value);
@@ -1195,7 +1231,7 @@ class DocumentsFts extends Table
   bool get dontWriteConstraints => true;
   @override
   String get moduleAndArgs =>
-      'fts5(title, category, user_memo, ai_summary, content=\'documents\', content_rowid=\'id\')';
+      'fts5(title, category, user_memo, ai_summary, content=\'documents\', content_rowid=\'local_id\')';
 }
 
 class DocumentsFt extends DataClass implements Insertable<DocumentsFt> {
@@ -1391,15 +1427,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final DocumentTags documentTags = DocumentTags(this);
   late final DocumentsFts documentsFts = DocumentsFts(this);
   late final Trigger documentsInsert = Trigger(
-    'CREATE TRIGGER documents_insert AFTER INSERT ON documents BEGIN INSERT INTO documents_fts ("rowid", title, category, user_memo, ai_summary) VALUES (new.id, new.title, new.category, new.user_memo, new.ai_summary);END',
+    'CREATE TRIGGER documents_insert AFTER INSERT ON documents BEGIN INSERT INTO documents_fts ("rowid", title, category, user_memo, ai_summary) VALUES (new.local_id, new.title, new.category, new.user_memo, new.ai_summary);END',
     'documents_insert',
   );
   late final Trigger documentsDelete = Trigger(
-    'CREATE TRIGGER documents_delete AFTER DELETE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, user_memo, ai_summary) VALUES (\'delete\', old.id, old.title, old.category, old.user_memo, old.ai_summary);END',
+    'CREATE TRIGGER documents_delete AFTER DELETE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, user_memo, ai_summary) VALUES (\'delete\', old.local_id, old.title, old.category, old.user_memo, old.ai_summary);END',
     'documents_delete',
   );
   late final Trigger documentsUpdate = Trigger(
-    'CREATE TRIGGER documents_update AFTER UPDATE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, user_memo, ai_summary) VALUES (\'delete\', old.id, old.title, old.category, old.user_memo, old.ai_summary);INSERT INTO documents_fts ("rowid", title, category, user_memo, ai_summary) VALUES (new.id, new.title, new.category, new.user_memo, new.ai_summary);END',
+    'CREATE TRIGGER documents_update AFTER UPDATE ON documents BEGIN INSERT INTO documents_fts (documents_fts, "rowid", title, category, user_memo, ai_summary) VALUES (\'delete\', old.local_id, old.title, old.category, old.user_memo, old.ai_summary);INSERT INTO documents_fts ("rowid", title, category, user_memo, ai_summary) VALUES (new.local_id, new.title, new.category, new.user_memo, new.ai_summary);END',
     'documents_update',
   );
   @override
@@ -1457,9 +1493,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $DocumentsCreateCompanionBuilder =
     DocumentsCompanion Function({
-      required String uid,
+      Value<int> localId,
       required String id,
-      Value<DateTime> createdAt,
+      required String uid,
+      required DateTime createdAt,
       required String category,
       required String userMemo,
       required String title,
@@ -1468,12 +1505,12 @@ typedef $DocumentsCreateCompanionBuilder =
       required String platform,
       required String aiSummary,
       required String aiStatus,
-      Value<int> rowid,
     });
 typedef $DocumentsUpdateCompanionBuilder =
     DocumentsCompanion Function({
-      Value<String> uid,
+      Value<int> localId,
       Value<String> id,
+      Value<String> uid,
       Value<DateTime> createdAt,
       Value<String> category,
       Value<String> userMemo,
@@ -1483,7 +1520,6 @@ typedef $DocumentsUpdateCompanionBuilder =
       Value<String> platform,
       Value<String> aiSummary,
       Value<String> aiStatus,
-      Value<int> rowid,
     });
 
 final class $DocumentsReferences
@@ -1494,16 +1530,15 @@ final class $DocumentsReferences
   _documentTagsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.documentTags,
     aliasName: $_aliasNameGenerator(
-      db.documents.id,
+      db.documents.localId,
       db.documentTags.documentId,
     ),
   );
 
   $DocumentTagsProcessedTableManager get documentTagsRefs {
-    final manager = $DocumentTagsTableManager(
-      $_db,
-      $_db.documentTags,
-    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
+    final manager = $DocumentTagsTableManager($_db, $_db.documentTags).filter(
+      (f) => f.documentId.localId.sqlEquals($_itemColumn<int>('local_id')!),
+    );
 
     final cache = $_typedResult.readTableOrNull(_documentTagsRefsTable($_db));
     return ProcessedTableManager(
@@ -1520,13 +1555,18 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get uid => $composableBuilder(
-    column: $table.uid,
+  ColumnFilters<int> get localId => $composableBuilder(
+    column: $table.localId,
     builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uid => $composableBuilder(
+    column: $table.uid,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1580,7 +1620,7 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
   ) {
     final $DocumentTagsFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.id,
+      getCurrentColumn: (t) => t.localId,
       referencedTable: $db.documentTags,
       getReferencedColumn: (t) => t.documentId,
       builder:
@@ -1609,13 +1649,18 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get uid => $composableBuilder(
-    column: $table.uid,
+  ColumnOrderings<int> get localId => $composableBuilder(
+    column: $table.localId,
     builder: (column) => ColumnOrderings(column),
   );
 
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get uid => $composableBuilder(
+    column: $table.uid,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1673,11 +1718,14 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get uid =>
-      $composableBuilder(column: $table.uid, builder: (column) => column);
+  GeneratedColumn<int> get localId =>
+      $composableBuilder(column: $table.localId, builder: (column) => column);
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -1711,7 +1759,7 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
   ) {
     final $DocumentTagsAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.id,
+      getCurrentColumn: (t) => t.localId,
       referencedTable: $db.documentTags,
       getReferencedColumn: (t) => t.documentId,
       builder:
@@ -1760,8 +1808,9 @@ class $DocumentsTableManager
               $DocumentsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> uid = const Value.absent(),
+                Value<int> localId = const Value.absent(),
                 Value<String> id = const Value.absent(),
+                Value<String> uid = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<String> userMemo = const Value.absent(),
@@ -1771,10 +1820,10 @@ class $DocumentsTableManager
                 Value<String> platform = const Value.absent(),
                 Value<String> aiSummary = const Value.absent(),
                 Value<String> aiStatus = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion(
-                uid: uid,
+                localId: localId,
                 id: id,
+                uid: uid,
                 createdAt: createdAt,
                 category: category,
                 userMemo: userMemo,
@@ -1784,13 +1833,13 @@ class $DocumentsTableManager
                 platform: platform,
                 aiSummary: aiSummary,
                 aiStatus: aiStatus,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required String uid,
+                Value<int> localId = const Value.absent(),
                 required String id,
-                Value<DateTime> createdAt = const Value.absent(),
+                required String uid,
+                required DateTime createdAt,
                 required String category,
                 required String userMemo,
                 required String title,
@@ -1799,10 +1848,10 @@ class $DocumentsTableManager
                 required String platform,
                 required String aiSummary,
                 required String aiStatus,
-                Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion.insert(
-                uid: uid,
+                localId: localId,
                 id: id,
+                uid: uid,
                 createdAt: createdAt,
                 category: category,
                 userMemo: userMemo,
@@ -1812,7 +1861,6 @@ class $DocumentsTableManager
                 platform: platform,
                 aiSummary: aiSummary,
                 aiStatus: aiStatus,
-                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -1838,7 +1886,9 @@ class $DocumentsTableManager
                       managerFromTypedResult: (p0) =>
                           $DocumentsReferences(db, table, p0).documentTagsRefs,
                       referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.documentId == item.id),
+                          referencedItems.where(
+                            (e) => e.documentId == item.localId,
+                          ),
                       typedResults: items,
                     ),
                 ];
@@ -2074,13 +2124,13 @@ typedef $TagsProcessedTableManager =
     >;
 typedef $DocumentTagsCreateCompanionBuilder =
     DocumentTagsCompanion Function({
-      required String documentId,
+      required int documentId,
       required int tagId,
       Value<int> rowid,
     });
 typedef $DocumentTagsUpdateCompanionBuilder =
     DocumentTagsCompanion Function({
-      Value<String> documentId,
+      Value<int> documentId,
       Value<int> tagId,
       Value<int> rowid,
     });
@@ -2091,16 +2141,16 @@ final class $DocumentTagsReferences
 
   static Documents _documentIdTable(_$AppDatabase db) =>
       db.documents.createAlias(
-        $_aliasNameGenerator(db.documentTags.documentId, db.documents.id),
+        $_aliasNameGenerator(db.documentTags.documentId, db.documents.localId),
       );
 
   $DocumentsProcessedTableManager get documentId {
-    final $_column = $_itemColumn<String>('document_id')!;
+    final $_column = $_itemColumn<int>('document_id')!;
 
     final manager = $DocumentsTableManager(
       $_db,
       $_db.documents,
-    ).filter((f) => f.id.sqlEquals($_column));
+    ).filter((f) => f.localId.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
@@ -2141,7 +2191,7 @@ class $DocumentTagsFilterComposer
       composer: this,
       getCurrentColumn: (t) => t.documentId,
       referencedTable: $db.documents,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.localId,
       builder:
           (
             joinBuilder, {
@@ -2197,7 +2247,7 @@ class $DocumentTagsOrderingComposer
       composer: this,
       getCurrentColumn: (t) => t.documentId,
       referencedTable: $db.documents,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.localId,
       builder:
           (
             joinBuilder, {
@@ -2253,7 +2303,7 @@ class $DocumentTagsAnnotationComposer
       composer: this,
       getCurrentColumn: (t) => t.documentId,
       referencedTable: $db.documents,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.localId,
       builder:
           (
             joinBuilder, {
@@ -2323,7 +2373,7 @@ class $DocumentTagsTableManager
               $DocumentTagsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> documentId = const Value.absent(),
+                Value<int> documentId = const Value.absent(),
                 Value<int> tagId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentTagsCompanion(
@@ -2333,7 +2383,7 @@ class $DocumentTagsTableManager
               ),
           createCompanionCallback:
               ({
-                required String documentId,
+                required int documentId,
                 required int tagId,
                 Value<int> rowid = const Value.absent(),
               }) => DocumentTagsCompanion.insert(
@@ -2376,7 +2426,7 @@ class $DocumentTagsTableManager
                                     ._documentIdTable(db),
                                 referencedColumn: $DocumentTagsReferences
                                     ._documentIdTable(db)
-                                    .id,
+                                    .localId,
                               )
                               as T;
                     }
