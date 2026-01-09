@@ -1,31 +1,45 @@
+import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:archivey/domain/model/document_model.dart';
+import 'package:archivey/domain/model/document_model_on_progress.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
+import 'package:provider/provider.dart';
 
-class DocumentAllTotalPage extends StatelessWidget {
-  final List<DocumentModel> documents;
+class DocumentAllTotalPage extends StatefulWidget {
 
   /// 기본값 강제로 빈 리스트 반환해서 GoRouter 에러 방지
-  const DocumentAllTotalPage({super.key, this.documents = const []});
+  const DocumentAllTotalPage({super.key});
+
+  @override
+  State<DocumentAllTotalPage> createState() => _DocumentAllTotalPageState();
+}
+
+class _DocumentAllTotalPageState extends State<DocumentAllTotalPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Provider.of<DocumentViewModel>(context, listen: false).readDocuments();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (documents.isEmpty) {
-      return const Center(child: Text("수집물이 없습니다."));
-    }
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: ListView.builder(
-          itemCount: documents.length,
+    return Consumer<DocumentViewModel>(
+      builder: (context, vm, _){
+        if (vm.documents.isEmpty) {
+          return const Center(child: Text("수집물이 없습니다."));
+        }
+        return ListView.builder(
+          itemCount: vm.documents.length,
           itemBuilder: (context, index) {
             return DocumentCard(
-              document: documents[index],
+              document: vm.documents[index],
               isFirstItem: index == 0,
               isDetailPage: false,
+              isOnAllPage: true,
             );
           },
-        ),
+        );
+      }
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
-import '../../domain/model/document_model.dart';
+import '../../domain/model/document_model_on_progress.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:archivey/ui/document/widget/more_icon_widget.dart';
@@ -35,7 +35,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
   @override
   void initState() {
     super.initState();
-    _memoController = TextEditingController(text: widget.document.memo);
+    _memoController = TextEditingController(text: widget.document.userMemo);
     _memoFocusNode.addListener(_focusListener);
 
     ///메모 포커스 리스너
@@ -112,6 +112,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                 isFirstItem: false,
                 isDetailPage: true,
                 showBottomBorder: false,
+                isOnAllPage: true,
               ),
             ),
 
@@ -202,11 +203,11 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
     AppTextTheme appTextTheme,
   ) {
     if (_selectedTabIndex == 0) {
-      return DocumentDetailAiSummaryWidget();
+      return DocumentDetailAiSummaryWidget(aiSummary: widget.document.aiSummary);
     } else if (_selectedTabIndex == 1) {
       return DocumentDetailMemoWidget(
         isEditing: _isEditing,
-        memo: widget.document.memo,
+        memo: widget.document.userMemo,
         controller: _memoController,
         focusNode: _memoFocusNode,
       );

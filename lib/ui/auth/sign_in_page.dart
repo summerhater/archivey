@@ -66,7 +66,7 @@ class _SignInPageState extends State<SignInPage> {
                     height: 25,
                   ),
                   CustomElevatedButton(
-                    path: '/document-index',
+                    path: '/document_all_index',
                     guide: '로그인',
                     backgroundColor: appColor.primaryStrong,
                     fontSize: appText.bodyMedium.fontSize,
@@ -78,7 +78,7 @@ class _SignInPageState extends State<SignInPage> {
                         )
                         .then((value) {
                           if (!context.mounted) return;
-                          context.go('/document-index');
+                          context.go('/document_all_index');
                         })
                         .catchError((e) {
                           if (!context.mounted) return;

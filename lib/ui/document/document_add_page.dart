@@ -1,10 +1,14 @@
+import 'package:archivey/domain/model/category_model.dart';
+import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/color_scheme_extension.dart';
 import '../../config/text_theme_extension.dart';
-import '../../domain/model/document_model.dart';
+import '../../domain/model/document_model_on_progress.dart';
 
 class DocumentAddPage extends StatefulWidget {
   const DocumentAddPage({Key? key}) : super(key: key);
@@ -14,23 +18,12 @@ class DocumentAddPage extends StatefulWidget {
 }
 
 class _DocumentAddPageState extends State<DocumentAddPage> {
-  String? _selectedCategory;
-  int? _selectedSubIndex = 0; /// 소분류 선택 인덱스 - 기본값 '전체'
+  CategoryModel? _selectedCategory;
+  CategoryModel? _selectedSubCategory;
   final _formKey = GlobalKey<FormState>();
   final _urlController = TextEditingController();
   final _memoController = TextEditingController();
   final int _maxMemoLength = 200;
-
-  final List<String> categories = DocumentDummyData.getCategories();
-  List<String> subCategories = [
-    '전체',
-    'sub1',
-    'sub2',
-    'sub3',
-    'sub4',
-    'sub5',
-    'sub6',
-  ];
 
   @override
   void dispose() {
@@ -39,14 +32,48 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
     super.dispose();
   }
 
-  void _handleSubmit() {
-    if (_formKey.currentState!.validate() && _selectedCategory != null) {
-      ///todo: db 저장 로직 구현
-      print({
-        'url': _urlController.text,
-        'category': _selectedCategory,
-        'memo': _memoController.text,
-      });
+  Future<void> _handleSave(context) async {
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+    if (!_formKey.currentState!.validate()) return;
+    if (_selectedCategory == null) return;
+
+    final documentVM = Provider.of<DocumentViewModel>(context, listen: false);
+
+    final CategoryModel targetCategory =
+        _selectedSubCategory ?? _selectedCategory!;
+
+    try {
+      await documentVM.addDocumentProcess(
+        rawText: _urlController.text.trim(),
+        category: targetCategory,
+        memo: _memoController.text.trim().isEmpty
+            ? null
+            : _memoController.text.trim(),
+      );
+
+      if (mounted) {
+        context.pop();
+      }
+
+      context.showAppSnackBar(
+        content: Text(
+          '수집물 아카이빙 성공',
+          style: appTextTheme.bodySmall.copyWith(
+            color: appColorScheme.primary,
+          ),
+        ),
+      );
+
+    } catch (e) {
+      context.showAppSnackBar(
+        content: Text(
+          '수집물 아카이빙 실패 : $e',
+          style: appTextTheme.bodySmall.copyWith(
+            color: appColorScheme.primary,
+          ),
+        ),
+      );
     }
   }
 
@@ -54,6 +81,11 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+    final categoryVM = context.watch<CategoryViewModel>();
+    final List<CategoryModel> categories = categoryVM.rootCategories;
+    final List<CategoryModel> subCategories = _selectedCategory == null
+        ? []
+        : categoryVM.getSubCategories(_selectedCategory!.categoryId);
     var memoLength = _memoController.text.length;
     final isFormValid =
         _urlController.text.isNotEmpty &&
@@ -161,14 +193,14 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                         bool isSelected = _selectedCategory == category;
                         return ChoiceChip(
                           showCheckmark: false,
-                          label: Text(category),
+                          label: Text(category.categoryName),
                           selected: isSelected,
                           onSelected: (selected) {
                             setState(() {
                               _selectedCategory = selected ? category : null;
 
                               /// 대분류가 바뀌거나 취소되면 소분류 선택도 초기화
-                              _selectedSubIndex = 0;
+                              _selectedSubCategory = null;
                             });
                           },
                           backgroundColor: appColorScheme.primary,
@@ -207,43 +239,73 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                     const SizedBox(height: 12),
                                     Wrap(
                                       spacing: 8.0,
-                                      children: List.generate(
-                                        subCategories.length,
-                                        (index) {
-                                          bool isSubSelected =
-                                              _selectedSubIndex == index;
-                                          return ChoiceChip(
-                                            showCheckmark: false,
-                                            label: Text(
-                                              subCategories[index],
-                                              style: appTextTheme.labelLarge,
+                                      children: subCategories.map((sub) {
+                                        // 2. 객체 비교를 통해 선택 여부 확인
+                                        bool isSubSelected = _selectedSubCategory == sub;
+
+                                        return ChoiceChip(
+                                          showCheckmark: false,
+                                          label: Text(
+                                            sub.categoryName, // 모델의 이름 표시
+                                            style: appTextTheme.labelLarge,
+                                          ),
+                                          selected: isSubSelected,
+                                          onSelected: (selected) {
+                                            setState(() {
+                                              _selectedSubCategory = selected ? sub : null;
+                                            });
+                                          },
+                                          backgroundColor: appColorScheme.primary,
+                                          selectedColor: appColorScheme.primaryStrong,
+                                          shape: StadiumBorder(
+                                            side: BorderSide(
+                                              color: appColorScheme.strokeLight,
                                             ),
-                                            selected: isSubSelected,
-                                            onSelected: (selected) {
-                                              setState(() {
-                                                _selectedSubIndex = selected
-                                                    ? index
-                                                    : null;
-                                              });
-                                            },
-                                            backgroundColor:
-                                                appColorScheme.primary,
-                                            selectedColor:
-                                                appColorScheme.primaryStrong,
-                                            shape: StadiumBorder(
-                                              side: BorderSide(
-                                                color:
-                                                    appColorScheme.strokeLight,
-                                              ),
-                                            ),
-                                            labelStyle: appTextTheme.bodyLarge.copyWith(
-                                              color: isSubSelected
-                                                  ? appColorScheme.primary
-                                                  : appColorScheme.primaryStrong,
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                          ),
+                                          labelStyle: appTextTheme.bodyLarge.copyWith(
+                                            color: isSubSelected
+                                                ? appColorScheme.primary
+                                                : appColorScheme.primaryStrong,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      // children: List.generate(
+                                      //   subCategories.length,
+                                      //   (index) {
+                                      //     bool isSubSelected =
+                                      //         _selectedSubIndex == index;
+                                      //     return ChoiceChip(
+                                      //       showCheckmark: false,
+                                      //       label: Text(
+                                      //         subCategories.categoryName,
+                                      //         style: appTextTheme.labelLarge,
+                                      //       ),
+                                      //       selected: isSubSelected,
+                                      //       onSelected: (selected) {
+                                      //         setState(() {
+                                      //           _selectedSubIndex = selected
+                                      //               ? index
+                                      //               : null;
+                                      //         });
+                                      //       },
+                                      //       backgroundColor:
+                                      //           appColorScheme.primary,
+                                      //       selectedColor:
+                                      //           appColorScheme.primaryStrong,
+                                      //       shape: StadiumBorder(
+                                      //         side: BorderSide(
+                                      //           color:
+                                      //               appColorScheme.strokeLight,
+                                      //         ),
+                                      //       ),
+                                      //       labelStyle: appTextTheme.bodyLarge.copyWith(
+                                      //         color: isSubSelected
+                                      //             ? appColorScheme.primary
+                                      //             : appColorScheme.primaryStrong,
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // ),
                                     ),
                                   ],
                                 ),
@@ -321,7 +383,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                   child: ElevatedButton(
                     onPressed: isFormValid
                         ? () {
-                            _handleSubmit();
+                            _handleSave(context);
                             context.showAppSnackBar(
                               content: Text(
                                 '수집물이 추가되었습니다',

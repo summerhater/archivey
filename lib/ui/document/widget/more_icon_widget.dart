@@ -1,6 +1,9 @@
+import 'package:archivey/domain/model/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:archivey/domain/model/document_model.dart';
-import 'package:archivey/ui/document/widget/bottom_sheet_more_icon_widget.dart';
+import 'package:archivey/ui/document/widget/bottom_sheet_more_action_widget.dart';
+
+import '../../../domain/model/document_model_on_progress.dart';
 
 enum MoreIconSettingMode { category, document, documentDetail }
 
@@ -8,11 +11,14 @@ class MoreIconWidget extends StatelessWidget {
   final DocumentModel? document;
   final MoreIconSettingMode moreIconSettingMode;
   final VoidCallback? onEditPressed;
+  final CategoryModel? originalCategoryModel;
+
   const MoreIconWidget({
     super.key,
     required this.moreIconSettingMode,
     this.document,
     this.onEditPressed,
+    this.originalCategoryModel,
   });
 
   @override
@@ -24,7 +30,8 @@ class MoreIconWidget extends StatelessWidget {
           isScrollControlled: true,
           context: context,
           useRootNavigator: true,
-          builder: (_) => BottomSheetWithNoHeaderWidget(
+          builder: (_) => BottomSheetMoreActionWidget(
+            isSubCategory: false,
             typeSettingMode: moreIconSettingMode == MoreIconSettingMode.category
                 ? TypeSettingMode.category
                 : moreIconSettingMode == MoreIconSettingMode.document
@@ -32,6 +39,7 @@ class MoreIconWidget extends StatelessWidget {
                 : TypeSettingMode.documentDetail,
             document: document,
             onEditPressed: onEditPressed,
+            originalCategoryModel: originalCategoryModel,
           ),
         );
       },

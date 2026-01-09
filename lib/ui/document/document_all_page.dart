@@ -1,8 +1,11 @@
+import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../domain/model/document_model.dart';
+import 'package:provider/provider.dart';
+import '../../domain/model/document_model_on_progress.dart';
 import 'package:archivey/ui/document/widget/document_list_header_widget.dart';
 import 'document_all_total_page.dart';
+
 
 class DocumentAllPage extends StatefulWidget {
   final Widget contentPage;
@@ -12,7 +15,12 @@ class DocumentAllPage extends StatefulWidget {
 }
 
 class _DocumentAllPageState extends State<DocumentAllPage> {
-  final List<DocumentModel> _allDocs = DocumentDummyData.getDummyDocuments();
+
+  @override
+  void initState() {
+    // Provider.of<DocumentViewModel>(context, listen: false).readDocuments();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final currentLocation = GoRouterState.of(context).uri.toString();
@@ -21,20 +29,27 @@ class _DocumentAllPageState extends State<DocumentAllPage> {
         currentLocation.contains('all_total') ||
         currentLocation.contains('all_index');
 
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DocumentListHeaderWidget(
-            isOnAllPage: isOnAllPage,
+    return Consumer<DocumentViewModel>(
+      builder: (context, vm, _){
+        final allDocs = vm.documents;
+        return SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DocumentListHeaderWidget(
+                isOnAllPage: isOnAllPage,
+                rootCategory: null,
+                documentCount: allDocs.length,
+              ),
+              Expanded(
+                child: isAllTotalPage
+                    ? DocumentAllTotalPage()
+                    : widget.contentPage,
+              ),
+            ],
           ),
-          Expanded(
-            child: isAllTotalPage
-                ? DocumentAllTotalPage(documents: _allDocs)
-                : widget.contentPage,
-          ),
-        ],
-      ),
+        );
+      }
     );
   }
 }
