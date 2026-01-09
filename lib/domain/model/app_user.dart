@@ -1,10 +1,10 @@
-import 'package:archivey/domain/model/document.dart';
+import 'package:archivey/domain/model/document_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppUser {
   final String email;
   final DateTime? createAt;
-  final List<Document>? docList; // db에는 저장 하지 않고, sub collection을 받아와 넣어줄 것
+  final List<DocumentModel>? docList; // db에는 저장 하지 않고, sub collection을 받아와 넣어줄 것
 
   AppUser({
     required this.email,

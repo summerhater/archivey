@@ -1,0 +1,57 @@
+-- document table
+CREATE TABLE documents (
+    local_id INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+    id TEXT NOT NULL UNIQUE,
+    uid TEXT NOT NULL,
+    created_at DATETIME NOT NULL,
+    category TEXT NOT NULL,
+    user_memo TEXT NOT NULL,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    image_url TEXT NOT NULL,
+    platform TEXT NOT NULL,
+    ai_summary TEXT NOT NULL,
+    ai_status TEXT NOT NULL
+) AS DocumentEntity;
+
+-- tag table
+CREATE TABLE tags (
+    id INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+) AS TagEntity;
+
+-- document, tag join table
+CREATE TABLE document_tags (
+    document_id INT NOT NULL REFERENCES documents(local_id) ON DELETE CASCADE,
+    tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (document_id, tag_id)
+) AS DocumentTag;
+
+-- fts index table
+CREATE VIRTUAL TABLE documents_fts USING fts5(
+    title,
+    category,
+    user_memo,
+    ai_summary,
+    content='documents', -- documents table의 데이터를 참고한다는 문장
+    content_rowid='local_id' -- documents table의 localId를 FTS의 rowid로 사용한다는 문장
+);
+
+-- INSERT trigger
+CREATE TRIGGER documents_insert AFTER INSERT ON documents
+BEGIN
+    INSERT INTO documents_fts(rowid, title, category, user_memo, ai_summary) VALUES (new.local_id, new.title, new.category, new.user_memo, new.ai_summary);
+END;
+
+-- DELETE trigger
+CREATE TRIGGER documents_delete AFTER DELETE ON documents
+BEGIN
+    INSERT INTO documents_fts(documents_fts, rowid, title, category, user_memo, ai_summary) VALUES ('delete', old.local_id, old.title, old.category, old.user_memo, old.ai_summary);
+END;
+
+-- UPDATE trigger
+CREATE TRIGGER documents_update AFTER UPDATE ON documents
+BEGIN
+    INSERT INTO documents_fts(documents_fts, rowid, title, category, user_memo, ai_summary) VALUES ('delete', old.local_id, old.title, old.category, old.user_memo, old.ai_summary);
+    INSERT INTO documents_fts(rowid, title, category, user_memo, ai_summary) VALUES (new.local_id, new.title, new.category, new.user_memo, new.ai_summary);
+END;
