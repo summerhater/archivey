@@ -64,8 +64,9 @@ class DocumentModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'uid': uid,
       'id': id,
-      'createdAt': createdAt, // Firestore가 자동으로 Timestamp로 변환함
+      'createdAt': createdAt,
       'category': category.toMap(),
       'userMemo': userMemo,
       'title': title,
