@@ -3,9 +3,14 @@ import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
+import 'package:archivey/data/service/firebase_category_service.dart';
+import 'package:archivey/data/service/firebase_document_service.dart';
+import 'package:archivey/domain/model/app_user.dart';
 import 'package:archivey/firebase_options.dart';
 import 'package:archivey/routing/go_router.dart';
 import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
+import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +52,25 @@ void main() async {
             context.read<FirebaseAuthService>(),
             context.read<FirebaseAppUserService>(),
           ),
+        ),
+
+        Provider<FirebaseCategoryService>(
+          create: (_) => FirebaseCategoryService(),
+        ),
+        ChangeNotifierProvider<CategoryViewModel>(
+          create: (context) => CategoryViewModel(
+            context.read<FirebaseCategoryService>(),
+            context.read<FirebaseAuthService>(),
+          ),
+        ),
+
+        Provider<FirebaseDocumentService>(
+          create: (_) => FirebaseDocumentService(),
+        ),
+        ChangeNotifierProvider<DocumentViewModel>(
+          create: (context) => DocumentViewModel(
+            context.read<FirebaseDocumentService>(),
+          )..readDocuments(),
         ),
       ],
       child: const Archivey(),

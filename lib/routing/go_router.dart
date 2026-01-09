@@ -1,3 +1,4 @@
+// import 'package:archivey/ui/document/ai_summary_example.dart';
 import 'package:archivey/ui/document/document_add_page.dart';
 import 'package:archivey/ui/document/document_all_total_page.dart';
 import 'package:archivey/ui/document/document_all_index_page.dart';
@@ -14,19 +15,17 @@ import 'package:archivey/ui/auth/signup_success_page.dart';
 import 'package:archivey/ui/onboarding/on_boarding_page.dart';
 import 'package:archivey/ui/setting/settings_page.dart';
 import 'package:go_router/go_router.dart';
-import '../domain/model/document_model.dart';
-// import '../ui/document/ai_summary_example.dart';
-// import '../ui/document/ai_summary_test.dart';
 import '../ui/document/document_shell_page.dart';
 import '../ui/document/document_all_page.dart';
 import 'package:flutter/material.dart';
+import 'package:archivey/domain/model/document_model_on_progress.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/document_all_total',
+  initialLocation: '/auth',
   routes: [
     GoRoute(
       path: '/',
@@ -109,7 +108,7 @@ final GoRouter goRouter = GoRouter(
           pageBuilder: (context, state) {
             final name = state.pathParameters['name'] ?? 'ALL';
             return NoTransitionPage(
-              child: DocumentCategoryPageListPage(category: name),
+              child: DocumentCategoryListPage(categoryName: name),
             );
           },
         ),
@@ -130,7 +129,6 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/document_add',
       builder: (context, state) => DocumentAddPage(),
-      // builder: (context, state) => AiSummaryTest(),
       // builder: (context, state) => AIValidationPage(),
     ),
   ],

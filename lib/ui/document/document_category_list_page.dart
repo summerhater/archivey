@@ -1,27 +1,79 @@
+import 'package:archivey/domain/model/category_model.dart';
+import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../domain/model/document_model.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:archivey/ui/document/widget/document_list_header_widget.dart';
 
-class DocumentCategoryPageListPage extends StatelessWidget {
-  final String category;
+import '../../domain/model/document_model_on_progress.dart';
 
-  const DocumentCategoryPageListPage({super.key, required this.category});
+class DocumentCategoryListPage extends StatefulWidget {
+  final String categoryName;
+
+  const DocumentCategoryListPage({super.key, required this.categoryName});
+
+  @override
+  State<DocumentCategoryListPage> createState() => _DocumentCategoryListPageState();
+}
+
+class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
+  String? _selectedSubId; // 현재 선택된 서브 카테고리 ID 저장 변수
 
   @override
   Widget build(BuildContext context) {
-    /// 전체 수집물 로드
-    final allDocuments = DocumentDummyData.getDummyDocuments();
+    final categoryVM = context.watch<CategoryViewModel>();
+    final documentVM = context.watch<DocumentViewModel>();
 
-    ///카테고리 필터링 로직 - 'ALL'이면 전체 반환, 아니면 해당 카테고리와 일치하는 것만 필터링
-    final List<DocumentModel> displayDocuments = category == 'ALL'
-        ? allDocuments
-        : allDocuments.where((doc) => doc.category == category).toList();
+    // 1. 현재 탭 이름에 해당하는 Root 카테고리 찾기
+    CategoryModel? rootCategory;
+    try {
+      rootCategory = categoryVM.rootCategories.firstWhere(
+            (c) => c.categoryName == widget.categoryName,
+      );
+    } catch (_) {
+      rootCategory = null;
+    }
+
+    // 2. 필터링 로직
+    List<DocumentModel> displayDocuments = [];
+
+    if (widget.categoryName == 'ALL') {
+      // 'ALL' 탭일 때는 모든 도큐먼트 표시
+      displayDocuments = documentVM.documents;
+        print('displayDocuments in ALL: ${displayDocuments.length}');
+    } else if (rootCategory != null) {
+      if (_selectedSubId == null) {
+        // '전체' 칩 선택 시: 현재 카테고리 ID + 하위 서브 카테고리 ID들 포함
+        final familyIds = [
+          rootCategory.categoryId,
+          ...categoryVM.getSubCategories(rootCategory.categoryId).map((e) => e.categoryId)
+        ];
+        displayDocuments = documentVM.documents
+            .where((doc) => familyIds.contains(doc.category.categoryId))
+            .toList();
+      } else {
+        // 특정 서브 카테고리 칩 선택 시: 해당 ID만 필터링
+        displayDocuments = documentVM.documents
+            .where((doc) => doc.category.categoryId == _selectedSubId)
+            .toList();
+      }
+    }
 
     return SafeArea(
       child: Column(
         children: [
-          DocumentListHeaderWidget(isOnAllPage: false,),
+          DocumentListHeaderWidget(
+            isOnAllPage: false,
+            rootCategory: rootCategory!,
+            documentCount: displayDocuments.length,
+            selectedSubCategory: (String? subId) {
+              setState(() {
+                _selectedSubId = subId;
+              });
+            },
+          ),
           if (displayDocuments.isEmpty)
             const Expanded(child: Center(child: Text('해당 카테고리에 글이 없습니다.')))
           else
@@ -33,6 +85,7 @@ class DocumentCategoryPageListPage extends StatelessWidget {
                     document: displayDocuments[index],
                     isFirstItem: index == 0,
                     isDetailPage: false,
+                    isOnAllPage: false,
                   );
                 },
               ),

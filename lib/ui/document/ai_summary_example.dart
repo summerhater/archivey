@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:metadata_fetch/metadata_fetch.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -10,11 +11,13 @@ import 'package:firebase_ai/firebase_ai.dart';
 enum AnalysisStatus { pending, analyzing, completed, failed }
 
 class AIAnalysis {
+  final String? platform;///임시
   final String? summary;
   final List<String> tags;
   final AnalysisStatus status;
 
   AIAnalysis({
+    this.platform,///임시
     this.summary,
     this.tags = const [],
     this.status = AnalysisStatus.pending,
@@ -55,34 +58,141 @@ class DocumentModel {
 
 ///로직
 class LinkProcessor {
-  final _yt = YoutubeExplode();
+  final _youtube = YoutubeExplode();
   final _model = FirebaseAI.googleAI().generativeModel(
     model: 'gemini-2.5-flash',
     generationConfig: GenerationConfig(responseMimeType: 'application/json'),
   );
 
-  Future<Map<String, dynamic>> processStep1(
+  Map<String, dynamic> extractMetaData(dom.Document document) {
+    final ogData = MetadataParser.openGraph(document);
+    final htmlData = MetadataParser.htmlMeta(document);
+    final twitterCardData = MetadataParser.twitterCard(document);
+    final structuredData = MetadataParser.jsonLdSchema(document);
+
+    String? title;
+    String? description;
+    String? image;
+
+    /// 우선순위 : OG -> HTML -> Twitter -> JSON-LD 순
+    /// 각 필드별로 우선순위에 따라 제일 먼저 채워지는 데이터 추출
+
+    // print('------------------ result ------------------');
+    if (ogData.title != null) {
+      title = ogData.title;
+      // print('1. get title : ogData');
+    } else if (htmlData.title != null) {
+      title = htmlData.title;
+      // print('1. get title : htmlData');
+    } else if (twitterCardData.title != null) {
+      title = twitterCardData.title;
+      // print('1. get title : twitterData');
+    } else {
+      title = structuredData.title;
+      // print('1. get title : structuredData');
+    }
+
+    if (ogData.description != null) {
+      description = ogData.description;
+      // print('2. get description : ogData');
+    } else if (htmlData.description != null) {
+      description = htmlData.description;
+      // print('2. get description : htmlData');
+    } else if (twitterCardData.description != null) {
+      description = twitterCardData.description;
+      // print('2. get description : twitterCardData');
+    } else {
+      description = structuredData.description;
+      // print('2. get description : structuredData');
+    }
+
+    if (ogData.image != null) {
+      image = ogData.image;
+      // print('3. get imageURL : ogData');
+    } else if (htmlData.image != null) {
+      image = htmlData.image;
+      // print('3. get imageURL : htmlData');
+    } else if (twitterCardData.image != null) {
+      image = twitterCardData.image;
+      // print('3. get imageURL : twitterCardData');
+    } else {
+      image = structuredData.image;
+      // print('3. get imageURL : structuredData');
+    }
+
+    return {
+      'title': title,
+      'description': description,
+      'image': image,
+    };
+  }
+
+  String extractPlatform(String url) {
+    // try {
+      final uri = Uri.parse(url);
+      final host = uri.host.toLowerCase();
+
+      // 1단계: 명확한 처리가 필요한 "슈퍼 플랫폼" 10~20개만 매핑 (예외 처리용)
+      const superPlatforms = {
+        'naver.com': '네이버',
+        'youtube.com': 'YouTube',
+        'youtu.be': 'YouTube',
+        'x.com': 'X',
+        'twitter.com': 'X',
+        'facebook.com': 'Facebook',
+        'instagram.com': 'Instagram',
+        'tistory.com': '티스토리',
+        'brunch.co.kr': '브런치',
+        'github.com': 'GitHub',
+      };
+
+      // 호스트의 끝부분이 매핑 테이블에 있는지 확인
+      for (var domain in superPlatforms.keys) {
+        if (host.endsWith(domain)) return superPlatforms[domain]!;
+      }
+
+      // // 2단계: 자동 추출 알고리즘 (나머지 수만 개의 사이트 대응)
+      // // 공통적인 서브도메인(www, m, blog, news 등)과 TLD(.com, .co.kr)를 제거
+      // List<String> parts = host.split('.');
+      //
+      // // 제거할 무의미한 서브도메인들
+      // const junkSubdomains = {'www', 'm', 'blog', 'news', 'cafe', 'app', 'shop', 'mail', 'api'};
+      //
+      // // junkSubdomains에 해당하는 앞부분을 제거
+      // List<String> filteredParts = parts.where((p) => !junkSubdomains.contains(p)).toList();
+      //
+      // if (filteredParts.isNotEmpty) {
+      //   // 가장 핵심이 되는 첫 번째 마디를 대문자로 변환 (예: zigzag.kr -> ZIGZAG)
+      //   return filteredParts[0].toUpperCase();
+      // }
+
+      // return host;
+    return 'Unknown';
+    // } catch (e) {
+    //   return "Unknown";
+    // }
+  }
+
+  Future<Map<String, dynamic>> urlScrapper (
     String rawText,
     String category,
   ) async {
-    final urlRegExp = RegExp(r"(https?://[^\s]+)");
-    final url = urlRegExp.firstMatch(rawText)?.group(0) ?? "";
-    final extraText = rawText.replaceAll(url, "").trim();
+    ///1. todo: 외부에서 공유된 텍스트 받기
+    final url = RegExp(r"(https?://[^\s]+)").firstMatch(rawText)?.group(0) ?? ""; ///1-1. rawText에서 정규식으로 링크 추출
+    final sharedUrlCaption = rawText.replaceAll(url, "").trim(); ///1-2. rawText에서 링크 캡션 텍스트 추출
 
-    if (url.isEmpty) throw Exception("URL을 찾을 수 없습니다.");
+    if (url.isEmpty) throw Exception("urlScrapper: URL을 찾을 수 없습니다.");
 
-    /// HTTP 요청 및 메타데이터 파싱
-    final response = await http.get(Uri.parse(url));
-    final document = html_parser.parse(response.body);
-    final metadata = MetadataParser.parse(document);
+    /// 2. HTTP 요청 및 OpenGraph & 메타데이터 파싱
+    final response = await http.get(Uri.parse(url)); /// 2-1. http 요청
+    final document = MetadataFetch.responseToDocument(response); /// 2-2. HTML 문자열 전체 가져오기
+    if (document == null) throw Exception('urlScrapper: HTML 문자열을 가져올 수 없습니다.');
+    final platform = extractPlatform(url);
+    final resultMeta = extractMetaData(document);
 
-    String title = metadata.title ?? "제목 정보를 가져올 수 없음";
-    String imageUrl = metadata.image ?? "이미지를 가져올 수 없음";
-    String description = metadata.description ?? "디스크립션으ㅏㄹ 가져올 수 없음";
-    String platform = Uri.parse(url).host.replaceAll('www.', '');
-    print(title);
-    print(imageUrl);
-    print(description);
+    // print('플랫폼 : |$platform|');
+    // print('combined map: $resultMeta');
+
 
     String mainContent = "";
     if (url.contains("youtube.com") || url.contains("youtu.be")) {
@@ -90,47 +200,51 @@ class LinkProcessor {
     } else {
       /// 본문 텍스트 추출 (스크립트 제외, 광고같은것도 걸러주는지는 잘 모르겠)
       document
-          .querySelectorAll('script, style, nav, footer')
+          ?.querySelectorAll('script, style, nav, footer')
           .forEach((e) => e.remove());
-      mainContent = document.body?.text.trim() ?? "";
+      mainContent = document?.body?.text.trim() ?? "";
     }
 
     final doc = DocumentModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: title,
+      title: '',
       url: url,
-      imageUrl: imageUrl,
-      platform: platform,
+      imageUrl: '',
+      platform: '',
       category: category,
       aiAnalysis: AIAnalysis(status: AnalysisStatus.analyzing),
     );
 
+    print('doc: $doc');
+    print('resultMeta: $resultMeta');
+    print('mainContent: $mainContent');
+    print('sharedUrlCaption: $sharedUrlCaption');
     return {
       "document": doc,
+      "metaData":  resultMeta,
       "mainContent": mainContent,
-      "extraText": extraText,
-      "metaDescription": description,
+      "sharedUrlCaption": sharedUrlCaption,
     };
   }
 
   Future<AIAnalysis> processStep2({
     required DocumentModel doc,
-    required String content,
-    required String contextText,
-    required String metaDescription,
+    required Map<String, dynamic> metaData,
+    required String mainContent,
+    required String sharedUrlCaption,
   }) async {
     final prompt = [
       Content.text('''
       반드시 다음 JSON 형식을 지켜서 응답해줘. 다른 말은 하지 마.
       
       정보:
-      - 제목: ${doc.title}
-      - 메타설명: $metaDescription
-      - 본문내용: ${content.length > 2000 ? content.substring(0, 2000) : content}
-      - 사용자메모: $contextText
+      - url: ${doc.url}
+      - 메타설명: $metaData
+      - 본문내용: ${mainContent.length > 2000 ? mainContent.substring(0, 2000) : mainContent}
+      - url 캡션: $sharedUrlCaption
 
       응답 포맷:
-      {"summary": "내용 요약 3줄", "tags": ["키워드1", "키워드2", "키워드3", "키워드4"]}
+      {"platform": "url로 알아낸 플랫폼 이름(예시: 네이버 블로그, 무신사, 알리익스프레스 등)", "summary": "내용 요약 3줄", "tags": ["키워드1", "키워드2", "키워드3", "키워드4"]}
     '''),
     ];
 
@@ -153,8 +267,11 @@ class LinkProcessor {
 
       final decoded = jsonDecode(cleanJson);
       return AIAnalysis(
-        summary: decoded['summary'],
-        tags: List<String>.from(decoded['tags']),
+        platform: decoded['platform']?.toString() ?? "알 수 없는 플랫폼",
+        summary: decoded['summary']?.toString() ?? "요약 정보가 없습니다.",
+        tags: decoded['tags'] != null
+            ? List<String>.from(decoded['tags'])
+            : [],
         status: AnalysisStatus.completed,
       );
     } catch (e) {
@@ -165,13 +282,13 @@ class LinkProcessor {
 
   Future<String> _getYoutubeTranscript(String url) async {
     try {
-      var video = await _yt.videos.get(url);
-      var manifest = await _yt.videos.closedCaptions.getManifest(video.id);
+      var video = await _youtube.videos.get(url);
+      var manifest = await _youtube.videos.closedCaptions.getManifest(video.id);
       if (manifest.tracks.isNotEmpty) {
         var track =
             manifest.tracks.where((e) => e.language.code == 'ko').firstOrNull ??
             manifest.tracks.first;
-        var captions = await _yt.videos.closedCaptions.get(track);
+        var captions = await _youtube.videos.closedCaptions.get(track);
         return captions.captions.map((e) => e.text).join(' ');
       }
       return video.description;
@@ -183,8 +300,10 @@ class LinkProcessor {
 
 ///UI
 class AIValidationPage extends StatefulWidget {
+  const AIValidationPage({super.key});
+
   @override
-  _AIValidationPageState createState() => _AIValidationPageState();
+  State<AIValidationPage> createState() => _AIValidationPageState();
 }
 
 class _AIValidationPageState extends State<AIValidationPage> {
@@ -193,18 +312,20 @@ class _AIValidationPageState extends State<AIValidationPage> {
 
   ///테스트 리스트
   final List<String> _testUrls = [
+    'https://www.instagram.com/p/DSFFEw9kwzs/?igsh=eWJzYTV4ODZxdmdm',
+    'https://x.com/imrealdonmisae/status/1986016225462460591?s=20',
+    'https://x.com/imrealdonmisae/status/2006942288954695851?s=46',
+    'https://m.blog.naver.com/bboddo00_/224127191364',
+    '남산와이너리 어때요? 캐치테이블에서 확인해보세요! https://app.catchtable.co.kr/ct/shop/namsan_winery?from=share&type=DINING',
+    'https://www.teamblind.com/kr/company/%EC%98%A4%EB%B8%8C%EC%A0%A0/',
     'https://api-shein.shein.com/h5/sharejump/appjump?link=lorEeS6nUwg_8&localcountry=KR&url_from=GM76053970465',
     'https://www.figma.com/design/2eMChlR1tjc8ljbynEMPXI/archivy-%EA%B0%80%EC%A0%9C-?node-id=55-448&t=4L4gninoHGtHati6-1',
     'https://a.aliexpress.com/_c4X3Qfnr',
     'https://naver.me/FFaMMrC0',
-    'https://www.instagram.com/p/DSFFEw9kwzs/?igsh=eWJzYTV4ODZxdmdm',
-    'https://m.blog.naver.com/bboddo00_/224127191364',
-    '남산와이너리 어때요? 캐치테이블에서 확인해보세요! https://app.catchtable.co.kr/ct/shop/namsan_winery?from=share&type=DINING',
     'https://velog.io/@dkdldhels10/%EC%99%9C-%EC%B7%A8%EC%97%85%EC%9D%B4-%ED%9E%98%EB%93%A4%EA%B9%8C',
     'https://github.com/summerhater/teeklit',
     'https://youtube.com/shorts/ZwocDHFD5V4?si=ar92HnSuTphH79Wi',
     'https://youtu.be/8PEUBRxlzFQ?si=vf6UWvFd3BypN_Mt',
-    'https://www.teamblind.com/kr/company/%EC%98%A4%EB%B8%8C%EC%A0%A0/',
     '[Blind] 블라인드에 올라온 글 보셨어요? 프로토스를 상징하는 유닛은 뭐라고생각함?? (블라블라) https://www.teamblind.com/kr/s/bbr45epg',
     'https://www.yna.co.kr/view/AKR20251230156300004?section=local/all',
     'https://mediahub.seoul.go.kr/archives/2016614',
@@ -224,16 +345,16 @@ class _AIValidationPageState extends State<AIValidationPage> {
     _currentIdx = (_currentIdx + 1) % _testUrls.length;
 
     try {
-      final result = await _processor.processStep1(rawText, "테스트");
+      final result = await _processor.urlScrapper(rawText, "테스트");
       DocumentModel doc = result['document'];
       setState(() => _items.insert(0, doc));
-
       final aiResult = await _processor.processStep2(
         doc: doc,
-        content: result['mainContent'],
-        contextText: result['extraText'],
-        metaDescription: result['metaDescription'],
+        metaData: result['metaData'],
+        mainContent: result['mainContent'],
+        sharedUrlCaption: result['sharedUrlCaption'],
       );
+
 
       setState(() {
         int index = _items.indexWhere((item) => item.id == doc.id);

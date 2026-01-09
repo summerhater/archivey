@@ -10,7 +10,7 @@ class AuthViewModel extends ChangeNotifier {
 
   String getEmail = '';
 
-  AuthViewModel(this._authService, this._userService);
+  AuthViewModel(this._authService, this._userService,);
 
   bool isLoading = false;
 

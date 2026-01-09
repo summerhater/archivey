@@ -45,20 +45,30 @@ class VerticalTabNavigation extends StatelessWidget {
                       width: .5,
                     ),
                   ),
+                  color: appColorScheme.primaryStrong,
                 ),
                 child: SingleChildScrollView(
                   physics: ClampingScrollPhysics(),
                   primary: false,
-                  padding: EdgeInsets.only(
-                    ///상단 상태바 높이만큼 패딩주기
-                    top: 30,
-                  ),
-                  child: Container(
-                    color: appColorScheme.primaryStrong,
-
-                    ///탭 개수에 따른 전체 길이 설정
-                    height: (categories.length * tabHeight) - 40,
-                    child: Stack(children: _buildTopFirstStackedTabs(context, isOnAllPage)),
+                  child: Column(
+                    children: [
+                      if (isOnAllPage)
+                        Container(
+                          height: 20,
+                          color: appColorScheme.primary,
+                        ),
+                      if (!isOnAllPage)
+                        Container(
+                          height: 20,
+                          color: appColorScheme.primaryStrong,
+                        ),
+                      Container(
+                        color: appColorScheme.primaryStrong,
+                        ///탭 개수에 따른 전체 길이 설정
+                        height: tabHeight + (categories.length - 1) * (tabHeight - overlap) + 40,
+                        child: Stack(children: _buildTopFirstStackedTabs(context, isOnAllPage)),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -120,7 +130,6 @@ class VerticalTabNavigation extends StatelessWidget {
                 child: IconButton(
                   onPressed: () {
                     context.go('/settings');
-                    // print('here');
                     onTapChanged(-1);
                   },
                   padding: EdgeInsets.zero,
@@ -178,28 +187,32 @@ class VerticalTabNavigation extends StatelessWidget {
           bottom: BorderSide(color: appColorScheme.primary, width: .5),
         ),
       ),
-      child: Padding(
-        padding: EdgeInsets.only(bottom: 30),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: RotatedBox(
-            quarterTurns: 1,
-            child: SizedBox(
-              width: 85,
-              child: Text(
-                title,
-                textAlign: TextAlign.end,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: appTextTheme.bodySmall.copyWith(
-                  color: isSelected
-                      ? appColorScheme.textDark
-                      : appColorScheme.textLight,
+      child: Column(
+        children: [
+          SizedBox(height: tabHeight - (tabHeight * .7),),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 23),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: RotatedBox(
+                  quarterTurns: 1,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.end,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: appTextTheme.bodySmall.copyWith(
+                      color: isSelected
+                          ? appColorScheme.textDark
+                          : appColorScheme.textLight,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

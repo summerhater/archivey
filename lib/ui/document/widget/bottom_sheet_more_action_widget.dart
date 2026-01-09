@@ -1,33 +1,39 @@
+import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../config/color_scheme_extension.dart';
 import '../../../config/text_theme_extension.dart';
+import '../../../domain/model/document_model_on_progress.dart';
 import 'bottom_sheet_share_widget.dart';
 import 'delete_dialog_widget.dart';
 
 enum TypeSettingMode { category, document, documentDetail }
 
-class BottomSheetWithNoHeaderWidget extends StatefulWidget {
-  final DocumentModel? document;
+class BottomSheetMoreActionWidget extends StatefulWidget {
+  final bool isSubCategory;
   final TypeSettingMode typeSettingMode;
+  final DocumentModel? document;
   final VoidCallback? onEditPressed;
+  final CategoryModel? originalCategoryModel;
 
-  const BottomSheetWithNoHeaderWidget({
+  const BottomSheetMoreActionWidget({
     super.key,
+    required this.isSubCategory,
     required this.typeSettingMode,
     this.document,
     this.onEditPressed,
+    this.originalCategoryModel,
   });
 
   @override
-  State<BottomSheetWithNoHeaderWidget> createState() =>
-      _BottomSheetWithNoHeaderWidgetState();
+  State<BottomSheetMoreActionWidget> createState() =>
+      _BottomSheetMoreActionWidgetState();
 }
 
-class _BottomSheetWithNoHeaderWidgetState
-    extends State<BottomSheetWithNoHeaderWidget> {
+class _BottomSheetMoreActionWidgetState
+    extends State<BottomSheetMoreActionWidget> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
@@ -101,7 +107,8 @@ class _BottomSheetWithNoHeaderWidgetState
 
             const SizedBox(height: 20),
 
-            SizedBox(
+            if (!widget.isSubCategory)
+              SizedBox(
               width: double.infinity,
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -155,15 +162,21 @@ class _BottomSheetWithNoHeaderWidgetState
                   onPressed: () {
                     context.pop();
                     if (widget.typeSettingMode == TypeSettingMode.category) {
+                      final categorySettingMode = widget.isSubCategory
+                          ? CategorySettingMode.subEdit
+                          : CategorySettingMode.edit;
+
                       showModalBottomSheet<String>(
                         isScrollControlled: true,
                         context: context,
                         useRootNavigator: true,
                         builder: (_) => BottomSheetCategoryAddEditWidget(
-                          categorySettingMode: CategorySettingMode.edit,
+                          categorySettingMode: categorySettingMode,
+                          originalCategoryModel: widget.originalCategoryModel,
                         ),
                       );
-                    } else if (widget.typeSettingMode ==
+                    }
+                    else if (widget.typeSettingMode ==
                         TypeSettingMode.document) {
                       context.go(
                         '/document_all_total/detail',
