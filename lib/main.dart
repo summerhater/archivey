@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
+import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/data/service/firebase_category_service.dart';
@@ -26,6 +27,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   // Initialize the Gemini Developer API backend service
   // Create a `GenerativeModel` instance with a model that supports your use case
   final model =
@@ -45,6 +47,9 @@ void main() async {
         ),
         Provider<FirebaseAppUserService>(
           create: (_) => FirebaseAppUserService(),
+        ),
+        Provider<DriftDocumentService>(
+          create: (_) => DriftDocumentService(),
         ),
 
         ChangeNotifierProvider<AuthViewModel>(

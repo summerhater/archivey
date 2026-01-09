@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/domain/model/app_user.dart';
@@ -8,13 +11,16 @@ class AuthViewModel extends ChangeNotifier {
   final FirebaseAuthService _authService;
   final FirebaseAppUserService _userService;
 
-  String getEmail = '';
+  AuthViewModel(this._authService, this._userService);
 
-  AuthViewModel(this._authService, this._userService,);
+  String getEmail = '';
 
   bool isLoading = false;
 
   User? get user => _authService.user;
+  String get uid {
+    return _authService.user?.uid ?? '';
+  }
 
   void _setLoading(bool isLoading) {
     this.isLoading = isLoading;

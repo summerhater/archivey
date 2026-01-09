@@ -33,6 +33,7 @@ class CustomNextButton extends StatelessWidget {
             }
             context.go(path);
           } catch (error) {
+            print(error);
             showSnackBar(
               context,
               error.toString(),
