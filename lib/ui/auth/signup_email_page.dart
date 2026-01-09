@@ -19,7 +19,7 @@ class SignupEmailPage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: appColor.primaryLight,
+        backgroundColor: appColor.primary,
         appBar: CustomAppbar(progressText: '1/3'),
         body: Padding(
           padding: const EdgeInsets.all(25.0),
@@ -32,26 +32,26 @@ class SignupEmailPage extends StatelessWidget {
                     TextSpan(
                       text: '가입하실 ',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     TextSpan(
                       text: '이메일',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '을\n',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     TextSpan(
                       text: '입력해 주세요.',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                   ],

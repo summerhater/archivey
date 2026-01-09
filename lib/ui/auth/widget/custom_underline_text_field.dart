@@ -47,13 +47,13 @@ class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
         ),
         hintText: hintText,
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: appColor.primaryDark),
+          borderSide: BorderSide(color: appColor.primaryStrong),
         ),
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: appColor.primaryDark),
+          borderSide: BorderSide(color: appColor.primaryStrong),
         ),
         focusedErrorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: appColor.primaryDark),
+          borderSide: BorderSide(color: appColor.primaryStrong),
         ),
         suffixIcon: isPassword ? IconButton(
           onPressed: () {
@@ -71,9 +71,9 @@ class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
         : null,
       ),
       keyboardType: isPassword ? TextInputType.text : TextInputType.emailAddress,
-      cursorColor: appColor.primaryDark,
+      cursorColor: appColor.primaryStrong,
       style: appText.bodyMedium.copyWith(
-        color: appColor.primaryDark,
+        color: appColor.primaryStrong,
       ),
       obscureText: isPassword && !visibility,
     );

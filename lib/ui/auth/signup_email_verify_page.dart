@@ -17,7 +17,7 @@ class SignupEmailVerifyPage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: appColor.primaryLight,
+        backgroundColor: appColor.primary,
         appBar: CustomAppbar(progressText: '3/3'),
         body: Padding(
           padding: const EdgeInsets.all(25.0),
@@ -27,7 +27,7 @@ class SignupEmailVerifyPage extends StatelessWidget {
               Text(
                 '이메일을 전송했어요.',
                 style: appText.bodyLarge.copyWith(
-                  color: appColor.primaryDark,
+                  color: appColor.primaryStrong,
                 ),
               ),
               SizedBox(
@@ -39,27 +39,27 @@ class SignupEmailVerifyPage extends StatelessWidget {
                     TextSpan(
                       text: '전송된 링크로 접속해 ',
                       style: appText.bodyMedium.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     TextSpan(
                       text: '인증완료 후,\n',
                       style: appText.bodyMedium.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '다음 ',
                       style: appText.bodyMedium.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '버튼을 눌러 진행해 주세요.',
                       style: appText.bodyMedium.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                   ],

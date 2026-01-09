@@ -1,0 +1,124 @@
+import 'package:flutter/material.dart';
+import '../../../config/color_scheme_extension.dart';
+import '../../../config/text_theme_extension.dart';
+
+class DocumentDetailTabBarWidget extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTabChanged;
+  final List<String> tabs;
+
+  const DocumentDetailTabBarWidget({
+    super.key,
+    required this.selectedIndex,
+    required this.onTabChanged,
+    required this.tabs,
+  });
+
+  /// 탭 하나가 차지할 고정 높이
+  static const double tabHeight = 42.0;
+  static const double tabWidth = 95.0;
+
+  /// 탭끼리 겹칠 간격
+  static const double overlap = 15.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: SizedBox(
+        height: 40,
+        child: Stack(
+          children: _buildStackedTabs(context),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildStackedTabs(
+    BuildContext context,
+  ) {
+    return tabs
+        .asMap()
+        .entries
+        .map((entry) {
+          int idx = entry.key;
+          bool isSelected = selectedIndex == idx;
+
+          return Positioned(
+            left: idx == 0 ? 0 : idx * (tabWidth - overlap),
+            child: GestureDetector(
+              onTap: () => onTabChanged(idx),
+              child: _buildTabItem(
+                context,
+                entry.value,
+                isSelected,
+              ),
+            ),
+          );
+        })
+        .toList()
+        .reversed
+        .toList();
+  }
+
+  Widget _buildTabItem(
+    BuildContext context,
+    String title,
+    bool isSelected,
+  ) {
+    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+
+    return Container(
+      height: tabHeight,
+      width: tabWidth,
+      decoration: BoxDecoration(
+        color: isSelected
+            ? appColorScheme.primary
+            : appColorScheme.primaryStrong,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(14),
+          topRight: Radius.circular(14),
+        ),
+        border: Border(
+          top: BorderSide(
+            color: appColorScheme.strokeLight,
+            width: 1,
+          ),
+          left: BorderSide(
+            color: appColorScheme.strokeLight,
+            width: 1,
+          ),
+          right: BorderSide(
+            color: appColorScheme.strokeLight,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            title,
+            style: appTextTheme.bodySmall.copyWith(
+              fontFamily: title == 'memo' || title == 'tag'
+                  ? 'theseasons'
+                  : 'scDream',
+              fontWeight: title == 'memo' || title == 'tag'
+                  ? FontWeight.w600
+                  : FontWeight.w500,
+              color: isSelected
+                  ? appColorScheme.textDark
+                  : appColorScheme.textLight,
+              height: 1,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

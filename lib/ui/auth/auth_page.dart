@@ -43,7 +43,7 @@ class _AuthPageState extends State<AuthPage> {
                 CustomElevatedButton(
                   path: '/auth/sign-in',
                   guide: '로그인',
-                  backgroundColor: appColor.primaryDark,
+                  backgroundColor: appColor.primaryStrong,
                   fontSize: appText.headlineSmallKo.fontSize,
                 ),
                 CustomElevatedButton(
@@ -54,7 +54,7 @@ class _AuthPageState extends State<AuthPage> {
                   asyncFunction: () async => await showModalBottomSheet(
                     context: context,
                     builder: (context) => CustomTosBottomModal(path: '/auth/signup-email',),
-                    backgroundColor: appColor.primaryLight,
+                    backgroundColor: appColor.primary,
                     useSafeArea: true,
                   ),
                 ),

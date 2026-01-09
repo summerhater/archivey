@@ -20,7 +20,7 @@ class FindEmailPasswordPage extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: appColor.primaryLight,
+        backgroundColor: appColor.primary,
         appBar: CustomAppbar(progressText: ''),
         body: Padding(
           padding: const EdgeInsets.all(25.0),
@@ -33,26 +33,26 @@ class FindEmailPasswordPage extends StatelessWidget {
                     TextSpan(
                       text: '가입하신 ',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     TextSpan(
                       text: '이메일',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '을\n',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     TextSpan(
                       text: '입력해 주세요.',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                   ],

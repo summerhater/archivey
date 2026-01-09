@@ -27,7 +27,7 @@ class _SignupPasswordPageState extends State<SignupPasswordPage> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: appColor.primaryLight,
+        backgroundColor: appColor.primary,
         appBar: CustomAppbar(progressText: '2/3'),
         body: Padding(
           padding: const EdgeInsets.all(25.0),
@@ -40,20 +40,20 @@ class _SignupPasswordPageState extends State<SignupPasswordPage> {
                     TextSpan(
                       text: '사용하실',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                     TextSpan(
                       text: '비밀번호',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: '를 입력해 주세요.',
                       style: appText.bodyLarge.copyWith(
-                        color: appColor.primaryDark,
+                        color: appColor.primaryStrong,
                       ),
                     ),
                   ],
