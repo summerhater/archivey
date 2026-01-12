@@ -7,8 +7,6 @@ import '../../domain/model/document_model.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:archivey/ui/document/widget/document_list_header_widget.dart';
 
-import '../../domain/model/document_model_on_progress.dart';
-
 class DocumentCategoryListPage extends StatefulWidget {
   final String categoryName;
 
@@ -20,6 +18,7 @@ class DocumentCategoryListPage extends StatefulWidget {
 
 class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
   String? _selectedSubId; // 현재 선택된 서브 카테고리 ID 저장 변수
+  bool _isLatest = true;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +60,12 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
       }
     }
 
+    if (_isLatest) {
+      displayDocuments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } else {
+      displayDocuments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    }
+
     return SafeArea(
       child: Column(
         children: [
@@ -71,6 +76,12 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
             selectedSubCategory: (String? subId) {
               setState(() {
                 _selectedSubId = subId;
+              });
+            },
+            isLatest: _isLatest,
+            onDateSortPressed: () {
+              setState(() {
+                _isLatest = !_isLatest;
               });
             },
           ),

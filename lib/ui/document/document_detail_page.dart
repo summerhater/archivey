@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
-import '../../domain/model/document_model_on_progress.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:archivey/ui/document/widget/more_icon_widget.dart';
@@ -10,6 +9,7 @@ import 'package:archivey/ui/document/widget/document_detail_tab_bar_widget.dart'
 import 'package:archivey/ui/document/widget/document_detail_ai_summary_widget.dart';
 import 'package:archivey/ui/document/widget/document_detail_memo_widget.dart';
 import 'package:archivey/ui/document/widget/document_detail_tag_widget.dart';
+import 'package:archivey/domain/model/document_model.dart';
 
 class DocumentDetailPage extends StatefulWidget {
   final DocumentModel document;

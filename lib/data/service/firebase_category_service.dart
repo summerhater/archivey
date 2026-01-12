@@ -36,9 +36,11 @@ class FirebaseCategoryService {
 
     for (int i = 0; i < categories.length; i++) {
       final category = categories[i];
-
       final ref = _db.collection('categories').doc(category.categoryId);
-      batch.update(ref, {'order': i});
+
+      batch.update(ref, {
+        'order': i,
+      });
     }
 
     await batch.commit();

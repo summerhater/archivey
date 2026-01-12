@@ -15,6 +15,8 @@ class DocumentListHeaderWidget extends StatefulWidget {
   final CategoryModel? rootCategory;
   final int documentCount;
   final Function(String? subCategoryId)? selectedSubCategory;
+  final bool isLatest;
+  final VoidCallback onDateSortPressed;
 
   const DocumentListHeaderWidget({
     super.key,
@@ -22,6 +24,8 @@ class DocumentListHeaderWidget extends StatefulWidget {
     required this.rootCategory,
     required this.documentCount,
     this.selectedSubCategory,
+    required this.isLatest,
+    required this.onDateSortPressed,
   });
 
   @override
@@ -32,7 +36,6 @@ class DocumentListHeaderWidget extends StatefulWidget {
 class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
   int _selectedIndex = 0;
   bool _isBookmarkSelected = false;
-  bool _isLatest = true; /// 북마크순 선택 여부
 
   @override
   void initState() {
@@ -354,7 +357,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                             onPressed: () {
                               setState(() {
                                 _isBookmarkSelected = !_isBookmarkSelected; /// 북마크 활성화
-                                _isLatest = true;
+                                // _isLatest = true;
                               });
                             },
                             style: TextButton.styleFrom(
@@ -378,16 +381,13 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                           ///최신순 / 과거순 버튼
                           TextButton(
                             onPressed: () {
+                              widget.onDateSortPressed();
                               setState(() {
-                                // print('1. _isLatest : $_isLatest');
                                 if (_isBookmarkSelected) {
                                   _isBookmarkSelected = false;
-                                  _isLatest = _isLatest;
-                                } else {
-                                  _isLatest = !_isLatest;
                                 }
-                                // print('2. _isLatest : $_isLatest');
                               });
+
                             },
                             style: TextButton.styleFrom(
                               splashFactory: NoSplash.splashFactory,
@@ -400,7 +400,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  _isLatest ? '최신순' : '과거순',
+                                  widget.isLatest ? '최신순' : '과거순',
                                   style: appTextTheme.labelLarge.copyWith(
                                     fontWeight: FontWeight.w500,
                                     color: !_isBookmarkSelected

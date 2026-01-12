@@ -18,7 +18,6 @@ import 'package:go_router/go_router.dart';
 import '../ui/document/document_shell_page.dart';
 import '../ui/document/document_all_page.dart';
 import 'package:flutter/material.dart';
-import 'package:archivey/domain/model/document_model_on_progress.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -84,13 +83,13 @@ final GoRouter goRouter = GoRouter(
             ),
           ),
           routes: [
-            GoRoute(
-              path: 'detail',
-              builder: (context, state) {
-                final document = state.extra as DocumentModel;
-                return DocumentDetailPage(document: document);
-              },
-            ),
+            // GoRoute(
+            //   path: 'detail',
+            //   builder: (context, state) {
+            //     final document = state.extra as DocumentModel;
+            //     return DocumentDetailPage(document: document);
+            //   },
+            // ),
           ],
         ),
         GoRoute(
@@ -128,7 +127,10 @@ final GoRouter goRouter = GoRouter(
     /// document 추가 페이지
     GoRoute(
       path: '/document_add',
-      builder: (context, state) => DocumentAddPage(),
+      builder: (context, state) {
+        final sharedText = state.extra as String?;
+        return DocumentAddPage(sharedText: sharedText);
+      },
       // builder: (context, state) => AIValidationPage(),
     ),
   ],

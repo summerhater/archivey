@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
-import 'package:archivey/domain/model/document_model_on_progress.dart';
 import 'package:archivey/domain/model/category_model.dart';
+import 'package:archivey/domain/model/document_model.dart';
 
 class DocumentViewModel extends ChangeNotifier {
   final FirebaseDocumentService _documentService;
@@ -28,12 +28,15 @@ class DocumentViewModel extends ChangeNotifier {
 
   /// 수집물 추가 프로세스
   Future<void> addDocumentProcess({
-    required String rawText,
+    required String sharedURL,
+    required String sharedURLCaptionText,
     required CategoryModel category,
     String? memo,
   }) async {
+    print('sharedURL: $sharedURL');
+    print('sharedURLCaptionText: $sharedURLCaptionText');
     /// 1. 스크래핑 (Step 1)
-    final (newDoc, contentText) = await _documentService.scrapeUrlAndPrepare(rawText, category, memo);
+    final (newDoc, contentText) = await _documentService.scrapeUrlAndPrepare(sharedURL, sharedURLCaptionText, category, memo);
 
     /// 2. 서비스에 1차 저장 (분석 중 상태)
     await _documentService.saveDocument(newDoc);
@@ -76,6 +79,7 @@ class DocumentViewModel extends ChangeNotifier {
       /// 2. 스크래핑 (contentText만 사용)
       final (_, contentText) = await _documentService.scrapeUrlAndPrepare(
         document.url,
+        '',
         document.category,
         document.userMemo,
       );
