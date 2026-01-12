@@ -284,6 +284,7 @@ class FirebaseDocumentService {
         category: category,
         userMemo: memo ?? '',
         aiStatus: AiTaskStatus.analyzing,
+        updatedAt: DateTime.now(),
       );
 
       return (newDoc, contentText);

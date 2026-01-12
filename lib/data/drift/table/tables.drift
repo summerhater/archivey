@@ -1,9 +1,17 @@
+-- setting table
+CREATE TABLE app_settings(
+    id INT PRIMARY KEY DEFAULT 0,
+    last_sync_time DATETIME
+);
+
 -- document table
 CREATE TABLE documents (
     local_id INT NOT NULL PRIMARY KEY AUTOINCREMENT,
     id TEXT NOT NULL UNIQUE,
     uid TEXT NOT NULL,
     created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    sync_status TEXT NOT NULL,
     category TEXT NOT NULL,
     user_memo TEXT NOT NULL,
     title TEXT NOT NULL,

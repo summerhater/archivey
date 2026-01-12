@@ -18,7 +18,7 @@ class DriftDocumentService {
     await _db.runTransaction(() async {
       // document 저장
       final documentId = await _db.insertDocument(
-        document.toDocumentCompanion(),
+        document.toDocumentCompanion(sync: SyncStatus.),
       );
 
       // tag 저장
