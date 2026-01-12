@@ -2,7 +2,6 @@ import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../domain/model/document_model_on_progress.dart';
 import 'package:archivey/ui/document/widget/document_list_header_widget.dart';
 import 'document_all_total_page.dart';
 

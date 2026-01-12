@@ -7,8 +7,6 @@ import '../../domain/model/document_model.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:archivey/ui/document/widget/document_list_header_widget.dart';
 
-import '../../domain/model/document_model_on_progress.dart';
-
 class DocumentCategoryListPage extends StatefulWidget {
   final String categoryName;
 

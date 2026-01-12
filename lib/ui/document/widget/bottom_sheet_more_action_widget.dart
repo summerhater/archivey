@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../config/color_scheme_extension.dart';
 import '../../../config/text_theme_extension.dart';
-import '../../../domain/model/document_model_on_progress.dart';
+import '../../../domain/model/document_model.dart';
 import 'bottom_sheet_share_widget.dart';
 import 'delete_dialog_widget.dart';
 

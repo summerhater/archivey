@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 
 import '../../config/color_scheme_extension.dart';
 import '../../config/text_theme_extension.dart';
-import '../../domain/model/document_model_on_progress.dart';
 
 class DocumentAddPage extends StatefulWidget {
   const DocumentAddPage({Key? key}) : super(key: key);

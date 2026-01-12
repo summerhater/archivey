@@ -8,7 +8,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:metadata_fetch/metadata_fetch.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import '../../domain/model/category_model.dart';
-import '../../domain/model/document_model_on_progress.dart';
+import '../../domain/model/document_model.dart';
 
 enum DataQuality {
   enough,

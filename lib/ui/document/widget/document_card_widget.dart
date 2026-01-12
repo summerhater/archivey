@@ -9,7 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../config/color_scheme_extension.dart';
 import '../../../config/text_theme_extension.dart';
 import '../../../domain/model/document_model.dart';
-import '../../../domain/model/document_model_on_progress.dart';
+import '../../../domain/model/document_model.dart';
 import 'more_icon_widget.dart';
 
 class DocumentCard extends StatelessWidget {

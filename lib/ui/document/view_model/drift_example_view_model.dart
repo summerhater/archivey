@@ -94,8 +94,8 @@ class DriftExampleViewModel extends ChangeNotifier{
   }
 
   /// search -> search button에 이 함수를 달면, 위의 read의 query문이 바뀌어서 검색이 됨
-  void search({required String keyword}) {
-    _searchQueryController.add(keyword);
+  void search({required String keyword, required String categoryId}) {
+    _searchQueryController.add(keyword, );
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
-import 'package:archivey/domain/model/document_model_on_progress.dart';
+import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/model/category_model.dart';
 
 class DocumentViewModel extends ChangeNotifier {

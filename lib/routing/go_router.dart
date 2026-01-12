@@ -18,7 +18,7 @@ import 'package:go_router/go_router.dart';
 import '../ui/document/document_shell_page.dart';
 import '../ui/document/document_all_page.dart';
 import 'package:flutter/material.dart';
-import 'package:archivey/domain/model/document_model_on_progress.dart';
+import 'package:archivey/domain/model/document_model.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -84,13 +84,13 @@ final GoRouter goRouter = GoRouter(
             ),
           ),
           routes: [
-            GoRoute(
-              path: 'detail',
-              builder: (context, state) {
-                final document = state.extra as DocumentModel;
-                return DocumentDetailPage(document: document);
-              },
-            ),
+            // GoRoute(
+            //   path: 'detail',
+            //   builder: (context, state) {
+            //     final document = state.extra as DocumentModel;
+            //     return DocumentDetailPage(document: document);
+            //   },
+            // ),
           ],
         ),
         GoRoute(

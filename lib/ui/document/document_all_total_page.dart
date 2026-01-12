@@ -1,6 +1,5 @@
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:archivey/domain/model/document_model_on_progress.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:provider/provider.dart';
 
