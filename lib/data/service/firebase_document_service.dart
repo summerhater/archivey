@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:metadata_fetch/metadata_fetch.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import '../../domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 
@@ -148,36 +147,14 @@ class FirebaseDocumentService {
     }
   }
 
-  Future<String> _getYoutubeTranscript(String url) async {
-    final _youtube = YoutubeExplode();
-    try {
-      var video = await _youtube.videos.get(url);
-      var manifest = await _youtube.videos.closedCaptions.getManifest(video.id);
-      if (manifest.tracks.isNotEmpty) {
-        var track =
-            manifest.tracks.where((e) => e.language.code == 'ko').firstOrNull ??
-            manifest.tracks.first;
-        var captions = await _youtube.videos.closedCaptions.get(track);
-        return captions.captions.map((e) => e.text).join(' ');
-      }
-      return video.description;
-    } catch (_) {
-      return "";
-    }
-  }
-
   Future<String> _scrapeBodyText(String url, dom.Document document) async {
     String mainContent = "";
-    if (url.contains("youtube.com") || url.contains("youtu.be")) {
-      mainContent = await _getYoutubeTranscript(url);
-    } else {
       document
           .querySelectorAll(
             'script, style, nav, footer, header, aside, form, iframe, button',
           )
           .forEach((e) => e.remove());
       mainContent = document.body?.text.trim() ?? "";
-    }
     return mainContent;
   }
 
@@ -468,7 +445,26 @@ $commonInstructions
     }
   }
 
-  Future<List<DocumentModel>> fetchDocuments() async {
+
+  Future<List<DocumentModel>> getDocumentsByCategory(String categoryId) async {
+    print('categoryId in service : $categoryId');
+    try {
+      final querySnapshot = await _db
+          .collection('documents')
+          .where('category.categoryId', isEqualTo: categoryId)
+          .get();
+      print('documents count in getDocumentsByCategory: ${querySnapshot.docs.length}');
+      return querySnapshot.docs
+          .map((doc) => DocumentModel.fromMap(doc.data()))
+          .toList();
+    } catch (e, stack) {
+      print('getDocumentsByCategory error: $e');
+      rethrow;
+    }
+  }
+
+
+  Future<List<DocumentModel>> readDocuments() async {
     try {
       /// 'documents' 컬렉션에서 생성일(createdAt) 역순으로 정렬하여 가져옴
       final querySnapshot = await _db
@@ -487,7 +483,7 @@ $commonInstructions
   }
 
   // CREATE: 도큐먼트 저장
-  Future<void> saveDocument(DocumentModel document) async {
+  Future<void> createDocument(DocumentModel document) async {
     await _db
         .collection(_collectionPath)
         .doc(document.id)

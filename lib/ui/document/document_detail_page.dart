@@ -1,3 +1,4 @@
+import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
@@ -10,6 +11,7 @@ import 'package:archivey/ui/document/widget/document_detail_ai_summary_widget.da
 import 'package:archivey/ui/document/widget/document_detail_memo_widget.dart';
 import 'package:archivey/ui/document/widget/document_detail_tag_widget.dart';
 import 'package:archivey/domain/model/document_model.dart';
+import 'package:provider/provider.dart';
 
 class DocumentDetailPage extends StatefulWidget {
   final DocumentModel document;
@@ -26,6 +28,7 @@ class DocumentDetailPage extends StatefulWidget {
 class _DocumentDetailPageState extends State<DocumentDetailPage> {
   int _selectedTabIndex = 0;
   bool _isEditing = false;
+  List<String>? _editingTags;
 
   late TextEditingController _memoController;
   final FocusNode _memoFocusNode = FocusNode();
@@ -33,8 +36,26 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
   final FocusNode _tagFocusNode = FocusNode();
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_editingTags != null) return;
+
+    final vm = context.read<DocumentViewModel>();
+
+    final currentDoc = vm.documents.firstWhere(
+          (doc) => doc.id == widget.document.id,
+      orElse: () => widget.document,
+    );
+
+    _editingTags = List.from(currentDoc.tags);
+  }
+
+  @override
   void initState() {
     super.initState();
+    Provider.of<DocumentViewModel>(context, listen: false).readDocuments();
+
     _memoController = TextEditingController(text: widget.document.userMemo);
     _memoFocusNode.addListener(_focusListener);
 
@@ -49,7 +70,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
   void _focusListener() {
     if (!_memoFocusNode.hasFocus && !_tagFocusNode.hasFocus) {
       if (_isEditing) {
-        _saveData();
+        _saveData(context);
         setState(() {
           _isEditing = false;
         });
@@ -57,10 +78,24 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
     }
   }
 
-  void _saveData() {
-    /// db 저장하는 로직 호출 필요
-    print("자동 저장: ${_memoController.text}");
-    setState(() => _isEditing = false);
+  Future<void> _saveData(BuildContext context) async {
+    final documentVM = Provider.of<DocumentViewModel>(context, listen: false);
+    // 현재 widget.document의 태그 리스트를 복사
+    print('updatedTags in _saveData: $_editingTags');
+
+    final docToUpdate = widget.document.copyWith(
+      userMemo: _memoController.text.trim(),
+      tags: _editingTags,
+    );
+
+    try {
+      documentVM.updateDocument(docToUpdate);
+      print("자동 저장 실행: 메모 - ${docToUpdate.userMemo}, 태그 - ${docToUpdate.tags}");
+
+      // 필요 시 성공 후 UI 업데이트나 스낵바 표시
+    } catch (e) {
+      print("저장 중 오류 발생: $e");
+    }
   }
 
   @override
@@ -76,154 +111,170 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+    final tags = _editingTags ?? [];
 
-    return Scaffold(
-      backgroundColor: appColorScheme.documentDetailBg,
-      appBar: AppBar(
-        backgroundColor: appColorScheme.primary,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: 18),
-          color: appColorScheme.textDark,
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          MoreIconWidget(
-            moreIconSettingMode: MoreIconSettingMode.documentDetail,
-            onEditPressed: () {
-              setState(() {
-                _isEditing = true;
-                _selectedTabIndex = 1;
-              });
-            },
-          ),
-          SizedBox(width: 10),
-        ],
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Column(
-          children: [
-            /// 선택한 수집물 카드 ui
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: DocumentCard(
-                document: widget.document,
-                isFirstItem: false,
-                isDetailPage: true,
-                showBottomBorder: false,
-                isOnAllPage: true,
-              ),
+    return Consumer<DocumentViewModel>(
+      builder: (context, vm, _) {
+        final currentDoc = vm.documents.firstWhere(
+              (doc) => doc.id == widget.document.id,
+          orElse: () => widget.document,
+        );
+
+        return Scaffold(
+          backgroundColor: appColorScheme.documentDetailBg,
+          appBar: AppBar(
+            backgroundColor: appColorScheme.primary,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios, size: 18),
+              color: appColorScheme.textDark,
+              onPressed: () => context.pop(),
             ),
-
-            /// 겹쳐진 탭바 (ai요약, 메모, 태그)
-            Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child: DocumentDetailTabBarWidget(
-                selectedIndex: _selectedTabIndex,
-                onTabChanged: (index) {
-                  FocusScope.of(context).unfocus();
+            actions: [
+              MoreIconWidget(
+                moreIconSettingMode: MoreIconSettingMode.documentDetail,
+                onEditPressed: () {
                   setState(() {
-                    _selectedTabIndex = index;
+                    _isEditing = true;
+                    _selectedTabIndex = 1;
                   });
                 },
-                tabs: ['AI 요약', 'memo', 'tag'],
               ),
-            ),
+              SizedBox(width: 10),
+            ],
+          ),
+          body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Column(
+              children: [
 
-            /// 탭 내용
-            Expanded(
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                        vertical: 25,
-                        horizontal: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: appColorScheme.primary,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                        border: Border.fromBorderSide(
-                          BorderSide(
-                            color: appColorScheme.strokeLight,
-                            width: 1,
+                /// 선택한 수집물 카드 ui
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: DocumentCard(
+                    document: currentDoc,
+                    isFirstItem: false,
+                    isDetailPage: true,
+                    showBottomBorder: false,
+                    isOnAllPage: true,
+                  ),
+                ),
+
+                /// 겹쳐진 탭바 (ai요약, 메모, 태그)
+                Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: DocumentDetailTabBarWidget(
+                    selectedIndex: _selectedTabIndex,
+                    onTabChanged: (index) {
+                      FocusScope.of(context).unfocus();
+                      setState(() {
+                        _selectedTabIndex = index;
+                      });
+                    },
+                    tabs: ['AI 요약', 'memo', 'tag'],
+                  ),
+                ),
+
+                /// 탭 내용
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 25,
+                            horizontal: 16,
                           ),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: _buildTabContent(
-                                appColorScheme,
-                                appTextTheme,
+                          decoration: BoxDecoration(
+                            color: appColorScheme.primary,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                            border: Border.fromBorderSide(
+                              BorderSide(
+                                color: appColorScheme.strokeLight,
+                                width: 1,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 21,
-                    child: Container(
-                      width: 253,
-                      height: 1.5,
-                      decoration: BoxDecoration(
-                        color: appColorScheme.primary,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: _buildTabContent(
+                                    appColorScheme,
+                                    appTextTheme,
+                                    currentDoc,
+                                    tags,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                      Positioned(
+                        top: 0,
+                        left: 21,
+                        child: Container(
+                          width: 253,
+                          height: 1.5,
+                          decoration: BoxDecoration(
+                            color: appColorScheme.primary,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+              ],
             ),
-            SizedBox(
-              height: 30,
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
+      });
   }
 
   Widget _buildTabContent(
     AppColorScheme appColorScheme,
     AppTextTheme appTextTheme,
+    DocumentModel currentDoc,
+      List<String> tags,
   ) {
     if (_selectedTabIndex == 0) {
-      return DocumentDetailAiSummaryWidget(aiSummary: widget.document.aiSummary);
+      return DocumentDetailAiSummaryWidget(aiSummary: currentDoc.aiSummary);
     } else if (_selectedTabIndex == 1) {
       return DocumentDetailMemoWidget(
         isEditing: _isEditing,
-        memo: widget.document.userMemo,
+        memo: currentDoc.userMemo,
         controller: _memoController,
         focusNode: _memoFocusNode,
       );
     } else {
       return DocumentDetailTagWidget(
         isEditing: _isEditing,
-        tags: widget.document.tags ?? [],
+        tags: tags,
         controller: _tagController,
         focusNode: _tagFocusNode,
         onTagDeleted: (tag) {
           setState(() {
-            widget.document.tags!.remove(tag);
+            tags.remove(tag);
+            // if (tags.isEmpty) {
+            // }
           });
         },
         onTagAdded: (value) {
-          if (widget.document.tags!.length >= 4) {
+          if (tags.length >= 4) {
             context.showAppSnackBar(
               content: Text(
                 '태그는 최대 4개까지만 등록 할 수 있어요!',
@@ -235,7 +286,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
             );
           } else {
             setState(() {
-              widget.document.tags!.add(value);
+              tags.add(value);
               _tagController.clear();
             });
           }

@@ -1,4 +1,4 @@
-// import 'package:archivey/ui/document/ai_summary_example.dart';
+import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/ui/document/document_add_page.dart';
 import 'package:archivey/ui/document/document_all_total_page.dart';
 import 'package:archivey/ui/document/document_all_index_page.dart';
@@ -15,6 +15,7 @@ import 'package:archivey/ui/auth/signup_success_page.dart';
 import 'package:archivey/ui/onboarding/on_boarding_page.dart';
 import 'package:archivey/ui/setting/settings_page.dart';
 import 'package:go_router/go_router.dart';
+
 import '../ui/document/document_shell_page.dart';
 import '../ui/document/document_all_page.dart';
 import 'package:flutter/material.dart';
@@ -83,13 +84,13 @@ final GoRouter goRouter = GoRouter(
             ),
           ),
           routes: [
-            // GoRoute(
-            //   path: 'detail',
-            //   builder: (context, state) {
-            //     final document = state.extra as DocumentModel;
-            //     return DocumentDetailPage(document: document);
-            //   },
-            // ),
+            GoRoute(
+              path: 'detail',
+              builder: (context, state) {
+                final document = state.extra as DocumentModel;
+                return DocumentDetailPage(document: document);
+              },
+            ),
           ],
         ),
         GoRoute(
@@ -103,11 +104,20 @@ final GoRouter goRouter = GoRouter(
 
         ///사용자 설정 카테고리
         GoRoute(
-          path: '/document_category/:name',
+          path: '/document_category/:id', // 1. 경로 파라미터를 id로 변경
           pageBuilder: (context, state) {
-            final name = state.pathParameters['name'] ?? 'ALL';
+            // 2. 경로에서 ID 추출
+            final id = state.pathParameters['id'] ?? 'ALL';
+
+            // 3. 쿼리 스트링에서 name 추출 (?name=전체)
+            // 이름이 없을 경우를 대비해 기본값을 'ALL' 혹은 적절한 이름으로 설정합니다.
+            final name = state.uri.queryParameters['name'] ?? 'ALL';
+
             return NoTransitionPage(
-              child: DocumentCategoryListPage(categoryName: name),
+              child: DocumentCategoryListPage(
+                categoryId: id,      // 새로 추가한 필드
+                categoryName: name,  // 기존 필드
+              ),
             );
           },
         ),

@@ -11,6 +11,7 @@ class MoreIconWidget extends StatelessWidget {
   final MoreIconSettingMode moreIconSettingMode;
   final VoidCallback? onEditPressed;
   final CategoryModel? originalCategoryModel;
+  final VoidCallback? onDeleteConfirmed;
 
   const MoreIconWidget({
     super.key,
@@ -18,14 +19,15 @@ class MoreIconWidget extends StatelessWidget {
     this.document,
     this.onEditPressed,
     this.originalCategoryModel,
+    this.onDeleteConfirmed,
   });
 
   @override
   Widget build(BuildContext context) {
     // print("전달 전 확인 in more icon widget: ${document?.title}, ${document?.memo}");
     return IconButton(
-      onPressed: () {
-        showModalBottomSheet<String>(
+      onPressed: () async {
+        final result = await showModalBottomSheet<bool>(
           isScrollControlled: true,
           context: context,
           useRootNavigator: true,
@@ -41,6 +43,9 @@ class MoreIconWidget extends StatelessWidget {
             originalCategoryModel: originalCategoryModel,
           ),
         );
+        if (result == true) {
+          onDeleteConfirmed!(); // 부모가 준 함수를 실행!
+        }
       },
       icon: Icon(Icons.more_vert),
       iconSize: 18,

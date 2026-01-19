@@ -56,7 +56,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
 
   @override
   void initState() {
-    Provider.of<CategoryViewModel>(context, listen: false).readCategory();
+    Provider.of<CategoryViewModel>(context, listen: false).initRootCategoryDocumentCount();
     super.initState();
   }
 
@@ -64,6 +64,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+
     return Stack(
       children: [
         Consumer<CategoryViewModel>(
@@ -71,6 +72,16 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
               var rootCategories = vm.rootCategories;
               if (rootCategories.isEmpty) {
                 return Center(child: Text('카테고리가 없습니다. 만들어주세요~'));
+              }
+              if (vm.errorMessage != null) {
+                context.showAppSnackBar(
+                  content: Text(
+                    vm.errorMessage!,
+                    style: appTextTheme.bodySmall.copyWith(
+                      color: appColorScheme.primary,
+                    ),
+                  ),
+                );
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,14 +109,14 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                       },
                       itemCount: rootCategories.length,
                       onReorder: (oldIndex, newIndex) async {
-                        vm.reorderCategories(oldIndex, newIndex);
+                        vm.updateReorderCategories(oldIndex, newIndex);
                       },
                       itemBuilder: (context, index) {
-                        final category = rootCategories[index].categoryName;
-
+                        final category = rootCategories[index];
+                        final documentCount = vm.docCountMap[category.categoryId] ?? 0;
                         return Container(
                           ///ReorderableListView 쓸라면 각 아이템에 반드시 고유한 Key가 필요
-                          key: ValueKey(category),
+                          key: ValueKey(category.categoryName),
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
@@ -124,7 +135,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    category,
+                                    category.categoryName,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: appTextTheme.headlineSmallKo.copyWith(
@@ -135,12 +146,15 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                 SizedBox(width: 10,),
                                 Row(
                                   children: [
-                                    const DocumentAllIndexPostCountWidget(),
+                                    DocumentAllIndexDocumentCountWidget(documentCount: documentCount),
                                     const SizedBox(width: 10),
                                     MoreIconWidget(
                                       moreIconSettingMode:
                                           MoreIconSettingMode.category,
                                       originalCategoryModel: rootCategories[index],
+                                      onDeleteConfirmed: () {
+                                        vm.deleteCategory(category.categoryId);
+                                      },
                                     ),
                                     const SizedBox(width: 8),
 

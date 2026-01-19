@@ -5,11 +5,14 @@ import 'package:archivey/domain/model/document_model.dart';
 
 class DocumentViewModel extends ChangeNotifier {
   final FirebaseDocumentService _documentService;
-  DocumentViewModel(this._documentService);
-
+  DocumentViewModel(this._documentService){
+   readDocuments();
+  }
 
   List<DocumentModel> _documents = [];
   List<DocumentModel> get documents => _documents;
+  DocumentModel? _document;
+  DocumentModel? get document => _document;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -20,9 +23,22 @@ class DocumentViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _documents = await _documentService.fetchDocuments();
+    _documents = await _documentService.readDocuments();
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  List<DocumentModel> getDocumentsByCategoryId(String categoryId) {
+    return _documents.where((doc) => doc.category.categoryId == categoryId).toList();
+  }
+
+  Future<void> updateDocument(DocumentModel docToUpdate) async {
+    await _documentService.updateDocument(docToUpdate);
+    final index = _documents.indexWhere((d) => d.id == docToUpdate.id);
+    if (index != -1) {
+      _documents[index] = docToUpdate;
+    }
     notifyListeners();
   }
 
@@ -39,7 +55,7 @@ class DocumentViewModel extends ChangeNotifier {
     final (newDoc, contentText) = await _documentService.scrapeUrlAndPrepare(sharedURL, sharedURLCaptionText, category, memo);
 
     /// 2. 서비스에 1차 저장 (분석 중 상태)
-    await _documentService.saveDocument(newDoc);
+    await _documentService.createDocument(newDoc);
 
     /// 3. UI 갱신을 위해 리스트 다시 불러오기
     await readDocuments();
@@ -48,6 +64,7 @@ class DocumentViewModel extends ChangeNotifier {
     _runAiAnalysis(newDoc, contentText);
   }
 
+  
   Future<void> _runAiAnalysis(DocumentModel doc, String contentText) async {
     try {
       final updatedDoc = await _documentService.getAiSummary(
@@ -56,8 +73,6 @@ class DocumentViewModel extends ChangeNotifier {
       );
 
       await _documentService.updateDocument(updatedDoc);
-
-      ///UI 갱신
       await readDocuments();
     } catch (e) {
       debugPrint("AI 분석 업데이트 실패: $e");

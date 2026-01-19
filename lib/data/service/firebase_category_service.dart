@@ -13,14 +13,13 @@ class FirebaseCategoryService {
     await _db.collection(_collectionPath).doc(category.categoryId).set(category.toMap());
   }
 
-  Stream<List<CategoryModel>> readCategory() {
-    return _db.collection(_collectionPath)
+  Future<List<CategoryModel>> readCategory() async {
+    final snapshot = await _db.collection(_collectionPath)
         .where('uid', isEqualTo: _currentUid)
         .orderBy('order')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => CategoryModel.fromMap(doc.data()))
-        .toList());
+        .get();
+
+    return snapshot.docs.map((doc) => CategoryModel.fromMap(doc.data())).toList();
   }
 
   Future<void> updateCategory(CategoryModel category) async {
@@ -31,16 +30,14 @@ class FirebaseCategoryService {
     await _db.collection(_collectionPath).doc(categoryId).delete();
   }
 
-  Future<void> updateCategoryOrders(List<CategoryModel> categories) async {
+  Future<void> updateReorderCategories(List<CategoryModel> categories) async {
     final batch = _db.batch();
 
-    for (int i = 0; i < categories.length; i++) {
-      final category = categories[i];
+    for (int idx = 0; idx < categories.length; idx++) {
+      final category = categories[idx];
       final ref = _db.collection('categories').doc(category.categoryId);
 
-      batch.update(ref, {
-        'order': i,
-      });
+      batch.update(ref, {'order': idx,});
     }
 
     await batch.commit();

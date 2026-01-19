@@ -48,6 +48,15 @@ void main() async {
           ),
         ),
 
+        Provider<FirebaseDocumentService>(
+          create: (_) => FirebaseDocumentService(),
+        ),
+        ChangeNotifierProvider<DocumentViewModel>(
+          create: (context) => DocumentViewModel(
+            context.read<FirebaseDocumentService>(),
+          ),
+        ),
+
         Provider<FirebaseCategoryService>(
           create: (_) => FirebaseCategoryService(),
         ),
@@ -55,17 +64,10 @@ void main() async {
           create: (context) => CategoryViewModel(
             context.read<FirebaseCategoryService>(),
             context.read<FirebaseAuthService>(),
+            context.read<FirebaseDocumentService>(),
           ),
         ),
 
-        Provider<FirebaseDocumentService>(
-          create: (_) => FirebaseDocumentService(),
-        ),
-        ChangeNotifierProvider<DocumentViewModel>(
-          create: (context) => DocumentViewModel(
-            context.read<FirebaseDocumentService>(),
-          )..readDocuments(),
-        ),
       ],
       child: const Archivey(),
     ),
