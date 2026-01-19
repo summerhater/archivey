@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_more_action_widget.dart';
 
-import '../../../domain/model/document_model.dart';
 
 enum MoreIconSettingMode { category, document, documentDetail }
 

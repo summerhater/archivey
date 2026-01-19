@@ -8,8 +8,12 @@ import 'package:uuid/uuid.dart';
 class CategoryViewModel extends ChangeNotifier {
   final FirebaseCategoryService _categoryService;
   final FirebaseAuthService _authService;
-  CategoryViewModel(this._categoryService, this._authService);
+  CategoryViewModel(this._categoryService, this._authService){
+    readCategory();
+    print('######### 카테고리 수: ${_categories.length} ###########');
+  }
   List<CategoryModel> _categories = [];
+  List<CategoryModel> get categories => _categories;
 
   User? get user => _authService.user;
 
@@ -74,6 +78,7 @@ class CategoryViewModel extends ChangeNotifier {
   void readCategory() {
     _categoryService.readCategory().listen((data) {
       _categories = data;
+      print('############ stream으로 받아온 카테고리는 ${data.length} ###########');
       notifyListeners();
     });
   }
@@ -96,14 +101,29 @@ class CategoryViewModel extends ChangeNotifier {
   }
 
   Future<void> reorderCategories(int oldIndex, int newIndex) async {
+    // 1. 현재 화면에 보여지고 있는 리스트(rootCategories)를 복사합니다.
+    List<CategoryModel> listToMove = List.from(rootCategories);
+
     if (newIndex > oldIndex) {
       newIndex -= 1;
     }
 
-    final item = _categories.removeAt(oldIndex);
-    _categories.insert(newIndex, item);
+    // 2. 해당 리스트 내에서 순서를 변경합니다.
+    final item = listToMove.removeAt(oldIndex);
+    listToMove.insert(newIndex, item);
 
-    notifyListeners();
-    await _categoryService.updateCategoryOrders(_categories);
+    // 3. 변경된 순서대로 'order' 값을 다시 할당합니다.
+    // 이 때, 전체 _categories를 업데이트하는 것이 아니라
+    // 영향을 받은 rootCategories들의 order만 계산하여 업데이트 리스트를 만듭니다.
+    for (int i = 0; i < listToMove.length; i++) {
+      listToMove[i] = listToMove[i].copyWith(order: i);
+    }
+
+    // 4. UI에 즉시 반영 (낙관적 업데이트)
+    // 스트림이 다시 돌기 전에 로컬 데이터를 먼저 갱신하고 싶다면 아래 주석을 활용하세요.
+    // notifyListeners();
+
+    // 5. DB 업데이트 (Batch 작업)
+    await _categoryService.updateCategoryOrders(listToMove);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,10 +28,18 @@ class _DocumentAllPageState extends State<DocumentAllPage> {
     final bool isOnAllPage =
         currentLocation.contains('all_total') ||
         currentLocation.contains('all_index');
+    bool isLatest = true;
 
-    return Consumer<DocumentViewModel>(
+    return Consumer<DocViewModel>(
       builder: (context, vm, _){
         final allDocs = vm.documents;
+
+        if (isLatest) {
+          allDocs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        } else {
+          allDocs.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        }
+
         return SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,6 +48,12 @@ class _DocumentAllPageState extends State<DocumentAllPage> {
                 isOnAllPage: isOnAllPage,
                 rootCategory: null,
                 documentCount: allDocs.length,
+                isLatest: isLatest,
+                onDateSortPressed: () {
+                  setState(() {
+                    isLatest = !isLatest;
+                  });
+                },
               ),
               Expanded(
                 child: isAllTotalPage

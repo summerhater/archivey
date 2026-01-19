@@ -8,7 +8,12 @@ class FirebaseAuthService {
     _auth.setLanguageCode('kr');
   }
 
-  User? get user => _auth.currentUser!;
+  User? get user => _auth.currentUser;
+
+  /// 유저 정보 구독, 유저 정보가 업데이트 될 때마다 갱신됨
+  Stream<User?> authStateChanges() {
+    return _auth.authStateChanges();
+  }
 
   /// 이메일 패스워드 받아서 가입
   Future<void> signUpWithEmailAndPassword({
@@ -166,7 +171,16 @@ class FirebaseAuthService {
     }
   }
 
-  /// 비밀번호 재설정
+  /// 사용자 재인증 -> 비밀번호 변경, 계정 삭제에 필요함
+  ///
+  /// 비밀번호 이메일로 재설정 시 필요 없음
+  Future<void> reAuthentication(String password) async{
+    final credential = EmailAuthProvider.credential(email: user!.email!, password: password);
+
+    await user?.reauthenticateWithCredential(credential);
+  }
+
+  /// 비밀번호 이메일 재설정
   Future<void> resetPasswordWithEmail(String email) async{
     String? errorMsg;
 
@@ -190,5 +204,15 @@ class FirebaseAuthService {
       }
       throw Exception(errorMsg);
     }
+  }
+
+  /// 비밀번호 받아서 재설정, reAuthentication 필요
+  Future<void> updatePassword(String newPassword) async{
+    await user?.updatePassword(newPassword);
+  }
+  
+  /// 계정 삭제, reAuthentication 필요
+  Future<void> deleteAccount() async{
+    await user?.delete();
   }
 }

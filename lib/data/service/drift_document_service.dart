@@ -1,13 +1,14 @@
 import 'package:archivey/data/drift/app_database.dart';
+import 'package:archivey/data/dto/document_with_tags.dart';
 import 'package:archivey/data/mapper/document_mapper.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:drift/drift.dart';
 
 class DriftDocumentService {
-  final AppDatabase _db = AppDatabase();
+  final AppDatabase _db;
 
-  DriftDocumentService();
+  DriftDocumentService(this._db);
 
   /**
    * Create
@@ -18,7 +19,7 @@ class DriftDocumentService {
     await _db.runTransaction(() async {
       // document 저장
       final documentId = await _db.insertDocument(
-        document.toDocumentCompanion(),
+        document.toDocumentCompanion(sync: SyncStatus.pending),
       );
 
       // tag 저장
@@ -70,12 +71,22 @@ class DriftDocumentService {
    * Read
    */
 
+  /// local Sync Time 가져오기
+  Future<DateTime> getSyncTime() async{
+    return await _db.getSyncTime();
+  }
+  
+  /// local db에서 pending인 값 가져오기
+  Future<List<DocumentWithTags>> getPendingDocuments() async {
+    return _db.getPendingDocuments();
+  }
+
   /// 모든 Document 가져오기
   Stream<List<DocumentModel>> watchAllDocuments(
     List<CategoryModel> categories,
   ) {
     return _db.watchAllDocuments().map((docs) {
-      return docs.map((doc) => doc.toDomain(categories)).toList();
+      return docs.map((doc) => doc.toDomain(categories:categories,)).toList();
     });
   }
 
@@ -90,13 +101,37 @@ class DriftDocumentService {
     List<CategoryModel> categories,
   ) {
     return _db.searchAll(keyword).map((docs) {
-      return docs.map((doc) => doc.toDomain(categories)).toList();
+      return docs.map((doc) => doc.toDomain(categories: categories,)).toList();
     });
   }
 
   /**
    * Update
    */
+  
+  /// Sync Time 현재 시각으로 변경
+  Future<void> setSyncTime() async{
+    await _db.setSyncTime();
+  }
+
+  /// Sync Update -> 없으면 create, 있으면 update
+  Future<void> syncUpdate(DocumentModel document) async {
+    _db.transaction(() async{
+
+      final localId = await _db.pullSyncUpdate(
+        document.toDocumentCompanion(sync: SyncStatus.synced),
+      );
+
+      await _syncTags(localId, document.tags);
+    });
+  }
+
+  /// Sync 후, pending 값을 synced로 바꾸기
+  Future<void> syncStatusUpdate(DocumentWithTags dt) async {
+    final localId = await _db.getLocalIdById(dt.documentEntity.id);
+
+    await _db.updateDocument(localId: localId!, companion: dt.toDocumentCompanion(SyncStatus.synced.name));
+  }
 
   /// Update Document
   Future<void> updateDocument(DocumentModel doc) async {
@@ -109,7 +144,7 @@ class DriftDocumentService {
       }
       // document update
       await _db.updateDocument(
-        companion: doc.toDocumentCompanion(),
+        companion: doc.toDocumentCompanion(sync: SyncStatus.pending),
         localId: localId,
       );
 
@@ -148,13 +183,40 @@ class DriftDocumentService {
     }
   }
 
+  /// remote db에 업로드 후, SyncStatus 값 변경
+  Future<void> remoteUploadDone(DocumentModel doc) async{
+
+    _db.transaction(() async{
+      await _db.transaction(() async {
+        // documentId로 localId 조회
+        final localId = await _db.getLocalIdById(doc.id);
+
+        if (localId == null) {
+          throw Exception("문서 찾을 수 없음. ID: ${doc.id}");
+        }
+        // document update
+        await _db.updateDocument(
+          companion: doc.toDocumentCompanion(sync: SyncStatus.synced),
+          localId: localId,
+        );
+      });
+    });
+
+  }
+
   /**
    *  Delete
    */
 
+  /// Sync Delete -> 없으면 아무일도 일어나지 않음, 있으면 delete
+  Future<void> syncDelete(String docId) async {
+    final localId = await _db.getLocalIdById(docId);
+    if (localId == null) return;
+    await _db.deleteDocument(localId);
+  }
+
   /// Document Delete
   Future<void> deleteDocument(String docId) async {
-    print('############# service delete start!!!!!!!!!!!!');
     await _db.transaction(() async {
       final localId = await _db.getLocalIdById(docId);
       print('local id: $localId');
@@ -165,6 +227,5 @@ class DriftDocumentService {
 
       await _db.deleteDocument(localId);
     });
-    print('############# service delete end!!!!!!!!!!!!');
   }
 }

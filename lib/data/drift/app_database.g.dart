@@ -3,6 +3,219 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class AppSettings extends Table with TableInfo<AppSettings, AppSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  AppSettings(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'PRIMARY KEY DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _lastSyncTimeMeta = const VerificationMeta(
+    'lastSyncTime',
+  );
+  late final GeneratedColumn<DateTime> lastSyncTime = GeneratedColumn<DateTime>(
+    'last_sync_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, lastSyncTime];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AppSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('last_sync_time')) {
+      context.handle(
+        _lastSyncTimeMeta,
+        lastSyncTime.isAcceptableOrUnknown(
+          data['last_sync_time']!,
+          _lastSyncTimeMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AppSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppSetting(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      ),
+      lastSyncTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_sync_time'],
+      ),
+    );
+  }
+
+  @override
+  AppSettings createAlias(String alias) {
+    return AppSettings(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class AppSetting extends DataClass implements Insertable<AppSetting> {
+  final int? id;
+  final DateTime? lastSyncTime;
+  const AppSetting({this.id, this.lastSyncTime});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || lastSyncTime != null) {
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime);
+    }
+    return map;
+  }
+
+  AppSettingsCompanion toCompanion(bool nullToAbsent) {
+    return AppSettingsCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      lastSyncTime: lastSyncTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncTime),
+    );
+  }
+
+  factory AppSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppSetting(
+      id: serializer.fromJson<int?>(json['id']),
+      lastSyncTime: serializer.fromJson<DateTime?>(json['last_sync_time']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int?>(id),
+      'last_sync_time': serializer.toJson<DateTime?>(lastSyncTime),
+    };
+  }
+
+  AppSetting copyWith({
+    Value<int?> id = const Value.absent(),
+    Value<DateTime?> lastSyncTime = const Value.absent(),
+  }) => AppSetting(
+    id: id.present ? id.value : this.id,
+    lastSyncTime: lastSyncTime.present ? lastSyncTime.value : this.lastSyncTime,
+  );
+  AppSetting copyWithCompanion(AppSettingsCompanion data) {
+    return AppSetting(
+      id: data.id.present ? data.id.value : this.id,
+      lastSyncTime: data.lastSyncTime.present
+          ? data.lastSyncTime.value
+          : this.lastSyncTime,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSetting(')
+          ..write('id: $id, ')
+          ..write('lastSyncTime: $lastSyncTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, lastSyncTime);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppSetting &&
+          other.id == this.id &&
+          other.lastSyncTime == this.lastSyncTime);
+}
+
+class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
+  final Value<int?> id;
+  final Value<DateTime?> lastSyncTime;
+  const AppSettingsCompanion({
+    this.id = const Value.absent(),
+    this.lastSyncTime = const Value.absent(),
+  });
+  AppSettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.lastSyncTime = const Value.absent(),
+  });
+  static Insertable<AppSetting> custom({
+    Expression<int>? id,
+    Expression<DateTime>? lastSyncTime,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (lastSyncTime != null) 'last_sync_time': lastSyncTime,
+    });
+  }
+
+  AppSettingsCompanion copyWith({
+    Value<int?>? id,
+    Value<DateTime?>? lastSyncTime,
+  }) {
+    return AppSettingsCompanion(
+      id: id ?? this.id,
+      lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (lastSyncTime.present) {
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('lastSyncTime: $lastSyncTime')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Documents extends Table with TableInfo<Documents, DocumentEntity> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -46,6 +259,28 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     aliasedName,
     false,
     type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
@@ -139,6 +374,8 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     id,
     uid,
     createdAt,
+    updatedAt,
+    syncStatus,
     category,
     userMemo,
     title,
@@ -186,6 +423,22 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
       );
     } else if (isInserting) {
       context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_syncStatusMeta);
     }
     if (data.containsKey('category')) {
       context.handle(
@@ -276,6 +529,14 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
       category: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}category'],
@@ -325,6 +586,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   final String id;
   final String uid;
   final DateTime createdAt;
+  final DateTime updatedAt;
+  final String syncStatus;
   final String category;
   final String userMemo;
   final String title;
@@ -338,6 +601,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     required this.id,
     required this.uid,
     required this.createdAt,
+    required this.updatedAt,
+    required this.syncStatus,
     required this.category,
     required this.userMemo,
     required this.title,
@@ -354,6 +619,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     map['id'] = Variable<String>(id);
     map['uid'] = Variable<String>(uid);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['sync_status'] = Variable<String>(syncStatus);
     map['category'] = Variable<String>(category);
     map['user_memo'] = Variable<String>(userMemo);
     map['title'] = Variable<String>(title);
@@ -371,6 +638,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       id: Value(id),
       uid: Value(uid),
       createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      syncStatus: Value(syncStatus),
       category: Value(category),
       userMemo: Value(userMemo),
       title: Value(title),
@@ -392,6 +661,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       id: serializer.fromJson<String>(json['id']),
       uid: serializer.fromJson<String>(json['uid']),
       createdAt: serializer.fromJson<DateTime>(json['created_at']),
+      updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
+      syncStatus: serializer.fromJson<String>(json['sync_status']),
       category: serializer.fromJson<String>(json['category']),
       userMemo: serializer.fromJson<String>(json['user_memo']),
       title: serializer.fromJson<String>(json['title']),
@@ -410,6 +681,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       'id': serializer.toJson<String>(id),
       'uid': serializer.toJson<String>(uid),
       'created_at': serializer.toJson<DateTime>(createdAt),
+      'updated_at': serializer.toJson<DateTime>(updatedAt),
+      'sync_status': serializer.toJson<String>(syncStatus),
       'category': serializer.toJson<String>(category),
       'user_memo': serializer.toJson<String>(userMemo),
       'title': serializer.toJson<String>(title),
@@ -426,6 +699,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     String? id,
     String? uid,
     DateTime? createdAt,
+    DateTime? updatedAt,
+    String? syncStatus,
     String? category,
     String? userMemo,
     String? title,
@@ -439,6 +714,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     id: id ?? this.id,
     uid: uid ?? this.uid,
     createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    syncStatus: syncStatus ?? this.syncStatus,
     category: category ?? this.category,
     userMemo: userMemo ?? this.userMemo,
     title: title ?? this.title,
@@ -454,6 +731,10 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       id: data.id.present ? data.id.value : this.id,
       uid: data.uid.present ? data.uid.value : this.uid,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
       category: data.category.present ? data.category.value : this.category,
       userMemo: data.userMemo.present ? data.userMemo.value : this.userMemo,
       title: data.title.present ? data.title.value : this.title,
@@ -472,6 +753,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
           ..write('id: $id, ')
           ..write('uid: $uid, ')
           ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('syncStatus: $syncStatus, ')
           ..write('category: $category, ')
           ..write('userMemo: $userMemo, ')
           ..write('title: $title, ')
@@ -490,6 +773,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     id,
     uid,
     createdAt,
+    updatedAt,
+    syncStatus,
     category,
     userMemo,
     title,
@@ -507,6 +792,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
           other.id == this.id &&
           other.uid == this.uid &&
           other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.syncStatus == this.syncStatus &&
           other.category == this.category &&
           other.userMemo == this.userMemo &&
           other.title == this.title &&
@@ -522,6 +809,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
   final Value<String> id;
   final Value<String> uid;
   final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> syncStatus;
   final Value<String> category;
   final Value<String> userMemo;
   final Value<String> title;
@@ -535,6 +824,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     this.id = const Value.absent(),
     this.uid = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
     this.category = const Value.absent(),
     this.userMemo = const Value.absent(),
     this.title = const Value.absent(),
@@ -549,6 +840,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     required String id,
     required String uid,
     required DateTime createdAt,
+    required DateTime updatedAt,
+    required String syncStatus,
     required String category,
     required String userMemo,
     required String title,
@@ -560,6 +853,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
   }) : id = Value(id),
        uid = Value(uid),
        createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       syncStatus = Value(syncStatus),
        category = Value(category),
        userMemo = Value(userMemo),
        title = Value(title),
@@ -573,6 +868,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     Expression<String>? id,
     Expression<String>? uid,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? syncStatus,
     Expression<String>? category,
     Expression<String>? userMemo,
     Expression<String>? title,
@@ -587,6 +884,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
       if (id != null) 'id': id,
       if (uid != null) 'uid': uid,
       if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (syncStatus != null) 'sync_status': syncStatus,
       if (category != null) 'category': category,
       if (userMemo != null) 'user_memo': userMemo,
       if (title != null) 'title': title,
@@ -603,6 +902,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     Value<String>? id,
     Value<String>? uid,
     Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? syncStatus,
     Value<String>? category,
     Value<String>? userMemo,
     Value<String>? title,
@@ -617,6 +918,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
       id: id ?? this.id,
       uid: uid ?? this.uid,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
       category: category ?? this.category,
       userMemo: userMemo ?? this.userMemo,
       title: title ?? this.title,
@@ -642,6 +945,12 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
     }
     if (category.present) {
       map['category'] = Variable<String>(category.value);
@@ -677,6 +986,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
           ..write('id: $id, ')
           ..write('uid: $uid, ')
           ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('syncStatus: $syncStatus, ')
           ..write('category: $category, ')
           ..write('userMemo: $userMemo, ')
           ..write('title: $title, ')
@@ -1422,6 +1733,7 @@ class DocumentsFtsCompanion extends UpdateCompanion<DocumentsFt> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final AppSettings appSettings = AppSettings(this);
   late final Documents documents = Documents(this);
   late final Tags tags = Tags(this);
   late final DocumentTags documentTags = DocumentTags(this);
@@ -1443,6 +1755,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    appSettings,
     documents,
     tags,
     documentTags,
@@ -1491,12 +1804,143 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ]);
 }
 
+typedef $AppSettingsCreateCompanionBuilder =
+    AppSettingsCompanion Function({
+      Value<int?> id,
+      Value<DateTime?> lastSyncTime,
+    });
+typedef $AppSettingsUpdateCompanionBuilder =
+    AppSettingsCompanion Function({
+      Value<int?> id,
+      Value<DateTime?> lastSyncTime,
+    });
+
+class $AppSettingsFilterComposer extends Composer<_$AppDatabase, AppSettings> {
+  $AppSettingsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $AppSettingsOrderingComposer
+    extends Composer<_$AppDatabase, AppSettings> {
+  $AppSettingsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $AppSettingsAnnotationComposer
+    extends Composer<_$AppDatabase, AppSettings> {
+  $AppSettingsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => column,
+  );
+}
+
+class $AppSettingsTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          AppSettings,
+          AppSetting,
+          $AppSettingsFilterComposer,
+          $AppSettingsOrderingComposer,
+          $AppSettingsAnnotationComposer,
+          $AppSettingsCreateCompanionBuilder,
+          $AppSettingsUpdateCompanionBuilder,
+          (AppSetting, BaseReferences<_$AppDatabase, AppSettings, AppSetting>),
+          AppSetting,
+          PrefetchHooks Function()
+        > {
+  $AppSettingsTableManager(_$AppDatabase db, AppSettings table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $AppSettingsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $AppSettingsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $AppSettingsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                Value<DateTime?> lastSyncTime = const Value.absent(),
+              }) => AppSettingsCompanion(id: id, lastSyncTime: lastSyncTime),
+          createCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                Value<DateTime?> lastSyncTime = const Value.absent(),
+              }) => AppSettingsCompanion.insert(
+                id: id,
+                lastSyncTime: lastSyncTime,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $AppSettingsProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      AppSettings,
+      AppSetting,
+      $AppSettingsFilterComposer,
+      $AppSettingsOrderingComposer,
+      $AppSettingsAnnotationComposer,
+      $AppSettingsCreateCompanionBuilder,
+      $AppSettingsUpdateCompanionBuilder,
+      (AppSetting, BaseReferences<_$AppDatabase, AppSettings, AppSetting>),
+      AppSetting,
+      PrefetchHooks Function()
+    >;
 typedef $DocumentsCreateCompanionBuilder =
     DocumentsCompanion Function({
       Value<int> localId,
       required String id,
       required String uid,
       required DateTime createdAt,
+      required DateTime updatedAt,
+      required String syncStatus,
       required String category,
       required String userMemo,
       required String title,
@@ -1512,6 +1956,8 @@ typedef $DocumentsUpdateCompanionBuilder =
       Value<String> id,
       Value<String> uid,
       Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<String> syncStatus,
       Value<String> category,
       Value<String> userMemo,
       Value<String> title,
@@ -1572,6 +2018,16 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1669,6 +2125,16 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get category => $composableBuilder(
     column: $table.category,
     builder: (column) => ColumnOrderings(column),
@@ -1729,6 +2195,14 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
@@ -1812,6 +2286,8 @@ class $DocumentsTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> uid = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<String> userMemo = const Value.absent(),
                 Value<String> title = const Value.absent(),
@@ -1825,6 +2301,8 @@ class $DocumentsTableManager
                 id: id,
                 uid: uid,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
+                syncStatus: syncStatus,
                 category: category,
                 userMemo: userMemo,
                 title: title,
@@ -1840,6 +2318,8 @@ class $DocumentsTableManager
                 required String id,
                 required String uid,
                 required DateTime createdAt,
+                required DateTime updatedAt,
+                required String syncStatus,
                 required String category,
                 required String userMemo,
                 required String title,
@@ -1853,6 +2333,8 @@ class $DocumentsTableManager
                 id: id,
                 uid: uid,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
+                syncStatus: syncStatus,
                 category: category,
                 userMemo: userMemo,
                 title: title,
@@ -2651,6 +3133,8 @@ typedef $DocumentsFtsProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $AppSettingsTableManager get appSettings =>
+      $AppSettingsTableManager(_db, _db.appSettings);
   $DocumentsTableManager get documents =>
       $DocumentsTableManager(_db, _db.documents);
   $TagsTableManager get tags => $TagsTableManager(_db, _db.tags);

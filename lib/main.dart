@@ -1,25 +1,25 @@
 import 'dart:async';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
+import 'package:archivey/data/drift/app_database.dart';
 import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
-import 'package:archivey/domain/model/app_user.dart';
 import 'package:archivey/firebase_options.dart';
 import 'package:archivey/routing/go_router.dart';
 import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
+import 'package:archivey/ui/setting/view_model/setting_view_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ai/firebase_ai.dart';
-import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -30,18 +30,23 @@ void main() async {
 
   // Initialize the Gemini Developer API backend service
   // Create a `GenerativeModel` instance with a model that supports your use case
-  final model =
-  FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash');
+  final model = FirebaseAI.googleAI().generativeModel(
+    model: 'gemini-2.5-flash',
+  );
 
-// Provide a prompt that contains text
-//   final prompt = [Content.text('Write a story about a magic backpack.')];
+  final db = AppDatabase.instance;
 
-// To generate text output, call generateContent with the text input
-//   final response = await model.generateContent(prompt);
-//   print(response.text);
+  // Provide a prompt that contains text
+  //   final prompt = [Content.text('Write a story about a magic backpack.')];
+
+  // To generate text output, call generateContent with the text input
+  //   final response = await model.generateContent(prompt);
+  //   print(response.text);
   runApp(
     MultiProvider(
       providers: [
+        Provider<AppDatabase>.value(value: db,),
+
         Provider<FirebaseAuthService>(
           create: (_) => FirebaseAuthService(),
         ),
@@ -49,7 +54,7 @@ void main() async {
           create: (_) => FirebaseAppUserService(),
         ),
         Provider<DriftDocumentService>(
-          create: (_) => DriftDocumentService(),
+          create: (_) => DriftDocumentService(db),
         ),
 
         ChangeNotifierProvider<AuthViewModel>(
@@ -76,6 +81,23 @@ void main() async {
           create: (context) => DocumentViewModel(
             context.read<FirebaseDocumentService>(),
           )..readDocuments(),
+        ),
+
+        // auth VM
+        ChangeNotifierProvider<SettingViewModel>(
+          create: (context) => SettingViewModel(
+            context.read<FirebaseAuthService>(),
+          ),
+        ),
+
+        // 테스트용 VM
+        ChangeNotifierProvider<DocViewModel>(
+          create: (context) => DocViewModel(
+            context.read<FirebaseDocumentService>(),
+            context.read<DriftDocumentService>(),
+            context.read<CategoryViewModel>(),
+            context.read<AuthViewModel>(),
+          ),
         ),
       ],
       child: const Archivey(),
@@ -176,7 +198,8 @@ class Archivey extends StatefulWidget {
 }
 
 class _ArchiveyState extends State<Archivey> {
-  final _intentDataStreamSubscription = FlutterSharingIntent.instance; // 파일 공유 테스트
+  final _intentDataStreamSubscription =
+      FlutterSharingIntent.instance; // 파일 공유 테스트
   List<SharedFile>? list;
 
   @override
