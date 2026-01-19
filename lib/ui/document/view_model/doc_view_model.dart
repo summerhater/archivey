@@ -117,7 +117,7 @@ class DocViewModel extends ChangeNotifier {
       );
 
       /// 서버와 Sync
-      await _firebaseDocumentService.saveDocument(updateDoc).then(
+      await _firebaseDocumentService.createDocument(updateDoc).then(
         (_) async {
           /// local의 SyncStatus 갱신
           print('########## 서버 업로드 성공 ##############');

@@ -102,8 +102,7 @@ class Archivey extends StatefulWidget {
 }
 
 class _ArchiveyState extends State<Archivey> {
-  final _intentDataStreamSubscription =
-      FlutterSharingIntent.instance; // 파일 공유 테스트
+  late StreamSubscription _intentDataStreamSubscription;
   List<SharedFile>? list;
 
   void _handleSharingIntent(value) {
