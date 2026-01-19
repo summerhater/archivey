@@ -32,18 +32,22 @@ extension DocumentWithTagsToDomain on DocumentWithTags {
   }
 
   /// Category Id만 갖고 있는 것을 Category 객체로 변환
-  CategoryModel _getCategory(List<CategoryModel> list) {
-    late CategoryModel category;
+  CategoryModel _getCategory(List<CategoryModel> categories) {
+    print('############### 현재 카테고리는 ${categories.length}개 ###################');
+    return categories.firstWhere(
+      (category) => category.categoryId == documentEntity.category,
+      orElse: () {
+        if(categories.isNotEmpty) {
+          categories.first;
+        }
 
-    for(var i in list) {
-      if(i.categoryId == documentEntity.category) category = i;
-    }
-
-    return category;
+        return CategoryModel(uid: documentEntity.uid, categoryId: '0000', categoryName: '미분류');
+      }
+    );
   }
 
   /// DTO Model을 Domain Model로 변환해 VM에 전달해주기 위함
-  DocumentModel toDomain({required List<CategoryModel> list}) {
+  DocumentModel toDomain({required List<CategoryModel> categories}) {
     return DocumentModel(
       uid: documentEntity.uid,
       id: documentEntity.id,
@@ -53,11 +57,29 @@ extension DocumentWithTagsToDomain on DocumentWithTags {
       url: documentEntity.url,
       imageUrl: documentEntity.imageUrl,
       tags: tags,
-      category: _getCategory(list),
+      category: _getCategory(categories),
       platform: documentEntity.platform,
       userMemo: documentEntity.userMemo,
       aiSummary: documentEntity.aiSummary,
       aiStatus: _getAiTaskStatus(),
+    );
+  }
+
+  DocumentsCompanion toDocumentCompanion(String syncStatus) {
+    return DocumentsCompanion(
+      uid: Value(documentEntity.uid),
+      id: Value(documentEntity.id),
+      createdAt: Value(documentEntity.createdAt),
+      updatedAt: Value(DateTime.now()),
+      syncStatus: Value(syncStatus),
+      title: Value(documentEntity.title),
+      url: Value(documentEntity.url),
+      imageUrl: Value(documentEntity.imageUrl),
+      category: Value(documentEntity.category),
+      platform: Value(documentEntity.platform),
+      userMemo: Value(documentEntity.userMemo),
+      aiSummary: Value(documentEntity.aiSummary),
+      aiStatus: Value(documentEntity.aiStatus),
     );
   }
 }

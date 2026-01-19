@@ -1,4 +1,5 @@
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,7 +9,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../config/color_scheme_extension.dart';
 import '../../../config/text_theme_extension.dart';
-import '../../../domain/model/document_model.dart';
 import '../../../domain/model/document_model.dart';
 import 'more_icon_widget.dart';
 
@@ -305,7 +305,7 @@ Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
     children: [
       GestureDetector(
         onTap: () {
-          context.read<DocumentViewModel>().retryAiAnalysis(document);
+          context.read<DocViewModel>().retryAiAnalysis(document);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

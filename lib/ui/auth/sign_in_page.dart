@@ -73,7 +73,7 @@ class _SignInPageState extends State<SignInPage> {
                     asyncFunction: () async => await context
                         .read<AuthViewModel>()
                         .signInWithEmailAndPassword(
-                          email: _emailController.text,
+                          email: _emailController.text.trim(),
                           pw: _pwController.text,
                         )
                         .then((value) {

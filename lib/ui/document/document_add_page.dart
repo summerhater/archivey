@@ -1,5 +1,6 @@
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,8 @@ import '../../config/color_scheme_extension.dart';
 import '../../config/text_theme_extension.dart';
 
 class DocumentAddPage extends StatefulWidget {
-  const DocumentAddPage({Key? key}) : super(key: key);
+  final String? sharedText;
+  const DocumentAddPage({super.key, this.sharedText});
 
   @override
   State<DocumentAddPage> createState() => _DocumentAddPageState();
@@ -23,28 +25,39 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   final _urlController = TextEditingController();
   final _memoController = TextEditingController();
   final int _maxMemoLength = 200;
+  String _sharedURLCaptionText = '';
 
-  @override
-  void dispose() {
-    _urlController.dispose();
-    _memoController.dispose();
-    super.dispose();
+  void _handleSharingIntent(sharedText) {
+    ///텍스트를 받는다
+    ///url만 추출 -> controller.text에 주입
+    ///나머지 텍스트 -> String으로 만들기
+    ///vm에게 url, urlCaptionText 따로 넘겨주기
+
+    final foundURLMatch = RegExp(r"(https?://[^\s]+)").firstMatch(sharedText);
+    final sharedURL = foundURLMatch?.group(0) ?? '';
+    if (sharedURL.isNotEmpty) {
+      setState(() {
+        _urlController.text = sharedURL;
+        _sharedURLCaptionText = sharedText.replaceAll(sharedURL, '').trim();
+      });
+    }
   }
 
-  Future<void> _handleSave(context) async {
+  Future<void> _handleSave(BuildContext context) async {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     if (!_formKey.currentState!.validate()) return;
     if (_selectedCategory == null) return;
 
-    final documentVM = Provider.of<DocumentViewModel>(context, listen: false);
+    final documentVM = Provider.of<DocViewModel>(context, listen: false);
 
     final CategoryModel targetCategory =
         _selectedSubCategory ?? _selectedCategory!;
 
     try {
       await documentVM.addDocumentProcess(
-        rawText: _urlController.text.trim(),
+        sharedURL: _urlController.text.trim(),
+        sharedURLCaptionText: _sharedURLCaptionText,
         category: targetCategory,
         memo: _memoController.text.trim().isEmpty
             ? null
@@ -57,7 +70,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
 
       context.showAppSnackBar(
         content: Text(
-          '수집물 아카이빙 성공',
+          '수집물 아카이빙이 완료되었습니다 ☻',
           style: appTextTheme.bodySmall.copyWith(
             color: appColorScheme.primary,
           ),
@@ -74,6 +87,21 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
         ),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.sharedText != null){
+      _handleSharingIntent(widget.sharedText);
+    }
+  }
+
+  @override
+  void dispose() {
+    _urlController.dispose();
+    _memoController.dispose();
+    super.dispose();
   }
 
   @override
@@ -383,15 +411,6 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                     onPressed: isFormValid
                         ? () {
                             _handleSave(context);
-                            context.showAppSnackBar(
-                              content: Text(
-                                '수집물이 추가되었습니다',
-                                style: appTextTheme.bodySmall.copyWith(
-                                  color: appColorScheme.primary,
-                                ),
-                              ),
-                            );
-                            context.pop();
                           }
                         : null,
                     style: ElevatedButton.styleFrom(

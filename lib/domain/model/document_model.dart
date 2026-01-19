@@ -76,7 +76,7 @@ class DocumentModel {
       'uid': uid,
       'id': id,
       'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'updatedAt': DateTime.now(), // Sync를 위해, 서버에 업로드 하는 시점으로 설정
       'deletedAt': deletedAt,
       'category': category.toMap(),
       'userMemo': userMemo,
@@ -96,7 +96,7 @@ class DocumentModel {
       id: map['id'],
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       updatedAt: (map['updatedAt'] as Timestamp).toDate(),
-      deletedAt: (map['deletedAt'] as Timestamp).toDate() ?? null,
+      deletedAt: (map['deletedAt'] != null) ? (map['deletedAt'] as Timestamp).toDate() : null,
       category: CategoryModel.fromMap(map['category']),
       userMemo: map['userMemo'],
       title: map['title'],

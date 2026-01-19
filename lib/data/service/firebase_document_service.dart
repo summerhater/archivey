@@ -8,7 +8,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:metadata_fetch/metadata_fetch.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import '../../domain/model/category_model.dart';
-import '../../domain/model/document_model.dart';
+import 'package:archivey/domain/model/document_model.dart';
 
 enum DataQuality {
   enough,
@@ -216,19 +216,15 @@ class FirebaseDocumentService {
   }
 
   Future<(DocumentModel, String)> scrapeUrlAndPrepare(
-    String rawText,
+    String sharedURL,
+    String sharedURLCaptionText,
     CategoryModel category,
     String? memo,
   ) async {
-    final urlMatch = RegExp(r"(https?://[^\s]+)").firstMatch(rawText);
-    if (urlMatch == null) throw Exception('URL을 찾을 수 없습니다.');
-    final url = urlMatch.group(0)!;
-    final sharedUrlCaption = rawText.replaceAll(url, "").trim();
-
     try {
       final response = await http
           .get(
-            Uri.parse(url),
+            Uri.parse(sharedURL),
             // headers: {
             //   'User-Agent':
             //       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -241,7 +237,7 @@ class FirebaseDocumentService {
       final document = MetadataFetch.responseToDocument(response);
       if (document == null) throw Exception('URL 파싱 실패');
 
-      final platform = _scrapePlatform(url);
+      final platform = _scrapePlatform(sharedURL);
 
       Map<String, dynamic> metadata = {};
       try {
@@ -250,11 +246,11 @@ class FirebaseDocumentService {
         print('Metadata 스크래핑 실패 : $e');
       }
 
-      print('metadata: $metadata');
+      // print('metadata: $metadata');
 
       String bodyText = "";
       try {
-        bodyText = await _scrapeBodyText(url, document);
+        bodyText = await _scrapeBodyText(sharedURL, document);
       } catch (e) {
         print('bodyText 스크래핑 실패: $e');
       }
@@ -262,7 +258,7 @@ class FirebaseDocumentService {
       final contentText = _makeValidContentText(
         metadata['description'],
         bodyText,
-        sharedUrlCaption,
+        sharedURLCaptionText,
       );
 
       if (user == null) {
@@ -273,18 +269,18 @@ class FirebaseDocumentService {
         uid: user!.uid,
         id: const Uuid().v4(),
         createdAt: DateTime.now(),
-        url: url,
+        updatedAt: DateTime.now(),
+        url: sharedURL,
         title: (metadata['title']?.toString().trim() ?? '').isNotEmpty
             ? metadata['title']
                   .toString()
                   .trim()
-            : (sharedUrlCaption.isNotEmpty ? sharedUrlCaption : '제목 없는 링크'),
+            : (sharedURLCaptionText.isNotEmpty ? sharedURLCaptionText : '제목 없는 링크'),
         imageUrl: metadata['image'] ?? '',
         platform: platform,
         category: category,
         userMemo: memo ?? '',
         aiStatus: AiTaskStatus.analyzing,
-        updatedAt: DateTime.now(),
       );
 
       return (newDoc, contentText);
@@ -324,7 +320,7 @@ class FirebaseDocumentService {
 
     if (quality == DataQuality.enough) {
       print('Data Quality: enough');
-      print('contentText : $contentText');
+      // print('contentText : $contentText');
       return [
         Content.text('''
 $commonInstructions
@@ -353,7 +349,7 @@ $commonInstructions
       ];
     } else if (quality == DataQuality.titleOnly) {
       print('Data Quality: titleOnly');
-      print('title: ${document.title}');
+      // print('title: ${document.title}');
       return [
         Content.text('''
 $commonInstructions
@@ -523,5 +519,42 @@ $commonInstructions
   // DELETE: 삭제
   Future<void> deleteDocument(String id) async {
     await _db.collection(_collectionPath).doc(id).delete();
+  }
+
+  /**
+   * Sync를 위한 함수들
+   */
+
+  /// localSyncTime과 비교하여 최신 데이터들을 가져옴
+  Future<List<DocumentModel>> getDocumentsByUpdatedAt(DateTime localSyncTime) async{
+    final querySnapshot = await _db
+        .collection(_collectionPath)
+        .where('uid', isEqualTo: user!.uid)
+        .where('updatedAt', isGreaterThan: localSyncTime)
+        .get();
+
+    final List<DocumentModel> documents = querySnapshot.docs
+        .map((e) => DocumentModel.fromMap(e.data()))
+        .toList();
+
+    return documents;
+  }
+
+  /// Sync를 위한 일괄 쓰기
+  Future<void> documentBatchWrite(List<Map<String, dynamic>> documents) async {
+    // 한번에 값을 저장하기 위한 WriteBatch
+    final WriteBatch batch = _db.batch();
+
+    // pending 값들 remote에 업로드 하기
+
+
+    for(var item in documents) {
+      final DocumentReference docRef = _db.collection('documents').doc(item['id']);
+
+      batch.set(docRef, item);
+    }
+
+    // 한번에 업로드 후 커밋
+    await batch.commit();
   }
 }

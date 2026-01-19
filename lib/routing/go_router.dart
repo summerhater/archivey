@@ -1,4 +1,5 @@
 // import 'package:archivey/ui/document/ai_summary_example.dart';
+import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/document/document_add_page.dart';
 import 'package:archivey/ui/document/document_all_total_page.dart';
 import 'package:archivey/ui/document/document_all_index_page.dart';
@@ -15,6 +16,7 @@ import 'package:archivey/ui/auth/signup_success_page.dart';
 import 'package:archivey/ui/onboarding/on_boarding_page.dart';
 import 'package:archivey/ui/setting/settings_page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../ui/document/document_shell_page.dart';
 import '../ui/document/document_all_page.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +35,12 @@ final GoRouter goRouter = GoRouter(
     ),
     GoRoute(
       path: '/auth',
+      redirect: (context, state) {
+        if(Provider.of<AuthViewModel>(context, listen: false).uid.isNotEmpty) {
+          return '/document_all_total';
+        }
+      },
       builder: (context, state) => AuthPage(),
-      redirect: (context, state) {},
       routes: [
         GoRoute(
           path: 'sign-in',
@@ -84,13 +90,13 @@ final GoRouter goRouter = GoRouter(
             ),
           ),
           routes: [
-            // GoRoute(
-            //   path: 'detail',
-            //   builder: (context, state) {
-            //     final document = state.extra as DocumentModel;
-            //     return DocumentDetailPage(document: document);
-            //   },
-            // ),
+            GoRoute(
+              path: 'detail',
+              builder: (context, state) {
+                final document = state.extra as DocumentModel;
+                return DocumentDetailPage(document: document);
+              },
+            ),
           ],
         ),
         GoRoute(

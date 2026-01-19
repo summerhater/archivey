@@ -1,3 +1,4 @@
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
@@ -22,7 +23,7 @@ class _DocumentAllTotalPageState extends State<DocumentAllTotalPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DocumentViewModel>(
+    return Consumer<DocViewModel>(
       builder: (context, vm, _){
         if (vm.documents.isEmpty) {
           return const Center(child: Text("수집물이 없습니다."));

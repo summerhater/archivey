@@ -1,5 +1,6 @@
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,11 +19,12 @@ class DocumentCategoryListPage extends StatefulWidget {
 
 class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
   String? _selectedSubId; // 현재 선택된 서브 카테고리 ID 저장 변수
+  bool _isLatest = true;
 
   @override
   Widget build(BuildContext context) {
     final categoryVM = context.watch<CategoryViewModel>();
-    final documentVM = context.watch<DocumentViewModel>();
+    final documentVM = context.watch<DocViewModel>();
 
     // 1. 현재 탭 이름에 해당하는 Root 카테고리 찾기
     CategoryModel? rootCategory;
@@ -59,6 +61,12 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
       }
     }
 
+    if (_isLatest) {
+      displayDocuments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } else {
+      displayDocuments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    }
+
     return SafeArea(
       child: Column(
         children: [
@@ -69,6 +77,12 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
             selectedSubCategory: (String? subId) {
               setState(() {
                 _selectedSubId = subId;
+              });
+            },
+            isLatest: _isLatest,
+            onDateSortPressed: () {
+              setState(() {
+                _isLatest = !_isLatest;
               });
             },
           ),
