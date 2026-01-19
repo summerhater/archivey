@@ -1,8 +1,12 @@
+import 'package:archivey/ui/setting/view_model/setting_view_model.dart';
 import 'package:archivey/ui/setting/widget/build_setting_menu_item_widget.dart';
 import 'package:archivey/ui/setting/widget/delete_account_dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
 import '../../config/color_scheme_extension.dart';
 import '../../config/text_theme_extension.dart';
 
@@ -19,10 +23,21 @@ class _SettingsPageState extends State<SettingsPage> {
   bool aiSummaryEnabled = true;
   String? appVersion;
 
+  @override
+  void initState() {
+    super.initState();
+    _getAppVersion();
+    if(Provider.of<SettingViewModel>(context, listen: false).email.isEmpty) {
+      isLoggedIn = false;
+    }
+  }
+
   void _handleLogout() {
     ///todo: 로그아웃 로직 여기에
-    setState(() {
-      isLoggedIn = false;
+    Provider.of<SettingViewModel>(context, listen: false).logout().then((_) {
+      setState(() {
+        isLoggedIn = false;
+      });
     });
   }
 
@@ -34,15 +49,10 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _getAppVersion();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
+    final vm = context.read<SettingViewModel>();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -99,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       height: 6,
                                     ),
                                     Text(
-                                      email,
+                                      vm.email,
                                       style: appTextTheme.bodySmall.copyWith(
                                         color: appColorScheme.textDark,
                                       ),
@@ -128,7 +138,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                     ),
                                   )
                                 : ElevatedButton.icon(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      context.go('/auth/sign-in');
+                                    },
                                     icon: Icon(Icons.mail),
                                     label: Text('이메일로 로그인'),
                                     style: ElevatedButton.styleFrom(

@@ -1,3 +1,4 @@
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +30,7 @@ class _DocumentAllPageState extends State<DocumentAllPage> {
         currentLocation.contains('all_index');
     bool isLatest = true;
 
-    return Consumer<DocumentViewModel>(
+    return Consumer<DocViewModel>(
       builder: (context, vm, _){
         final allDocs = vm.documents;
 

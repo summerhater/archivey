@@ -2,11 +2,14 @@ import 'package:archivey/domain/model/category_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum AiTaskStatus { pending, analyzing, completed, failed }
+enum SyncStatus { synced, pending }
 
 class DocumentModel {
   final String uid; ///사용자 id
   final String id;///도큐먼트 고유 id
   final DateTime createdAt;///생성일
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
   final CategoryModel category; ///사용자 지정 카테고리 모델
   final String userMemo;///사용자 작성 메모
   final String title;///도큐먼트 제목
@@ -21,6 +24,8 @@ class DocumentModel {
     required this.uid,
     required this.id,
     required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
     required this.category,
     this.userMemo = '',
     this.title = '',
@@ -36,6 +41,8 @@ class DocumentModel {
     String? uid,
     String? id,
     DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? deletedAt,
     CategoryModel? category,
     String? userMemo,
     String? title,
@@ -50,6 +57,8 @@ class DocumentModel {
       uid: uid ?? this.uid,
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
       category: category ?? this.category,
       userMemo: userMemo ?? this.userMemo,
       title: title ?? this.title,
@@ -67,6 +76,8 @@ class DocumentModel {
       'uid': uid,
       'id': id,
       'createdAt': createdAt,
+      'updatedAt': DateTime.now(), // Sync를 위해, 서버에 업로드 하는 시점으로 설정
+      'deletedAt': deletedAt,
       'category': category.toMap(),
       'userMemo': userMemo,
       'title': title,
@@ -84,6 +95,8 @@ class DocumentModel {
       uid: map['uid'],
       id: map['id'],
       createdAt: (map['createdAt'] as Timestamp).toDate(),
+      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
+      deletedAt: (map['deletedAt'] != null) ? (map['deletedAt'] as Timestamp).toDate() : null,
       category: CategoryModel.fromMap(map['category']),
       userMemo: map['userMemo'],
       title: map['title'],

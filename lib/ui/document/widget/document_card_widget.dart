@@ -1,4 +1,5 @@
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -304,7 +305,7 @@ Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
     children: [
       GestureDetector(
         onTap: () {
-          context.read<DocumentViewModel>().retryAiAnalysis(document);
+          context.read<DocViewModel>().retryAiAnalysis(document);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

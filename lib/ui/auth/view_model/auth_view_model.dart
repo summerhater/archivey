@@ -1,30 +1,47 @@
 import 'dart:async';
 
-import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/domain/model/app_user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final FirebaseAuthService _authService;
   final FirebaseAppUserService _userService;
 
-  AuthViewModel(this._authService, this._userService);
+  AuthViewModel(this._authService, this._userService){
+    print('########################## 앱 시작해서 user 정보 받아오려고 함!!!!');
+    fetchUser();
+  }
 
   String getEmail = '';
 
   bool isLoading = false;
 
-  User? get user => _authService.user;
-  String get uid {
-    return _authService.user?.uid ?? '';
-  }
+  String uid = '';
 
   void _setLoading(bool isLoading) {
     this.isLoading = isLoading;
     notifyListeners();
+  }
+  
+  /// 앱 시작 시, user 정보 불러오기
+  void fetchUser() {
+    _authService.authStateChanges().listen((user) async{
+      if(user == null) {
+        uid = '';
+        notifyListeners();
+      } else {
+        await loadUid();
+        notifyListeners();
+      }
+    });
+  }
+
+  /// user 정보에서 uid 불러오기
+  Future<void> loadUid() async{
+    uid = _authService.user!.uid;
+    print('##################### uid: $uid ######################');
   }
 
   /// 이메일 중복 확인
@@ -72,7 +89,7 @@ class AuthViewModel extends ChangeNotifier {
         password: pw,
       );
       await _userService.userRegistration(
-        uid: user?.uid,
+        uid: uid,
         appUser: AppUser(email: getEmail, createAt: DateTime.now()),
       );
     } catch (e) {

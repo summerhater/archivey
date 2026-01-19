@@ -1,5 +1,6 @@
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedCategory == null) return;
 
-    final documentVM = Provider.of<DocumentViewModel>(context, listen: false);
+    final documentVM = Provider.of<DocViewModel>(context, listen: false);
 
     final CategoryModel targetCategory =
         _selectedSubCategory ?? _selectedCategory!;

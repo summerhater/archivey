@@ -246,6 +246,7 @@ class FirebaseDocumentService {
         uid: user!.uid,
         id: const Uuid().v4(),
         createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         url: sharedURL,
         title: (metadata['title']?.toString().trim() ?? '').isNotEmpty
             ? metadata['title']
@@ -514,5 +515,42 @@ $commonInstructions
   // DELETE: 삭제
   Future<void> deleteDocument(String id) async {
     await _db.collection(_collectionPath).doc(id).delete();
+  }
+
+  /**
+   * Sync를 위한 함수들
+   */
+
+  /// localSyncTime과 비교하여 최신 데이터들을 가져옴
+  Future<List<DocumentModel>> getDocumentsByUpdatedAt(DateTime localSyncTime) async{
+    final querySnapshot = await _db
+        .collection(_collectionPath)
+        .where('uid', isEqualTo: user!.uid)
+        .where('updatedAt', isGreaterThan: localSyncTime)
+        .get();
+
+    final List<DocumentModel> documents = querySnapshot.docs
+        .map((e) => DocumentModel.fromMap(e.data()))
+        .toList();
+
+    return documents;
+  }
+
+  /// Sync를 위한 일괄 쓰기
+  Future<void> documentBatchWrite(List<Map<String, dynamic>> documents) async {
+    // 한번에 값을 저장하기 위한 WriteBatch
+    final WriteBatch batch = _db.batch();
+
+    // pending 값들 remote에 업로드 하기
+
+
+    for(var item in documents) {
+      final DocumentReference docRef = _db.collection('documents').doc(item['id']);
+
+      batch.set(docRef, item);
+    }
+
+    // 한번에 업로드 후 커밋
+    await batch.commit();
   }
 }

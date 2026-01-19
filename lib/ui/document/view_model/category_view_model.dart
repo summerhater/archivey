@@ -11,11 +11,15 @@ class CategoryViewModel extends ChangeNotifier {
   final FirebaseCategoryService _categoryService;
   final FirebaseAuthService _authService;
   final FirebaseDocumentService _documentService;
-  CategoryViewModel(this._categoryService, this._authService, this._documentService);
-
-  List<CategoryModel> _categories = [];
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+  CategoryViewModel(this._categoryService, this._authService, this._documentService){
+    readCategory();
+    print('######### 카테고리 수: ${_categories.length} ###########');
+  }
+  List<CategoryModel> _categories = [];
+  List<CategoryModel> get categories => _categories;
+
   User? get user => _authService.user;
   final Map<String, int> _docCountMap = {};
   Map<String, int> get docCountMap => _docCountMap;

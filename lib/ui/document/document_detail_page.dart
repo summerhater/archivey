@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
-import '../../domain/model/document_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:archivey/ui/document/widget/more_icon_widget.dart';

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:archivey/data/dto/document_with_tags.dart';
+import 'package:archivey/domain/model/document_model.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,10 +13,131 @@ part 'app_database.g.dart';
   include: {'table/tables.drift'},
 ) // TODO 트러블슈팅 include는 drift 파일 경로까지 적어줘야 한다
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  static final AppDatabase instance = AppDatabase._internal();
+
+  AppDatabase._internal() : super(_openConnection());
+  // AppDatabase() : super(_openConnection());
+
+  factory AppDatabase() => instance;
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (migration) async{
+      await migration.createAll();
+
+      await into(appSettings).insert(
+        AppSettingsCompanion.insert(
+          lastSyncTime: Value(DateTime.fromMillisecondsSinceEpoch(0)),
+        ),
+      );
+    }
+  );
+
+  /**
+   * Sync
+   */
+
+  /// 마지막 Sync 실행한 시간 받아오기
+  Future<DateTime> getSyncTime() async {
+    final setting = await select(appSettings).getSingle();
+
+    return setting.lastSyncTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+  }
+
+  /// Sync 실행한 시점의 시간 저장
+  Future<void> setSyncTime() async {
+    await (update(appSettings)).write(
+      AppSettingsCompanion(lastSyncTime: Value(DateTime.now())),
+    );
+  }
+
+  /// Sync Update(없으면 create, 있으면 update)
+  Future<int> pullSyncUpdate(DocumentsCompanion companion) async {
+    // await into(documents).insertOnConflictUpdate(companion);
+    await customInsert(
+      '''
+      INSERT INTO documents (
+        id, uid, created_at, updated_at, sync_status,
+        category, user_memo, title, url, image_url,
+        platform, ai_summary, ai_status
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      )
+      ON CONFLICT(id) DO UPDATE SET
+        uid = excluded.uid,
+        created_at = excluded.created_at,
+        updated_at = excluded.updated_at,
+        sync_status = excluded.sync_status,
+        category = excluded.category,
+        user_memo = excluded.user_memo,
+        title = excluded.title,
+        url = excluded.url,
+        image_url = excluded.image_url,
+        platform = excluded.platform,
+        ai_summary = excluded.ai_summary,
+        ai_status = excluded.ai_status
+      ''',
+      variables: [
+        Variable<String>(companion.id.value),
+        Variable<String>(companion.uid.value),
+        Variable<DateTime>(companion.createdAt.value),
+        Variable<DateTime>(companion.updatedAt.value),
+        Variable<String>(companion.syncStatus.value),
+        Variable<String>(companion.category.value),
+        Variable<String>(companion.userMemo.value),
+        Variable<String>(companion.title.value),
+        Variable<String>(companion.url.value),
+        Variable<String>(companion.imageUrl.value),
+        Variable<String>(companion.platform.value),
+        Variable<String>(companion.aiSummary.value),
+        Variable<String>(companion.aiStatus.value),
+      ],
+      updates: {documents},
+    );
+
+    final row = await customSelect(
+      'SELECT local_id FROM documents WHERE id = ?',
+      variables: [Variable(companion.id.value)],
+    ).getSingle();
+
+    return row.read<int>('local_id');
+  }
+
+  /// Push Sync, 모종의 이유로 싱크가 되지 않은 데이터들을 remote에 업로드하기 위함
+  Future<List<DocumentWithTags>> getPendingDocuments() async {
+    // final documents = await (select(documents)..where((tbl) => tbl.syncStatus.equals(SyncStatus.pending.name),)).get();
+
+    final query = customSelect(
+      '''
+      SELECT d.*, GROUP_CONCAT(t.name) AS tags
+      FROM documents d
+      LEFT JOIN document_tags dt ON dt.document_id = d.local_id
+      LEFT JOIN tags t ON t.id = dt.tag_id
+      WHERE d.sync_status LIKE ?
+      GROUP BY d.id
+      ORDER BY d.created_at DESC
+      ''',
+      variables: [Variable.withString(SyncStatus.pending.name)],
+      readsFrom: {documents, documentTags, tags},
+    );
+
+    final rows = await query.get();
+
+    return rows.map(
+      (row) {
+        return DocumentWithTags(
+          documentEntity: documents.map(row.data),
+          tags: (row.read<String?>('tags') ?? '')
+              .split(',')
+              .where((e) => e.isNotEmpty)
+              .toList(),
+        );
+      },
+    ).toList();
+  }
 
   /**
    * Create
@@ -71,14 +193,10 @@ class AppDatabase extends _$AppDatabase {
       return rows.map((row) {
         return DocumentWithTags(
           documentEntity: documents.map(row.data),
-          tags:
-              (row.read<String?>(
-                        'tags',
-                      ) ??
-                      '')
-                  .split(',')
-                  .where((e) => e.isNotEmpty)
-                  .toList(),
+          tags: (row.read<String?>('tags',) ??  '')
+              .split(',')
+              .where((e) => e.isNotEmpty)
+              .toList(),
         );
       }).toList();
     });
