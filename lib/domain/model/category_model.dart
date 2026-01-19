@@ -16,13 +16,29 @@ class CategoryModel {
   ///parentId가 null이면 루트 카테고리, != null이면 서브 카테고리
   bool get isRootCategory => parentId == null;
 
+  CategoryModel copyWith({
+    String? uid,
+    String? categoryId,
+    String? categoryName,
+    int? order,
+    String? parentId,
+  }) {
+    return CategoryModel(
+      uid: uid ?? this.uid,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      order: order ?? this.order,
+      parentId: parentId ?? this.parentId,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
       'categoryId': categoryId,
       'categoryName': categoryName,
-      'order' : order,
       'parentId' : parentId,
+      'order': order,
     };
   }
 
@@ -31,7 +47,7 @@ class CategoryModel {
       uid: map['uid'],
       categoryId: map['categoryId'],
       categoryName: map['categoryName'],
-      order: map['order'] as int?,
+      order: (map['order'] as num?)?.toInt(),
       parentId: map['parentId'] as String?,
     );
   }

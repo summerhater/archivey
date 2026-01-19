@@ -9,8 +9,13 @@ import 'package:archivey/ui/document/widget/document_list_header_widget.dart';
 
 class DocumentCategoryListPage extends StatefulWidget {
   final String categoryName;
+  final String categoryId;
 
-  const DocumentCategoryListPage({super.key, required this.categoryName});
+  const DocumentCategoryListPage({
+    super.key,
+    required this.categoryName,
+    required this.categoryId,
+  });
 
   @override
   State<DocumentCategoryListPage> createState() => _DocumentCategoryListPageState();
@@ -18,6 +23,7 @@ class DocumentCategoryListPage extends StatefulWidget {
 
 class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
   String? _selectedSubId; // 현재 선택된 서브 카테고리 ID 저장 변수
+  bool _isLatest = true;
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +33,16 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
     // 1. 현재 탭 이름에 해당하는 Root 카테고리 찾기
     CategoryModel? rootCategory;
     try {
+      //todo: jh : category ID로 비교하는게 더 좋은 방식
       rootCategory = categoryVM.rootCategories.firstWhere(
-            (c) => c.categoryName == widget.categoryName,
+            (c) => c.categoryId == widget.categoryId,
       );
-    } catch (_) {
+    } catch (e) {
+      print('rootCategory is null');
       rootCategory = null;
     }
 
-    // 2. 필터링 로직
+    // 필터링 로직
     List<DocumentModel> displayDocuments = [];
 
     if (widget.categoryName == 'ALL') {
@@ -44,19 +52,19 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
     } else if (rootCategory != null) {
       if (_selectedSubId == null) {
         // '전체' 칩 선택 시: 현재 카테고리 ID + 하위 서브 카테고리 ID들 포함
-        final familyIds = [
-          rootCategory.categoryId,
-          ...categoryVM.getSubCategories(rootCategory.categoryId).map((e) => e.categoryId)
-        ];
         displayDocuments = documentVM.documents
-            .where((doc) => familyIds.contains(doc.category.categoryId))
+            .where((doc) => categoryVM.getFamilyCategories(rootCategory!.categoryId).contains(doc.category.categoryId))
             .toList();
       } else {
         // 특정 서브 카테고리 칩 선택 시: 해당 ID만 필터링
-        displayDocuments = documentVM.documents
-            .where((doc) => doc.category.categoryId == _selectedSubId)
-            .toList();
+        documentVM.getDocumentsByCategoryId(_selectedSubId!);
       }
+    }
+
+    if (_isLatest) {
+      displayDocuments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } else {
+      displayDocuments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     }
 
     return SafeArea(
@@ -69,6 +77,12 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
             selectedSubCategory: (String? subId) {
               setState(() {
                 _selectedSubId = subId;
+              });
+            },
+            isLatest: _isLatest,
+            onDateSortPressed: () {
+              setState(() {
+                _isLatest = !_isLatest;
               });
             },
           ),

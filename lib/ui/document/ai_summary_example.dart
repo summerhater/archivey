@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:metadata_fetch/metadata_fetch.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 
 ///임시모델
@@ -58,7 +57,6 @@ class DocumentModel {
 
 ///로직
 class LinkProcessor {
-  final _youtube = YoutubeExplode();
   final _model = FirebaseAI.googleAI().generativeModel(
     model: 'gemini-2.5-flash',
     generationConfig: GenerationConfig(responseMimeType: 'application/json'),
@@ -195,15 +193,15 @@ class LinkProcessor {
 
 
     String mainContent = "";
-    if (url.contains("youtube.com") || url.contains("youtu.be")) {
-      mainContent = await _getYoutubeTranscript(url);
-    } else {
+    // if (url.contains("youtube.com") || url.contains("youtu.be")) {
+    //   mainContent = await _getYoutubeTranscript(url);
+    // } else {
       /// 본문 텍스트 추출 (스크립트 제외, 광고같은것도 걸러주는지는 잘 모르겠)
       document
           ?.querySelectorAll('script, style, nav, footer')
           .forEach((e) => e.remove());
       mainContent = document?.body?.text.trim() ?? "";
-    }
+    // }
 
     final doc = DocumentModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -280,22 +278,22 @@ class LinkProcessor {
     }
   }
 
-  Future<String> _getYoutubeTranscript(String url) async {
-    try {
-      var video = await _youtube.videos.get(url);
-      var manifest = await _youtube.videos.closedCaptions.getManifest(video.id);
-      if (manifest.tracks.isNotEmpty) {
-        var track =
-            manifest.tracks.where((e) => e.language.code == 'ko').firstOrNull ??
-            manifest.tracks.first;
-        var captions = await _youtube.videos.closedCaptions.get(track);
-        return captions.captions.map((e) => e.text).join(' ');
-      }
-      return video.description;
-    } catch (_) {
-      return "";
-    }
-  }
+  // Future<String> _getYoutubeTranscript(String url) async {
+  //   try {
+  //     var video = await _youtube.videos.get(url);
+  //     var manifest = await _youtube.videos.closedCaptions.getManifest(video.id);
+  //     if (manifest.tracks.isNotEmpty) {
+  //       var track =
+  //           manifest.tracks.where((e) => e.language.code == 'ko').firstOrNull ??
+  //           manifest.tracks.first;
+  //       var captions = await _youtube.videos.closedCaptions.get(track);
+  //       return captions.captions.map((e) => e.text).join(' ');
+  //     }
+  //     return video.description;
+  //   } catch (_) {
+  //     return "";
+  //   }
+  // }
 }
 
 ///UI

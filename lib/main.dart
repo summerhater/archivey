@@ -18,9 +18,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_ai/firebase_ai.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,17 +28,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize the Gemini Developer API backend service
-  // Create a `GenerativeModel` instance with a model that supports your use case
-  final model =
-  FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash');
-
-// Provide a prompt that contains text
-//   final prompt = [Content.text('Write a story about a magic backpack.')];
-
-// To generate text output, call generateContent with the text input
-//   final response = await model.generateContent(prompt);
-//   print(response.text);
   runApp(
     MultiProvider(
       providers: [
@@ -59,6 +48,15 @@ void main() async {
           ),
         ),
 
+        Provider<FirebaseDocumentService>(
+          create: (_) => FirebaseDocumentService(),
+        ),
+        ChangeNotifierProvider<DocumentViewModel>(
+          create: (context) => DocumentViewModel(
+            context.read<FirebaseDocumentService>(),
+          ),
+        ),
+
         Provider<FirebaseCategoryService>(
           create: (_) => FirebaseCategoryService(),
         ),
@@ -66,106 +64,14 @@ void main() async {
           create: (context) => CategoryViewModel(
             context.read<FirebaseCategoryService>(),
             context.read<FirebaseAuthService>(),
+            context.read<FirebaseDocumentService>(),
           ),
         ),
 
-        Provider<FirebaseDocumentService>(
-          create: (_) => FirebaseDocumentService(),
-        ),
-        ChangeNotifierProvider<DocumentViewModel>(
-          create: (context) => DocumentViewModel(
-            context.read<FirebaseDocumentService>(),
-          )..readDocuments(),
-        ),
       ],
       child: const Archivey(),
     ),
   );
-}
-
-// void main() {
-//   runApp(const MyApp());
-// }
-
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late StreamSubscription _intentDataStreamSubscription;
-  List<SharedFile>? list;
-
-  @override
-  void initState() {
-    initSharingListener();
-
-    super.initState();
-  }
-
-  void initSharingListener() {
-    // For sharing images coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription = FlutterSharingIntent.instance
-        .getMediaStream()
-        .listen(
-          (List<SharedFile> value) {
-            setState(() {
-              list = value;
-            });
-            if (kDebugMode) {
-              print(
-                " Shared: getMediaStream ${value.map((f) => f.value).join(",")}",
-              );
-            }
-          },
-          onError: (err) {
-            if (kDebugMode) {
-              print("Shared: getIntentDataStream error: $err");
-            }
-          },
-        );
-
-    // For sharing images coming from outside the app while the app is closed
-    FlutterSharingIntent.instance.getInitialSharing().then((
-      List<SharedFile> value,
-    ) {
-      if (kDebugMode) {
-        print(
-          "Shared: getInitialMedia => ${value.map((f) => f.value).join(",")}",
-        );
-      }
-      setState(() {
-        list = value;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            child: SingleChildScrollView(
-              child: Text('Sharing data: \n${list?.join("\n\n")}\n'),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _intentDataStreamSubscription.cancel();
-    super.dispose();
-  }
 }
 
 class Archivey extends StatefulWidget {
@@ -176,23 +82,52 @@ class Archivey extends StatefulWidget {
 }
 
 class _ArchiveyState extends State<Archivey> {
-  final _intentDataStreamSubscription = FlutterSharingIntent.instance; // 파일 공유 테스트
+  // final _intentDataStreamSubscription = FlutterSharingIntent.instance; // 파일 공유 테스트
+
+  ///flutter_sharing_intent
+  late StreamSubscription _intentDataStreamSubscription;
   List<SharedFile>? list;
+
+  void _handleSharingIntent(value) {
+    if (value.isNotEmpty) {
+      List<String> temp = [];
+
+      for (final e in value) {
+        if (e.value is String) {
+          temp.add(e.value!);
+        }
+      }
+
+      final sharedText = temp.join(' ');
+      setState(() {
+        goRouter.push('/document_add', extra: sharedText);
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _intentDataStreamSubscription.getInitialSharing().then((value) {
-      if (value.isNotEmpty) {
-        debugPrint('Initial share: $value');
-      }
+    ///앱이 실행 중 일때 (백그라운드 포함) : getMediaStream()
+    _intentDataStreamSubscription = FlutterSharingIntent.instance.getMediaStream()
+        .listen((List<SharedFile> value) {
+      _handleSharingIntent(value);
+      // print("Shared: getMediaStream ${value.map((f) => f.value).join(",")}");
+    }, onError: (err) {
+      print("getIntentDataStream error: $err");
     });
 
-    _intentDataStreamSubscription.getMediaStream().listen((value) {
-      if (value.isNotEmpty) {
-        debugPrint('Incoming share: $value');
-      }
+    ///앱이 실행 중이 아닐 때: getInitialSharing()
+    FlutterSharingIntent.instance.getInitialSharing().then((List<SharedFile> value) {
+      print("Shared: getInitialMedia ${value.map((f) => f.value).join(",")}");
+      _handleSharingIntent(value);
     });
+  }
+
+  @override
+  void dispose() {
+    _intentDataStreamSubscription.cancel();
+    super.dispose();
   }
 
   @override

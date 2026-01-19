@@ -1,11 +1,10 @@
 import 'package:archivey/ui/setting/widget/build_setting_menu_item_widget.dart';
 import 'package:archivey/ui/setting/widget/delete_account_dialog_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../config/color_scheme_extension.dart';
 import '../../config/text_theme_extension.dart';
-import '../document/widget/app_toggle_switch_widget.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -18,12 +17,26 @@ class _SettingsPageState extends State<SettingsPage> {
   final String email = 'user@example.com';
   bool isLoggedIn = true;
   bool aiSummaryEnabled = true;
+  String? appVersion;
 
   void _handleLogout() {
     ///todo: 로그아웃 로직 여기에
     setState(() {
       isLoggedIn = false;
     });
+  }
+
+  Future<void> _getAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      appVersion = packageInfo.version;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getAppVersion();
   }
 
   @override
@@ -130,44 +143,50 @@ class _SettingsPageState extends State<SettingsPage> {
                         Divider(height: 48, color: appColorScheme.strokeLight),
 
                         /// AI 요약 설정 토글 스위치
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'AI 요약',
-                                    style: appTextTheme.bodyMedium.copyWith(
-                                      color: appColorScheme.primaryStrong,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    '수집한 콘텐츠를 AI로 자동 요약합니다.',
-                                    style: appTextTheme.bodySmall.copyWith(
-                                      color: appColorScheme.textLight,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            AppToggleSwitchWidget(
-                              value: aiSummaryEnabled,
-                              onChanged: (value) {
-                                setState(() {
-                                  aiSummaryEnabled = value;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        Divider(height: 48, color: appColorScheme.strokeLight),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     Expanded(
+                        //       child: Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: [
+                        //           Text(
+                        //             'AI 요약',
+                        //             style: appTextTheme.bodyMedium.copyWith(
+                        //               color: appColorScheme.primaryStrong,
+                        //             ),
+                        //           ),
+                        //           SizedBox(height: 8),
+                        //           Text(
+                        //             '수집한 콘텐츠를 AI로 자동 요약합니다.',
+                        //             style: appTextTheme.bodySmall.copyWith(
+                        //               color: appColorScheme.textLight,
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //     AppToggleSwitchWidget(
+                        //       value: aiSummaryEnabled,
+                        //       onChanged: (value) {
+                        //         setState(() {
+                        //           aiSummaryEnabled = value;
+                        //         });
+                        //       },
+                        //     ),
+                        //   ],
+                        // ),
+                        // Divider(height: 48, color: appColorScheme.strokeLight),
                         SettingMenuItemWidget(
                           icon: Icons.notifications,
                           label: '공지사항',
-                          onTap: () {},
+                          onTap: () async {
+                            final url = 'https://www.notion.so/archivey-2e6299c18862802a91ddcc7dce6f10b0?source=copy_link';
+                            final uri = Uri.parse(url);
+                            if (await canLaunchUrl(uri)) {
+                            launchUrl(uri, mode: LaunchMode.externalApplication);
+                            }
+                          },
                           appTextTheme: appTextTheme,
                           appColorScheme: appColorScheme,
                         ),
@@ -189,7 +208,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           suffix: Row(
                             children: [
                               Text(
-                                '1.0.0',
+                                appVersion ?? '버전 정보 로드 실패',
                                 style: appTextTheme.bodySmall.copyWith(
                                   color: appColorScheme.primaryStrong,
                                 ),

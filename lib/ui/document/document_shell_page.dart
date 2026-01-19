@@ -20,18 +20,15 @@ class DocumentShellPage extends StatefulWidget {
 
 class DocumentShellPageState extends State<DocumentShellPage> {
   int selectedIndex = 0;
-
-  int _getSelectedIndex(String location, List<String> categories) {
-    // 전체보기 페이지인 경우
+  int _getSelectedIndex(String location, List<Map<String, String>> categories) {
     if (location.contains('document_all_total')) return 0;
 
     final Uri uri = Uri.parse(location);
     if (uri.pathSegments.isEmpty) return 0;
 
-    final String categoryName = uri.pathSegments.last;
-
-    // 인자로 받은 실제 카테고리 리스트에서 인덱스 검색
-    final index = categories.indexOf(categoryName);
+    /// URL의 마지막 부분(ID)을 가져와서 값이 일치하는 인덱스 찾기
+    final String categoryId = uri.pathSegments.last;
+    final index = categories.indexWhere((category) => category['id'] == categoryId);
 
     return index != -1 ? index : 0;
   }
@@ -45,42 +42,64 @@ class DocumentShellPageState extends State<DocumentShellPage> {
   @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
+    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     final currentLocation = GoRouterState.of(context).uri.toString();
     final bool isAllTotalDetailPage = currentLocation.contains('all_total/detail');
-    final categoryVM = context.watch<CategoryViewModel>();
 
-    final List<String> categoryNames = [
-      'ALL',
-      ...categoryVM.rootCategories.map((e) => e.categoryName)
-    ];
+    return Consumer<CategoryViewModel>(
+      builder: (context, vm, _) {
 
-    return Scaffold(
-      backgroundColor: appColorScheme.primary,
-      body: Row(
-        children: [
-          Expanded(
-            child: widget.contentPage,
-          ),
-          if (!isAllTotalDetailPage)
-            VerticalTabNavigation(
-              selectedIndex: _getSelectedIndex(currentLocation, categoryNames),
-              categories: categoryNames,
-              onTapChanged: (index) {
-                if (index == -1) {
-                  setState(() => selectedIndex = -1);
-                  return;
-                }
-
-                if (index == 0) { /// ALL은 무조건 idx 0번
-                  context.go('/document_all_total');
-                } else {
-                  final selectedCategory = categoryNames[index];
-                  context.go('/document_category/$selectedCategory');
-                }
-              },
+        if (vm.errorMessage != null) {
+          context.showAppSnackBar(
+            content: Text(
+              vm.errorMessage!,
+              style: appTextTheme.bodySmall.copyWith(
+                color: appColorScheme.primary,
+              ),
             ),
-        ],
-      ),
-    );
+          );
+        }
+
+        final categoryIds = [
+          'ALL', ...vm.rootCategories.map((e) => e.categoryId)
+        ];
+        final displayCategories = [
+          {'id': 'ALL', 'name': '전체'},
+          ...vm.rootCategories.map((c) => {'id': c.categoryId, 'name': c.categoryName}),
+        ];
+
+        return Scaffold(
+          backgroundColor: appColorScheme.primary,
+          body: Row(
+            children: [
+              Expanded(
+                child: widget.contentPage,
+              ),
+              if (!isAllTotalDetailPage)
+                VerticalTabNavigation(
+                  categories: displayCategories.map((e) => e['name']!).toList(),
+                  selectedIndex: _getSelectedIndex(currentLocation, displayCategories),
+                  onTapChanged: (index) {
+                    if (index == -1) {
+                      setState(() => selectedIndex = -1);
+                      return;
+                    }
+
+                    final selected = displayCategories[index];
+                    final String id = selected['id']!;
+                    final String name = selected['name']!;
+
+                    if (selected['id'] == 'ALL') {
+                      context.go('/document_all_total');
+                    } else {
+                      /// ID를 경로에, 이름을 쿼리에 넣고 이동
+                      context.go('/document_category/$id?name=$name');
+                    }
+                  },
+                ),
+            ],
+          ),
+        );
+      });
   }
 }

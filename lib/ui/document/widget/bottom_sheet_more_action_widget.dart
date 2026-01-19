@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../config/color_scheme_extension.dart';
 import '../../../config/text_theme_extension.dart';
-import '../../../domain/model/document_model.dart';
 import 'bottom_sheet_share_widget.dart';
 import 'delete_dialog_widget.dart';
 
@@ -37,10 +36,9 @@ class _BottomSheetMoreActionWidgetState
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  void deleteByTypeSettingModeFromBottomSheet(){
+  Future<void> deleteByTypeSettingModeFromBottomSheet() async {
     if (widget.typeSettingMode == TypeSettingMode.category) {
-      Navigator.pop(context);
-      showDialog(
+      final bool? result = await showDialog<bool>(
         context: context,
         barrierDismissible: false,
         builder: (context) {
@@ -49,6 +47,8 @@ class _BottomSheetMoreActionWidgetState
           );
         },
       );
+      if (!context.mounted) return;
+      Navigator.of(context).pop(result);
     } else {
       ///1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
       context.pop();
@@ -215,8 +215,8 @@ class _BottomSheetMoreActionWidgetState
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: () {
-                  deleteByTypeSettingModeFromBottomSheet();
+                onPressed: () async {
+                  await deleteByTypeSettingModeFromBottomSheet();
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),

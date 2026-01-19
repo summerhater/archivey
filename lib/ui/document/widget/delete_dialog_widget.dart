@@ -9,7 +9,10 @@ enum DeleteSettingMode { category, document }
 
 class DeleteDialogWidget extends StatelessWidget {
   final DeleteSettingMode deleteSettingMode;
-  const DeleteDialogWidget({super.key, required this.deleteSettingMode});
+  const DeleteDialogWidget({
+    super.key,
+    required this.deleteSettingMode,
+  });
 
   String settingModeToString() {
     if (deleteSettingMode == DeleteSettingMode.category) {
@@ -104,8 +107,7 @@ class DeleteDialogWidget extends StatelessWidget {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () {
-                      context.pop();
-                      ///todo: 카테고리 삭제 로직
+                      Navigator.of(context).pop(true);
                     },
                     style: TextButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
