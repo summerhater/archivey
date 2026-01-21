@@ -29,40 +29,10 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     if (widget.shareSettingMode == ShareSettingMode.category) {
       ///todo: 카테고리 일 시 처리할 링크 생성+복사 로직
-      context.showAppSnackBar(
-        content: Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(
-                // text: '\'$newCategoryName\'',
-                text: 'newCategoryName',
-                style: appTextTheme.bodySmall.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: appColorScheme.primary,
-                ),
-              ),
-              const TextSpan(
-                text: ' 카테고리 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
-              ),
-            ],
-            style: appTextTheme.bodySmall.copyWith(
-              height: 1.8,
-              color: appColorScheme.primary,
-            ),
-          ),
-        ),
-      );
+      context.showAppMessageSnackBar('카테고리 링크가 복사되었습니다. ☻');
     } else {
       ///todo: 1개의 수집물(도큐먼트) 일 시 처리할 링크 복사 로직
-      context.showAppSnackBar(
-        content: Text(
-          '수집물 링크가 복사되었습니다. \n원하는 곳에 붙여넣기 해보세요 ☻',
-          style: appTextTheme.bodySmall.copyWith(
-            height: 1.8,
-            color: appColorScheme.primary,
-          ),
-        ),
-      );
+      context.showAppMessageSnackBar('수집물 링크가 복사되었습니다. ☻');
     }
   }
 

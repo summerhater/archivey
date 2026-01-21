@@ -50,14 +50,10 @@ class DocumentShellPageState extends State<DocumentShellPage> {
       builder: (context, vm, _) {
 
         if (vm.errorMessage != null) {
-          context.showAppSnackBar(
-            content: Text(
-              vm.errorMessage!,
-              style: appTextTheme.bodySmall.copyWith(
-                color: appColorScheme.primary,
-              ),
-            ),
-          );
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.showAppMessageSnackBar('에러 발생 : ${vm.errorMessage!}');
+            vm.clearErrorMessage();
+          });
         }
 
         final categoryIds = [

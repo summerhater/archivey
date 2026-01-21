@@ -153,42 +153,6 @@ class _SettingsPageState extends State<SettingsPage> {
                           ],
                         ),
                         Divider(height: 48, color: appColorScheme.strokeLight),
-
-                        /// AI 요약 설정 토글 스위치
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     Expanded(
-                        //       child: Column(
-                        //         crossAxisAlignment: CrossAxisAlignment.start,
-                        //         children: [
-                        //           Text(
-                        //             'AI 요약',
-                        //             style: appTextTheme.bodyMedium.copyWith(
-                        //               color: appColorScheme.primaryStrong,
-                        //             ),
-                        //           ),
-                        //           SizedBox(height: 8),
-                        //           Text(
-                        //             '수집한 콘텐츠를 AI로 자동 요약합니다.',
-                        //             style: appTextTheme.bodySmall.copyWith(
-                        //               color: appColorScheme.textLight,
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //     AppToggleSwitchWidget(
-                        //       value: aiSummaryEnabled,
-                        //       onChanged: (value) {
-                        //         setState(() {
-                        //           aiSummaryEnabled = value;
-                        //         });
-                        //       },
-                        //     ),
-                        //   ],
-                        // ),
-                        // Divider(height: 48, color: appColorScheme.strokeLight),
                         SettingMenuItemWidget(
                           icon: Icons.notifications,
                           label: '공지사항',
@@ -206,7 +170,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         SettingMenuItemWidget(
                           icon: Icons.mail,
                           label: '문의하기',
-                          onTap: () {},
+                          onTap: () async {
+                            final url = 'https://forms.gle/aPeFzWGP4mVna1eZ8';
+                            final uri = Uri.parse(url);
+                            if (await canLaunchUrl(uri)) {
+                              launchUrl(uri, mode: LaunchMode.externalApplication);
+                            }
+                          },
                           appTextTheme: appTextTheme,
                           appColorScheme: appColorScheme,
                         ),

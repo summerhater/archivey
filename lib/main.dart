@@ -55,6 +55,7 @@ void main() async {
         Provider<FirebaseDocumentService>(
           create: (_) => FirebaseDocumentService(),
         ),
+
         ChangeNotifierProvider<DocumentViewModel>(
           create: (context) => DocumentViewModel(
             context.read<FirebaseDocumentService>(),

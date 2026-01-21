@@ -40,7 +40,7 @@ class DocumentCard extends StatelessWidget {
       final rootCategory = categoryVM.getRootCategoryByParentId(
         document.category.parentId!,
       );
-      categoryName = rootCategory!.categoryName;
+      categoryName = rootCategory?.categoryName ?? '알수없는 대분류 카테고리';
     } else {
       categoryName = document.category.categoryName;
     }
@@ -310,7 +310,7 @@ Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(

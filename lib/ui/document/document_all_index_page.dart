@@ -19,8 +19,6 @@ class DocumentAllIndexPage extends StatefulWidget {
 
 class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
   Future<void> _onAddCategoryPressed() async {
-    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
-    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final newCategoryName = await showModalBottomSheet<String>(
       isScrollControlled: true,
       context: context,
@@ -33,24 +31,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
     if (!mounted) return;
 
     if (newCategoryName != null && newCategoryName.isNotEmpty) {
-      context.showAppSnackBar(
-        content: Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(
-                text: '\'$newCategoryName\'',
-                style: appTextTheme.bodySmall.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const TextSpan(text: ' 카테고리가 추가 되었습니다 ☻'),
-            ],
-            style: appTextTheme.bodySmall.copyWith(
-              color: appColorScheme.primary,
-            ),
-          ),
-        ),
-      );
+      context.showAppMessageSnackBar('카테고리가 추가 완료 되었습니다 ☻');
     }
   }
 
@@ -74,14 +55,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                 return Center(child: Text('카테고리가 없습니다. 만들어주세요~'));
               }
               if (vm.errorMessage != null) {
-                context.showAppSnackBar(
-                  content: Text(
-                    vm.errorMessage!,
-                    style: appTextTheme.bodySmall.copyWith(
-                      color: appColorScheme.primary,
-                    ),
-                  ),
-                );
+                context.showAppMessageSnackBar('에러 발생 : ${vm.errorMessage!}');
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
