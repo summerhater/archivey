@@ -275,15 +275,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
         },
         onTagAdded: (value) {
           if (tags.length >= 4) {
-            context.showAppSnackBar(
-              content: Text(
-                '태그는 최대 4개까지만 등록 할 수 있어요!',
-                style: appTextTheme.bodySmall.copyWith(
-                  height: 1.8,
-                  color: appColorScheme.primary,
-                ),
-              ),
-            );
+            context.showAppMessageSnackBar('태그는 최대 4개까지만 등록 할 수 있어요!');
           } else {
             setState(() {
               tags.add(value);

@@ -5,8 +5,6 @@ import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:provider/provider.dart';
 
 class DocumentAllTotalPage extends StatefulWidget {
-
-  /// 기본값 강제로 빈 리스트 반환해서 GoRouter 에러 방지
   const DocumentAllTotalPage({super.key});
 
   @override

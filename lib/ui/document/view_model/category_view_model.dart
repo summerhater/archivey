@@ -15,7 +15,7 @@ class CategoryViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   CategoryViewModel(this._categoryService, this._authService, this._documentService){
     readCategory();
-    print('######### 카테고리 수: ${_categories.length} ###########');
+    // print('######### 카테고리 수: ${_categories.length} ###########');
   }
   List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
@@ -24,9 +24,17 @@ class CategoryViewModel extends ChangeNotifier {
   final Map<String, int> _docCountMap = {};
   Map<String, int> get docCountMap => _docCountMap;
 
+
   ///에러 메세지 문자열 비우는 util
   void clearErrorMessage() {
-    _errorMessage = null;
+    if (_errorMessage != null) {
+      _errorMessage = null;
+      notifyListeners();
+    }
+  }
+
+  CategoryModel? getCategory(String categoryId) {
+    return _categories.where((c) => c.categoryId == categoryId).firstOrNull;
   }
 
   ///대분류 카테고리만 반환
@@ -45,7 +53,7 @@ class CategoryViewModel extends ChangeNotifier {
   }
 
   ///특정 대분류와 해당하는 소분류 카테고리의 id를 하나로 묶어서 반환
-  Set<String> getFamilyCategories(String rootId) {
+  Set<String> _getFamilyCategories(String rootId) {
     return {
       rootId, ...getSubCategories(rootId).map((e) => e.categoryId),
     };
@@ -74,6 +82,28 @@ Future<int> getDocumentsByCategory(String categoryId) async {
       rethrow;
     }
 }
+
+  ///대분류 카테고리 자체 + 속한 소분류 카테고리에 해당하는 document 반환
+  Future<List<DocumentModel>> getDocumentsByRootCategory(String rootCategoryId) async {
+    try {
+      final familyIds = _getFamilyCategories(rootCategoryId);
+
+      final results = await Future.wait(
+          familyIds.map((id) => _documentService.getDocumentsByCategory(id))
+      );
+
+      return results.expand((docs) => docs).toList();
+    } catch (e) {
+      print("error in getDocumentsByRootCategory : $e");
+      rethrow;
+    }
+  }
+
+  Future<int> getDocumentCountByRootCategory(String rootCategoryId) async {
+    final docs = await getDocumentsByRootCategory(rootCategoryId);
+    return docs.length;
+  }
+
   Future<void> initRootCategoryDocumentCount() async {
     _docCountMap.clear();
 
@@ -81,12 +111,14 @@ Future<int> getDocumentsByCategory(String categoryId) async {
     _categories.where((c) => c.isRootCategory).toList();
 
     for (final category in rootList) {
-      final count = await getDocumentsByCategory(category.categoryId);
+      final count =
+      await getDocumentCountByRootCategory(category.categoryId);
+
       _docCountMap[category.categoryId] = count;
-      print('디버그 : ${category.categoryName} : $count');
+      print('${category.categoryName} : $count');
     }
 
-    // notifyListeners();
+    notifyListeners();
   }
 
 
@@ -204,7 +236,7 @@ Future<int> getDocumentsByCategory(String categoryId) async {
     try {
       clearErrorMessage();
       await _categoryService.deleteCategory(categoryId);
-      _decreaseDocCount(categoryId);
+      // _decreaseDocCount(categoryId);
       await readCategory();
     } catch(e) {
       print('error in deleteCategory: $e');

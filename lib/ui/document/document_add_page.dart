@@ -1,7 +1,6 @@
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
-import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,10 +27,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   String _sharedURLCaptionText = '';
 
   void _handleSharingIntent(sharedText) {
-    ///텍스트를 받는다
-    ///url만 추출 -> controller.text에 주입
-    ///나머지 텍스트 -> String으로 만들기
-    ///vm에게 url, urlCaptionText 따로 넘겨주기
+    ///텍스트 받기 -> url만 추출해서 controller.text에 주입 -> 나머지 텍스트는 String으로 만들기 -> vm에게 url, urlCaptionText 따로 넘겨줌
 
     final foundURLMatch = RegExp(r"(https?://[^\s]+)").firstMatch(sharedText);
     final sharedURL = foundURLMatch?.group(0) ?? '';
@@ -44,48 +40,25 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   }
 
   Future<void> _handleSave(BuildContext context) async {
-    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
-    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
     if (!_formKey.currentState!.validate()) return;
     if (_selectedCategory == null) return;
 
-    final documentVM = Provider.of<DocViewModel>(context, listen: false);
-
-    final CategoryModel targetCategory =
-        _selectedSubCategory ?? _selectedCategory!;
+    final vm = context.read<DocViewModel>();
+    final targetCategory = _selectedSubCategory ?? _selectedCategory!;
 
     try {
-      await documentVM.addDocumentProcess(
-        sharedURL: _urlController.text.trim(),
+      await vm.addDocumentProcess(
+        sharedURL: _urlController.text,
         sharedURLCaptionText: _sharedURLCaptionText,
         category: targetCategory,
-        memo: _memoController.text.trim().isEmpty
-            ? null
-            : _memoController.text.trim(),
+        memo: _memoController.text,
       );
 
-      if (mounted) {
-        context.pop();
-      }
-
-      context.showAppSnackBar(
-        content: Text(
-          '수집물 아카이빙이 완료되었습니다 ☻',
-          style: appTextTheme.bodySmall.copyWith(
-            color: appColorScheme.primary,
-          ),
-        ),
-      );
-
+      if (!mounted) return;
+      context.pop();
+      context.showAppMessageSnackBar('수집물 아카이빙이 완료되었습니다 ☻');
     } catch (e) {
-      context.showAppSnackBar(
-        content: Text(
-          '수집물 아카이빙 실패 : $e',
-          style: appTextTheme.bodySmall.copyWith(
-            color: appColorScheme.primary,
-          ),
-        ),
-      );
+      context.showAppMessageSnackBar('수집물 아카이빙에 실패했습니다 : $e');
     }
   }
 
@@ -213,7 +186,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                     ),
                     const SizedBox(height: 12),
 
-                    ///대분류 카테고리
+                    /// 대분류 카테고리
                     Wrap(
                       spacing: 8.0,
                       children: categories.map((category) {
@@ -250,9 +223,9 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                         padding: const EdgeInsets.only(
                           top: 30,
                         ),
-                        child: Container(
+                        child: SizedBox(
                           width: double.infinity,
-                          child: _selectedCategory == null
+                          child: _selectedCategory == null || subCategories.isEmpty
                               ? const SizedBox.shrink()
                               : Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,43 +269,6 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                           ),
                                         );
                                       }).toList(),
-                                      // children: List.generate(
-                                      //   subCategories.length,
-                                      //   (index) {
-                                      //     bool isSubSelected =
-                                      //         _selectedSubIndex == index;
-                                      //     return ChoiceChip(
-                                      //       showCheckmark: false,
-                                      //       label: Text(
-                                      //         subCategories.categoryName,
-                                      //         style: appTextTheme.labelLarge,
-                                      //       ),
-                                      //       selected: isSubSelected,
-                                      //       onSelected: (selected) {
-                                      //         setState(() {
-                                      //           _selectedSubIndex = selected
-                                      //               ? index
-                                      //               : null;
-                                      //         });
-                                      //       },
-                                      //       backgroundColor:
-                                      //           appColorScheme.primary,
-                                      //       selectedColor:
-                                      //           appColorScheme.primaryStrong,
-                                      //       shape: StadiumBorder(
-                                      //         side: BorderSide(
-                                      //           color:
-                                      //               appColorScheme.strokeLight,
-                                      //         ),
-                                      //       ),
-                                      //       labelStyle: appTextTheme.bodyLarge.copyWith(
-                                      //         color: isSubSelected
-                                      //             ? appColorScheme.primary
-                                      //             : appColorScheme.primaryStrong,
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      // ),
                                     ),
                                   ],
                                 ),
