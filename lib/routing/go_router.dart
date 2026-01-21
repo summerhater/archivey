@@ -14,6 +14,7 @@ import 'package:archivey/ui/auth/signup_email_page.dart';
 import 'package:archivey/ui/auth/signup_email_verify_page.dart';
 import 'package:archivey/ui/auth/signup_password_page.dart';
 import 'package:archivey/ui/auth/signup_success_page.dart';
+import 'package:archivey/ui/document/view_model/category_view_model.dart';
 
 import 'package:archivey/ui/onboarding/on_boarding_page.dart';
 import 'package:archivey/ui/setting/settings_page.dart';
@@ -144,6 +145,10 @@ final GoRouter goRouter = GoRouter(
     /// document 추가 페이지
     GoRoute(
       path: '/document_add',
+      onExit: (context, state){
+        //Provider.of<CategoryViewModel>(context,listen: false).updateCategory();
+        return true;
+      },
       builder: (context, state) {
         final sharedText = state.extra as String?;
         return DocumentAddPage(sharedText: sharedText);

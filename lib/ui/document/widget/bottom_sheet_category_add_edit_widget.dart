@@ -209,14 +209,7 @@ class _BottomSheetCategoryAddEditWidgetState
                         context.pop(_inputValue);
                       } catch (e) {
                         if (!mounted) return;
-                        context.showAppSnackBar(
-                          content: Text(
-                            '카테고리 작업 실패: $e',
-                            style: appTextTheme.bodySmall.copyWith(
-                              color: appColorScheme.primary,
-                            ),
-                          ),
-                        );
+                        context.showAppMessageSnackBar('카테고리 작업 실패: $e');
                       }
                     },
                     style: ElevatedButton.styleFrom(

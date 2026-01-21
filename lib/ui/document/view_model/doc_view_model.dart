@@ -92,9 +92,11 @@ class DocViewModel extends ChangeNotifier {
     if (_isLoading) return;
     _isLoading = true;
 
+    final trimmedMemo = memo != null && memo.trim().isEmpty ? null : memo?.trim();
+
     /// 스크래핑
     final (newDoc, contentText) = await _firebaseDocumentService
-        .scrapeUrlAndPrepare(sharedURL, sharedURLCaptionText, category, memo);
+        .scrapeUrlAndPrepare(sharedURL.trim(), sharedURLCaptionText, category, trimmedMemo);
 
     /// 1차 저장(분석중)
     await _driftDocumentService.createDocument(newDoc);
@@ -280,3 +282,4 @@ class DocViewModel extends ChangeNotifier {
     _driftDocumentService.setSyncTime();
   }
 }
+

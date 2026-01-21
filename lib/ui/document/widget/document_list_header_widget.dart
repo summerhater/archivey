@@ -56,25 +56,33 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
     final isSelected;
 
     return Consumer<CategoryViewModel>(
-      builder: (context, categoryVM, _) {
-        final roots = categoryVM.rootCategories;
+      builder: (context, vm, _) {
+        final roots = vm.rootCategories;
 
-        if (roots.isEmpty) {
-          return const SizedBox.shrink();
-        }
+        // if (roots.isEmpty) {
+        //   return const SizedBox.shrink();
+        // }
 
-        final CategoryModel currentRoot =
-        widget.isOnAllPage
+        final CategoryModel? currentRoot = roots.isEmpty
+            ? null
+            : (widget.isOnAllPage
             ? roots.first
             : roots.firstWhere(
-              (c) => c.categoryName == widget.rootCategory!.categoryName,
+              (c) => c.categoryName == widget.rootCategory?.categoryName,
           orElse: () => roots.first,
-        );
+        ));
 
-        final List<CategoryModel> subCategories =
-        widget.isOnAllPage
+        // final CategoryModel currentRoot =
+        // widget.isOnAllPage
+        //     ? roots.first
+        //     : roots.firstWhere(
+        //       (c) => c.categoryName == widget.rootCategory!.categoryName,
+        //   orElse: () => roots.first,
+        // );
+
+        final List<CategoryModel> subCategories = widget.isOnAllPage || currentRoot == null
             ? const []
-            : categoryVM.getSubCategories(currentRoot.categoryId);
+            : vm.getSubCategories(currentRoot.categoryId);
 
         return Material(
           color: Colors.transparent,
@@ -133,7 +141,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                     Padding(
                       padding: EdgeInsets.only(top: 2.5),
                       child: Text(
-                        currentRoot.categoryName,
+                        currentRoot?.categoryName ?? '카테고리 없음',
                         textAlign: TextAlign.left,
                         style: appTextTheme.headlineSmallKo.copyWith(
                           color: appColorScheme.textDark,
@@ -191,8 +199,8 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                             padding: const EdgeInsets.only(right: 8.0),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(24),
-                              onLongPress: () {
-                                showModalBottomSheet<String>(
+                              onLongPress: () async {
+                                final result = await showModalBottomSheet<bool>(
                                   isScrollControlled: true,
                                   context: context,
                                   useRootNavigator: true,
@@ -202,6 +210,11 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                     originalCategoryModel: sub,
                                   ),
                                 );
+                                print('result is : $result');
+                                if (result == true) {
+                                  print('ondelete subcategory');
+                                    vm.deleteCategory(sub.categoryId);
+                                }
                               },
                               child: ChoiceChip(
                                 showCheckmark: false,
@@ -255,24 +268,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                   ),
                                 );
                                 if (newCategoryName != null) {
-                                  context.showAppSnackBar(
-                                    content: Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: '\'$newCategoryName\'',
-                                            style: appTextTheme.bodySmall.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const TextSpan(text: ' 카테고리가 추가 되었습니다 ☻'),
-                                        ],
-                                        style: appTextTheme.bodySmall.copyWith(
-                                          color: appColorScheme.primary,
-                                        ),
-                                      ),
-                                    ),
-                                  );
+                                  context.showAppMessageSnackBar('카테고리가 추가 되었습니다. ☻');
                                 }
                               },
                               label: Icon(Icons.add, size: 18),

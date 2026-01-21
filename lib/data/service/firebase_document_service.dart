@@ -454,7 +454,7 @@ $commonInstructions
           .collection('documents')
           .where('category.categoryId', isEqualTo: categoryId)
           .get();
-      print('documents count in getDocumentsByCategory: ${querySnapshot.docs.length}');
+      // print('documents count in getDocumentsByCategory: ${querySnapshot.docs.length}');
       return querySnapshot.docs
           .map((doc) => DocumentModel.fromMap(doc.data()))
           .toList();

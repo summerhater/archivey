@@ -61,6 +61,7 @@ void main() async {
             return previous;
           },
         ),
+
         ChangeNotifierProvider<DocumentViewModel>(
           create: (context) => DocumentViewModel(
             context.read<FirebaseDocumentService>(),
