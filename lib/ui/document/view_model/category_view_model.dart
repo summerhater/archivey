@@ -3,26 +3,36 @@ import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
+import 'package:archivey/domain/state/app_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 class CategoryViewModel extends ChangeNotifier {
   final FirebaseCategoryService _categoryService;
-  final FirebaseAuthService _authService;
-  final FirebaseDocumentService _documentService;
+  // final FirebaseAuthService _authService;
+  // final FirebaseDocumentService _documentService;
+  AppState _appState;
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
-  CategoryViewModel(this._categoryService, this._authService, this._documentService){
-    readCategory();
-    print('######### 카테고리 수: ${_categories.length} ###########');
-  }
-  List<CategoryModel> _categories = [];
-  List<CategoryModel> get categories => _categories;
+  CategoryViewModel(
+    this._categoryService,
+    // this._authService,
+    // this._documentService,
+    this._appState
+  );
+  // List<CategoryModel> _categories = [];
+  // List<CategoryModel> get categories => _categories;
+  List<CategoryModel> get categories => _appState.categories;
 
-  User? get user => _authService.user;
+  // User? get user => _authService.user;
   final Map<String, int> _docCountMap = {};
   Map<String, int> get docCountMap => _docCountMap;
+
+  void updateState(AppState newState) {
+    _appState = newState;
+    notifyListeners();
+  }
 
   ///에러 메세지 문자열 비우는 util
   void clearErrorMessage() {
@@ -31,14 +41,14 @@ class CategoryViewModel extends ChangeNotifier {
 
   ///대분류 카테고리만 반환
   List<CategoryModel> get rootCategories {
-    final rootList = _categories.where((c) => c.isRootCategory).toList();
+    final rootList = categories.where((c) => c.isRootCategory).toList();
     rootList.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
     return rootList;
   }
 
   ///특정 대분류의 소분류 카테고리들을 반환
   List<CategoryModel> getSubCategories(String rootId) {
-    final subList = _categories.where((c) => c.parentId == rootId).toList();
+    final subList = categories.where((c) => c.parentId == rootId).toList();
     subList.sort((a, b) => a.categoryName.compareTo(b.categoryName));
 
     return subList;
@@ -47,7 +57,8 @@ class CategoryViewModel extends ChangeNotifier {
   ///특정 대분류와 해당하는 소분류 카테고리의 id를 하나로 묶어서 반환
   Set<String> getFamilyCategories(String rootId) {
     return {
-      rootId, ...getSubCategories(rootId).map((e) => e.categoryId),
+      rootId,
+      ...getSubCategories(rootId).map((e) => e.categoryId),
     };
   }
 
@@ -55,7 +66,7 @@ class CategoryViewModel extends ChangeNotifier {
   CategoryModel? getRootCategoryByParentId(String parentId) {
     try {
       return rootCategories.firstWhere(
-            (root) => root.categoryId == parentId,
+        (root) => root.categoryId == parentId,
       );
     } catch (_) {
       return null;
@@ -63,22 +74,36 @@ class CategoryViewModel extends ChangeNotifier {
   }
 
   ///카테고리id를 받아 해당 id에 속한 document 반환
-Future<int> getDocumentsByCategory(String categoryId) async {
-    try{
-      final documents = await _documentService.getDocumentsByCategory(categoryId);
-      print('documents.length: ${documents.length}');
-      return documents.length;
+  // Future<int> getDocumentsByCategory(String categoryId) async {
+  //   try {
+  //     final documents = await _documentService.getDocumentsByCategory(
+  //       categoryId,
+  //     );
+  //     print('documents.length: ${documents.length}');
+  //     return documents.length;
+  //   } catch (e) {
+  //     print("error in getDocumentsByCategory : $e");
+  //     rethrow;
+  //   }
+  // }
+  int getDocumentsByCategory(String categoryId) {
+    final documents = _appState.documents;
 
-    }catch(e){
-      print("error in getDocumentsByCategory : $e");
-      rethrow;
+    if(documents.isEmpty) return 0;
+
+    int result = 0;
+
+    for(var d in documents) {
+      if(d.category.categoryId == categoryId) result++;
     }
-}
+
+    return result;
+  }
+
   Future<void> initRootCategoryDocumentCount() async {
     _docCountMap.clear();
 
-    final rootList =
-    _categories.where((c) => c.isRootCategory).toList();
+    final rootList = categories.where((c) => c.isRootCategory).toList();
 
     for (final category in rootList) {
       final count = await getDocumentsByCategory(category.categoryId);
@@ -89,11 +114,10 @@ Future<int> getDocumentsByCategory(String categoryId) async {
     // notifyListeners();
   }
 
-
   ///create할때 order 최대값 계산해주는 util
-  int _calculateCategoryOrder(){
+  int _calculateCategoryOrder() {
     int currentMax = -1;
-    for (var i in _categories) {
+    for (var i in categories) {
       if (i.isRootCategory) {
         int categoryOrder = i.order ?? 0;
         if (categoryOrder > currentMax) {
@@ -104,10 +128,9 @@ Future<int> getDocumentsByCategory(String categoryId) async {
     return currentMax;
   }
 
-///create할때 document수 +1 하는 util
+  ///create할때 document수 +1 하는 util
   void _increaseDocCount(String categoryId) {
-    _docCountMap[categoryId] =
-        (_docCountMap[categoryId] ?? 0) + 1;
+    _docCountMap[categoryId] = (_docCountMap[categoryId] ?? 0) + 1;
     notifyListeners();
   }
 
@@ -121,14 +144,16 @@ Future<int> getDocumentsByCategory(String categoryId) async {
   Future<void> createCategory(String name, {String? parentId}) async {
     int? order;
 
-    if (parentId == null) { ///최상위 카테고리일때만 order 계산
+    if (parentId == null) {
+      ///최상위 카테고리일때만 order 계산
       int currentMax = _calculateCategoryOrder();
       order = (currentMax == -1) ? 0 : currentMax + 1;
+
       /// 찾은 결과가 없으면 0, 있으면 최댓값 + 1
     }
 
     final newCategory = CategoryModel(
-      uid: user!.uid,
+      uid: _appState.uid,
       categoryId: const Uuid().v4(),
       categoryName: name,
       order: order,
@@ -147,28 +172,34 @@ Future<int> getDocumentsByCategory(String categoryId) async {
   }
 
   Future<void> readCategory() async {
-    try{
+    try {
       clearErrorMessage();
-      _categories = await _categoryService.readCategory();
+      // _categories = await _categoryService.readCategory();
+      final _categories = await _categoryService.readCategory();
+      _appState.setCategories(_categories);
+
       await initRootCategoryDocumentCount();
-    }catch(e){
+    } catch (e) {
       print('error in readCategory: $e');
       _errorMessage = '카테고리 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
-    }finally{
+    } finally {
       notifyListeners();
     }
   }
 
-  Future<void> updateCategory(CategoryModel originalCategory, String newName) async {
+  Future<void> updateCategory(
+    CategoryModel originalCategory,
+    String newName,
+  ) async {
     if (originalCategory.categoryName == newName) return;
 
     final toUpdate = originalCategory.copyWith(categoryName: newName);
 
-    try{
+    try {
       clearErrorMessage();
       await _categoryService.updateCategory(toUpdate);
       await readCategory();
-    }catch(e){
+    } catch (e) {
       print('error in updateCategory: $e');
       _errorMessage = '카테고리 이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.';
       notifyListeners();
@@ -189,11 +220,11 @@ Future<int> getDocumentsByCategory(String categoryId) async {
       toReorder[i] = toReorder[i].copyWith(order: i);
     }
 
-    try{
+    try {
       clearErrorMessage();
       await _categoryService.updateReorderCategories(toReorder);
       await readCategory();
-    }catch(e){
+    } catch (e) {
       print('error in reorderCategories: $e');
       _errorMessage = '카테고리 순서를 변경할 수 없습니다. 잠시 후 다시 시도해주세요.';
       notifyListeners();
@@ -206,7 +237,7 @@ Future<int> getDocumentsByCategory(String categoryId) async {
       await _categoryService.deleteCategory(categoryId);
       _decreaseDocCount(categoryId);
       await readCategory();
-    } catch(e) {
+    } catch (e) {
       print('error in deleteCategory: $e');
       _errorMessage = '카테고리 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.';
       notifyListeners();

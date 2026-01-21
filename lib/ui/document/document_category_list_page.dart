@@ -29,8 +29,8 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
   @override
   Widget build(BuildContext context) {
     final categoryVM = context.watch<CategoryViewModel>();
-    // final documentVM = context.watch<DocViewModel>();
-    final documentVM = context.watch<DocumentViewModel>();
+    final documentVM = context.watch<DocViewModel>();
+    // final documentVM = context.watch<DocumentViewModel>();
 
     // 1. 현재 탭 이름에 해당하는 Root 카테고리 찾기
     CategoryModel? rootCategory;
