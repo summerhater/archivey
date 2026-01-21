@@ -1,4 +1,5 @@
 import 'package:archivey/domain/model/document_model.dart';
+import 'package:archivey/domain/state/app_state.dart';
 // import 'package:archivey/ui/document/ai_summary_example.dart';
 import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/document/document_add_page.dart';
@@ -37,8 +38,8 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/auth',
       redirect: (context, state) {
-        if(Provider.of<AuthViewModel>(context, listen: false).uid.isNotEmpty) {
-          return '/document_all_index';
+        if(Provider.of<AppState>(context, listen: false).uid.isNotEmpty) {
+          return '/document_all_total';
         }
       },
       builder: (context, state) => AuthPage(),

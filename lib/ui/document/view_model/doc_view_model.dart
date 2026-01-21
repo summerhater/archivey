@@ -5,33 +5,27 @@ import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
-import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
-import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/domain/state/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DocViewModel extends ChangeNotifier {
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
-  final CategoryViewModel _categoryViewModel;
-  final AuthViewModel _authViewModel;
+  AppState _appState;
 
   DocViewModel(
     this._firebaseDocumentService,
     this._driftDocumentService,
-    this._categoryViewModel,
-    this._authViewModel,
+    this._appState,
   ) {
-    _categoryViewModel.addListener(_onCategoryChanged);
-    if(_categoryViewModel.categories.isNotEmpty) {
-      readDocuments(_categoryViewModel.categories);
-    }
+    pullAndPush();
   }
 
   StreamSubscription<List<DocumentModel>>? _subscription;
 
-  List<DocumentModel> _documents = [];
-  List<DocumentModel> get documents => _documents;
+  // List<DocumentModel> _documents = [];
+  List<DocumentModel> get documents => _appState.documents;
 
   final _searchQueryController = BehaviorSubject<String>.seeded('');
 
@@ -39,6 +33,15 @@ class DocViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool _isRetrying = false;
   bool isBookMark = false;
+
+  void updateState(AppState newState) {
+    print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
+    _appState = newState;
+
+    if(_appState.categories.isNotEmpty && _appState.documents.isEmpty) {
+      readDocuments(_appState.categories);
+    }
+  }
 
   /// 초기 데이터 로드
   ///
@@ -60,10 +63,10 @@ class DocViewModel extends ChangeNotifier {
         .listen(
           (data) {
             // 여기서 List에 받아온 값들 저장함
-            _documents = data;
+            _appState.setDocuments(data);
             notifyListeners();
             print(
-              '################## 저장된 문서는 ${_documents.length}개###########',
+              '################## 저장된 문서는 ${_appState.documents.length}개###########',
             );
           },
           onError: (e, stackTrace) {
@@ -73,6 +76,10 @@ class DocViewModel extends ChangeNotifier {
         );
 
     // TODO 북마크 어떻게 할건지? SQL을 다시 호출? 아니면 Client 에서 sort?
+  }
+
+  List<DocumentModel> getDocumentsByCategoryId(String categoryId) {
+    return _appState.documents.where((doc) => doc.category.categoryId == categoryId).toList();
   }
 
   /// 수집물 추가
@@ -123,7 +130,6 @@ class DocViewModel extends ChangeNotifier {
         (_) async {
           /// local의 SyncStatus 갱신
           print('########## 서버 업로드 성공 ##############');
-          await pullSync(_authViewModel.uid);
           await _driftDocumentService.remoteUploadDone(updateDoc);
         },
       );
@@ -193,30 +199,25 @@ class DocViewModel extends ChangeNotifier {
   }
 
   /// 검색 함수
-  void search({required String keyword, required CategoryModel category}) {
+  void search({required String keyword}) {
     _searchQueryController.add(
       keyword,
     );
   }
 
-  /// 카테고리 변경 감지 리스너
-  void _onCategoryChanged() async{
-    print('############## doc VM에서 카테고리 수는? ${_categoryViewModel.categories.length} ################');
-    if(_categoryViewModel.categories.isNotEmpty) {
-      readDocuments(_categoryViewModel.categories);
-      await pullSync(_authViewModel.uid);
-    }
-  }
-  
   @override
   void dispose() {
-    _categoryViewModel.removeListener(_onCategoryChanged);
     _subscription?.cancel();
     super.dispose();
   }
 
+  Future<void> pullAndPush() async{
+    await pullSync();
+    await pushSync();
+  }
+
   /// remote의 데이터를 가져와 sync 맞추기
-  Future<void> pullSync(String uid) async {
+  Future<void> pullSync() async {
     print('############# pull Sync 시작 #################');
 
     // local sync
@@ -225,7 +226,7 @@ class DocViewModel extends ChangeNotifier {
 
     // local sync보다 오래된 data들을 가져옴
     final List<DocumentModel> documents = await _firebaseDocumentService
-        .getDocumentsByUpdatedAt(localSyncTime);
+        .getDocumentsByUpdatedAt(localSyncTime, _appState.uid);
     print(
       '################### sync data는 총 ${documents.length}개 ###################',
     );
@@ -251,11 +252,8 @@ class DocViewModel extends ChangeNotifier {
   }
 
   /// Sync가 되지 않은 local의 데이터를 보내 sync 맞추기
-  Future<void> pushSync(List<CategoryModel> categories, String uid) async {
+  Future<void> pushSync() async {
     print('############# push Sync 시작 #################');
-
-    // pull sync 하기
-    await pullSync(uid);
 
     // pending인 값 가져오기
     final pendingDocuments = await _driftDocumentService.getPendingDocuments();
@@ -267,7 +265,7 @@ class DocViewModel extends ChangeNotifier {
 
     final documents = pendingDocuments.map((doc) {
       return doc
-          .toDomain(categories: categories)
+          .toDomain(categories: _appState.categories)
           .copyWith(updatedAt: DateTime.now())
           .toMap();
     }).toList();
@@ -280,6 +278,8 @@ class DocViewModel extends ChangeNotifier {
         await _driftDocumentService.syncStatusUpdate(d);
       }
     });
+
+    _driftDocumentService.setSyncTime();
   }
 }
 

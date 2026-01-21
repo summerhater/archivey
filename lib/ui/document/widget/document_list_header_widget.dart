@@ -1,5 +1,6 @@
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -289,7 +290,8 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: TextField(
                     onChanged: (value) {
-                      _searchValue = value;
+                      // _searchValue = value;
+                      Provider.of<DocViewModel>(context, listen: false).search(keyword: value,);
                     },
                     cursorColor: appColorScheme.categoryTagBg,
                     cursorWidth: 1.0,

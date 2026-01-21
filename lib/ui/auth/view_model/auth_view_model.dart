@@ -3,22 +3,26 @@ import 'dart:async';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/domain/model/app_user.dart';
+import 'package:archivey/domain/state/app_state.dart';
 import 'package:flutter/material.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final FirebaseAuthService _authService;
   final FirebaseAppUserService _userService;
+  AppState _appState;
 
-  AuthViewModel(this._authService, this._userService){
+  AuthViewModel(this._authService, this._userService, this._appState){
     print('########################## 앱 시작해서 user 정보 받아오려고 함!!!!');
     fetchUser();
   }
 
-  String getEmail = '';
+  String inputEmail = '';
 
   bool isLoading = false;
 
-  String uid = '';
+  void updateState(AppState newState) {
+    _appState = newState;
+  }
 
   void _setLoading(bool isLoading) {
     this.isLoading = isLoading;
@@ -29,19 +33,15 @@ class AuthViewModel extends ChangeNotifier {
   void fetchUser() {
     _authService.authStateChanges().listen((user) async{
       if(user == null) {
-        uid = '';
-        notifyListeners();
+        print('############### user 없음 #################');
+        _appState.setUid(null);
+        _appState.setEmail(null);
       } else {
-        await loadUid();
-        notifyListeners();
+        print('################## user 있음 ##################');
+        _appState.setUid(_authService.user?.uid);
+        _appState.setEmail(_authService.user?.email);
       }
     });
-  }
-
-  /// user 정보에서 uid 불러오기
-  Future<void> loadUid() async{
-    uid = _authService.user!.uid;
-    print('##################### uid: $uid ######################');
   }
 
   /// 이메일 중복 확인
@@ -60,7 +60,7 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       result = await _userService.isAlreadyExistEmail(email.trim());
-      getEmail = email.trim();
+      inputEmail = email.trim();
     } catch (e) {
       _setLoading(false);
       rethrow;
@@ -69,7 +69,7 @@ class AuthViewModel extends ChangeNotifier {
     _setLoading(false);
 
     if (result) {
-      getEmail = '';
+      inputEmail = '';
       throw Exception('사용중인 이메일 입니다.');
     }
   }
@@ -85,12 +85,12 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       await _authService.signUpWithEmailAndPassword(
-        email: getEmail,
+        email: inputEmail,
         password: pw,
       );
       await _userService.userRegistration(
-        uid: uid,
-        appUser: AppUser(email: getEmail, createAt: DateTime.now()),
+        uid: _appState.uid,
+        appUser: AppUser(email: inputEmail, createAt: DateTime.now()),
       );
     } catch (e) {
       _setLoading(false);

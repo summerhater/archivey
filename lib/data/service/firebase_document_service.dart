@@ -522,10 +522,10 @@ $commonInstructions
    */
 
   /// localSyncTime과 비교하여 최신 데이터들을 가져옴
-  Future<List<DocumentModel>> getDocumentsByUpdatedAt(DateTime localSyncTime) async{
+  Future<List<DocumentModel>> getDocumentsByUpdatedAt(DateTime localSyncTime, String uid) async{
     final querySnapshot = await _db
         .collection(_collectionPath)
-        .where('uid', isEqualTo: user!.uid)
+        .where('uid', isEqualTo: uid)
         .where('updatedAt', isGreaterThan: localSyncTime)
         .get();
 
