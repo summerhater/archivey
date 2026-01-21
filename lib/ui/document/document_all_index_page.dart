@@ -37,7 +37,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
 
   @override
   void initState() {
-    Provider.of<CategoryViewModel>(context, listen: false).initRootCategoryDocumentCount();
+    // Provider.of<CategoryViewModel>(context, listen: false).initRootCategoryDocumentCount();
     super.initState();
   }
 

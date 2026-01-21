@@ -54,7 +54,7 @@ class CategoryViewModel extends ChangeNotifier {
   }
 
   CategoryModel? getCategory(String categoryId) {
-    return _categories.where((c) => c.categoryId == categoryId).firstOrNull;
+    return categories.where((c) => c.categoryId == categoryId).firstOrNull;
   }
 
   ///대분류 카테고리만 반환
@@ -119,41 +119,41 @@ class CategoryViewModel extends ChangeNotifier {
 }
 
   ///대분류 카테고리 자체 + 속한 소분류 카테고리에 해당하는 document 반환
-  Future<List<DocumentModel>> getDocumentsByRootCategory(String rootCategoryId) async {
-    try {
-      final familyIds = _getFamilyCategories(rootCategoryId);
+  // Future<List<DocumentModel>> getDocumentsByRootCategory(String rootCategoryId) async {
+  //   try {
+  //     final familyIds = _getFamilyCategories(rootCategoryId);
+  //
+  //     final results = await Future.wait(
+  //         familyIds.map((id) => _documentService.getDocumentsByCategory(id))
+  //     );
+  //
+  //     return results.expand((docs) => docs).toList();
+  //   } catch (e) {
+  //     print("error in getDocumentsByRootCategory : $e");
+  //     rethrow;
+  //   }
+  // }
 
-      final results = await Future.wait(
-          familyIds.map((id) => _documentService.getDocumentsByCategory(id))
-      );
+  // Future<int> getDocumentCountByRootCategory(String rootCategoryId) async {
+  //   final docs = await getDocumentsByRootCategory(rootCategoryId);
+  //   return docs.length;
+  // }
 
-      return results.expand((docs) => docs).toList();
-    } catch (e) {
-      print("error in getDocumentsByRootCategory : $e");
-      rethrow;
-    }
-  }
-
-  Future<int> getDocumentCountByRootCategory(String rootCategoryId) async {
-    final docs = await getDocumentsByRootCategory(rootCategoryId);
-    return docs.length;
-  }
-
-  Future<void> initRootCategoryDocumentCount() async {
-    _docCountMap.clear();
-
-    final rootList = categories.where((c) => c.isRootCategory).toList();
-
-    for (final category in rootList) {
-      final count =
-      await getDocumentCountByRootCategory(category.categoryId);
-
-      _docCountMap[category.categoryId] = count;
-      print('${category.categoryName} : $count');
-    }
-
-    notifyListeners();
-  }
+  // Future<void> initRootCategoryDocumentCount() async {
+  //   _docCountMap.clear();
+  //
+  //   final rootList = categories.where((c) => c.isRootCategory).toList();
+  //
+  //   for (final category in rootList) {
+  //     final count =
+  //     await getDocumentCountByRootCategory(category.categoryId);
+  //
+  //     _docCountMap[category.categoryId] = count;
+  //     print('${category.categoryName} : $count');
+  //   }
+  //
+  //   notifyListeners();
+  // }
 
   ///create할때 order 최대값 계산해주는 util
   int _calculateCategoryOrder() {
@@ -219,7 +219,7 @@ class CategoryViewModel extends ChangeNotifier {
       final _categories = await _categoryService.readCategory();
       _appState.setCategories(_categories);
 
-      await initRootCategoryDocumentCount();
+      // await initRootCategoryDocumentCount();
     } catch (e) {
       print('error in readCategory: $e');
       _errorMessage = '카테고리 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
