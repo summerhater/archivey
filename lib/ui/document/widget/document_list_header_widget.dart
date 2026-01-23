@@ -18,6 +18,8 @@ class DocumentListHeaderWidget extends StatefulWidget {
   final Function(String? subCategoryId)? selectedSubCategory;
   final bool isLatest;
   final VoidCallback onDateSortPressed;
+  final bool isBookmarkSelected;
+  final VoidCallback onBookmarkSortPressed;
 
   const DocumentListHeaderWidget({
     super.key,
@@ -27,6 +29,8 @@ class DocumentListHeaderWidget extends StatefulWidget {
     this.selectedSubCategory,
     required this.isLatest,
     required this.onDateSortPressed,
+    required this.isBookmarkSelected,
+    required this.onBookmarkSortPressed,
   });
 
   @override
@@ -36,7 +40,6 @@ class DocumentListHeaderWidget extends StatefulWidget {
 
 class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
   int _selectedIndex = 0;
-  bool _isBookmarkSelected = false;
 
   @override
   void initState() {
@@ -268,7 +271,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                   ),
                                 );
                                 if (newCategoryName != null) {
-                                  context.showAppMessageSnackBar('카테고리가 추가 되었습니다. ☻');
+                                  context.showAppMessageSnackBar('$newCategoryName 소분류 카테고리가 추가 되었습니다. ☻');
                                 }
                               },
                               label: Icon(Icons.add, size: 18),
@@ -330,13 +333,16 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                     children: [
                       Text.rich(
                         TextSpan(
-                          children: <TextSpan>[
+                          children: [
                             TextSpan(
                               text: '수집물',
                               style: appTextTheme.labelLarge.copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: appColorScheme.textLight,
                               ),
+                            ),
+                            const WidgetSpan(
+                              child: SizedBox(width: 3),
                             ),
                             TextSpan(
                               text: widget.documentCount.toString(),
@@ -353,10 +359,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                           ///북마크순 버튼
                           TextButton(
                             onPressed: () {
-                              setState(() {
-                                _isBookmarkSelected = !_isBookmarkSelected; /// 북마크 활성화
-                                // _isLatest = true;
-                              });
+                                  widget.onBookmarkSortPressed();
                             },
                             style: TextButton.styleFrom(
                               splashFactory: NoSplash.splashFactory,
@@ -369,7 +372,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                               '북마크순',
                               style: appTextTheme.labelLarge.copyWith(
                                 fontWeight: FontWeight.w500,
-                                color: _isBookmarkSelected
+                                color: widget.isBookmarkSelected
                                     ? appColorScheme.textDark
                                     : appColorScheme.textLight,
                               ),
@@ -380,12 +383,11 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                           TextButton(
                             onPressed: () {
                               widget.onDateSortPressed();
-                              setState(() {
-                                if (_isBookmarkSelected) {
-                                  _isBookmarkSelected = false;
-                                }
-                              });
-
+                              // setState(() {
+                              //   if (widget.isBookmarkSelected) {
+                              //     widget.isBookmarkSelected = false;
+                              //   }
+                              // });
                             },
                             style: TextButton.styleFrom(
                               splashFactory: NoSplash.splashFactory,
@@ -401,7 +403,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                   widget.isLatest ? '최신순' : '과거순',
                                   style: appTextTheme.labelLarge.copyWith(
                                     fontWeight: FontWeight.w500,
-                                    color: !_isBookmarkSelected
+                                    color: !widget.isBookmarkSelected
                                         ? appColorScheme.textDark
                                         : appColorScheme.textLight,
                                   ),
@@ -412,7 +414,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                   width: 13,
                                   height: 13,
                                   colorFilter: ColorFilter.mode(
-                                    !_isBookmarkSelected
+                                    !widget.isBookmarkSelected
                                         ? appColorScheme.textDark
                                         : appColorScheme.textLight,
                                     BlendMode.srcIn,

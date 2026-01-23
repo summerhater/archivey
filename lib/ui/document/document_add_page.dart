@@ -81,14 +81,11 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
-    final categoryVM = context.watch<CategoryViewModel>();
+    final categoryVM = context.read<CategoryViewModel>();
     final List<CategoryModel> categories = categoryVM.rootCategories;
-    final List<CategoryModel> subCategories = _selectedCategory == null
-        ? []
-        : categoryVM.getSubCategories(_selectedCategory!.categoryId);
+    final List<CategoryModel> subCategories=categoryVM.getSubCategories(_selectedCategory?.categoryId);
     var memoLength = _memoController.text.length;
-    final isFormValid =
-        _urlController.text.isNotEmpty &&
+    final isFormValid = _urlController.text.isNotEmpty &&
         _selectedCategory != null &&
         memoLength <= _maxMemoLength;
 
@@ -363,6 +360,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                       style: appTextTheme.headlineSmallKo,
                     ),
                   ),
+
                 ),
               ],
             ),

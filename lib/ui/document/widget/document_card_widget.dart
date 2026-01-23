@@ -11,6 +11,7 @@ import '../../../config/color_scheme_extension.dart';
 import '../../../config/text_theme_extension.dart';
 import '../../../domain/model/document_model.dart';
 import 'more_icon_widget.dart';
+import 'dart:ui' as ui;
 
 class DocumentCard extends StatelessWidget {
   final DocumentModel document;
@@ -311,7 +312,7 @@ Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: Colors.red.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: Text(
             'AI 요약 다시 시도',
@@ -330,42 +331,80 @@ Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
 Widget _buildNormalBottomTags(BuildContext context, DocumentModel document) {
   final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
   final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: document.tags.map((tag) {
-            return Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: appColorScheme.searchBackground,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Text(
-                tag,
-                style: appTextTheme.labelLarge.copyWith(
-                  color: appColorScheme.categoryTagBg,
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+
+  /// 북마크 아이콘 공간을 제외한 태그 영역의 여유 공간 (아이콘 24 + 여백 등)
+  const double actionAreaWidth = 48.0;
+  const double tagSpacing = 8.0;
+
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final maxWidth = constraints.maxWidth - actionAreaWidth;
+
+      List<String> visibleTags = [];
+      int hiddenCount = 0;
+      double currentWidth = 0;
+
+      for (var tag in document.tags) {
+        /// 텍스트 너비 계산
+        final textPainter = TextPainter(
+          text: TextSpan(text: tag, style: appTextTheme.labelLarge),
+          maxLines: 1,
+          textDirection: ui.TextDirection.ltr,
+        )..layout();
+
+        /// 컨테이너 패딩(12*2) + 태그 간격(8) 포함 너비
+        final tagWidth = textPainter.width + 24 + tagSpacing;
+
+        /// '+N'표시하기 위한 최소 공간(35px)을 고려해 계산
+        if (currentWidth + tagWidth + 35 < maxWidth) {
+          visibleTags.add(tag);
+          currentWidth += tagWidth;
+        } else {
+          hiddenCount = document.tags.length - visibleTags.length;
+          break;
+        }
+      }
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Wrap(
+              spacing: tagSpacing,
+              runSpacing: 8,
+              children: [
+                ...visibleTags.map((tag) => _buildTagItem(tag, appColorScheme, appTextTheme)),
+                if (hiddenCount > 0)
+                  _buildTagItem('+$hiddenCount', appColorScheme, appTextTheme),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.bookmark_border),
+            color: Colors.grey.shade400,
+            iconSize: 24,
+            visualDensity: VisualDensity(horizontal: -4.0),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// 공통 태그 아이템 빌더
+Widget _buildTagItem(String text, AppColorScheme colorScheme, AppTextTheme textTheme) {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    decoration: BoxDecoration(
+      color: colorScheme.searchBackground,
+      borderRadius: BorderRadius.circular(5),
+    ),
+    child: Text(
+      text,
+      style: textTheme.labelLarge.copyWith(
+        color: colorScheme.categoryTagBg,
       ),
-      IconButton(
-        onPressed: () {},
-        icon: Icon(
-          Icons.bookmark_border,
-        ),
-        color: Colors.grey.shade400,
-        iconSize: 24,
-        visualDensity: VisualDensity(horizontal: -4.0),
-      ),
-    ],
+    ),
   );
 }

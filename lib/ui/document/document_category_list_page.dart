@@ -1,13 +1,12 @@
-import 'package:archivey/domain/model/category_model.dart';
-import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
-import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import '../../domain/model/document_model.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
 import 'package:archivey/ui/document/widget/document_list_header_widget.dart';
 
+
+//todo: jh all_total_page와, category_list_page가 filter 처리 방식이 다름. 일치되어야함.
 class DocumentCategoryListPage extends StatefulWidget {
   final String categoryName;
   final String categoryId;
@@ -24,68 +23,99 @@ class DocumentCategoryListPage extends StatefulWidget {
 
 class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
   String? _selectedSubId;
+  late String _selectedCategoryId;
   bool _isLatest = true;
+  bool _isBookmarkMode = false;
 
+  ///selectedSubId가 null -> view에서의 selectedCategoryId은 rootCategoryId
+  String get _getSelectedCategoryId {
+    return _selectedSubId ?? widget.categoryId;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      displayDoc();
+    });
+
+  }
+
+  void displayDoc(){
+    context.read<DocViewModel>().getDisplayDocuments(
+      categoryId: _getSelectedCategoryId,
+      isLatest: _isLatest,
+      isBookmarkMode: _isBookmarkMode,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant DocumentCategoryListPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        displayDoc();
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final categoryVM = context.watch<CategoryViewModel>();
-    final documentVM = context.watch<DocViewModel>();
-    // final documentVM = context.watch<DocumentViewModel>();
+    return Consumer<DocViewModel>(
+        builder: (context, vm, _) {
+          final displayDocuments = vm.filteredDisplayDocuments;
 
-    /// categoryId에 해당하는 Root 카테고리 찾기
-    CategoryModel? rootCategory;
-    try {
-      rootCategory = categoryVM.getCategory(widget.categoryId);
-    } catch (e) {
-      print('category list page error : $e');
-    }
-
-    List<DocumentModel> displayDocuments = [];
-
-    if (_isLatest) {
-      displayDocuments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    } else {
-      displayDocuments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    }
-
-    return SafeArea(
-      child: Column(
-        children: [
-          DocumentListHeaderWidget(
-            isOnAllPage: false,
-            rootCategory: rootCategory!,
-            documentCount: displayDocuments.length,
-            selectedSubCategory: (String? subId) {
-              setState(() {
-                _selectedSubId = subId;
-              });
-            },
-            isLatest: _isLatest,
-            onDateSortPressed: () {
-              setState(() {
-                _isLatest = !_isLatest;
-              });
-            },
-          ),
-          if (displayDocuments.isEmpty)
-            const Expanded(child: Center(child: Text('해당 카테고리에 글이 없습니다.')))
-          else
-            Expanded(
-              child: ListView.builder(
-                itemCount: displayDocuments.length,
-                itemBuilder: (context, index) {
-                  return DocumentCard(
-                    document: displayDocuments[index],
-                    isFirstItem: index == 0,
-                    isDetailPage: false,
-                    isOnAllPage: false,
-                  );
-                },
-              ),
+          return SafeArea(
+            child: Column(
+              children: [
+                DocumentListHeaderWidget(
+                  isOnAllPage: false,
+                  rootCategory: vm.getCategory(widget.categoryId),
+                  documentCount: displayDocuments.length,
+                  selectedSubCategory: (String? subId) {
+                    _selectedSubId = subId;
+                    displayDoc();
+                  },
+                  isLatest: _isLatest,
+                  onDateSortPressed: () {
+                    _isBookmarkMode = false;
+                    _isLatest = !_isLatest;
+                    displayDoc();
+                  },
+                  isBookmarkSelected: _isBookmarkMode,
+                  onBookmarkSortPressed: () {
+                    _isBookmarkMode = !_isBookmarkMode;
+                    displayDoc();
+                  },
+                ),
+                if (displayDocuments.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: SvgPicture.asset(
+                        vm.isSearching
+                            ? 'assets/images/empty_state_no_search_result.svg'
+                            : _isBookmarkMode
+                            ? 'assets/images/empty_state_no_bookmark.svg'
+                            : 'assets/images/empty_state_no_document.svg',
+                        width: MediaQuery.of(context).size.width * 0.7,
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: displayDocuments.length,
+                      itemBuilder: (context, index) {
+                        return DocumentCard(
+                          document: displayDocuments[index],
+                          isFirstItem: index == 0,
+                          isDetailPage: false,
+                          isOnAllPage: false,
+                        );
+                      },
+                    ),
+                  ),
+              ],
             ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }

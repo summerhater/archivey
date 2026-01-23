@@ -28,17 +28,25 @@ class DocViewModel extends ChangeNotifier {
   List<DocumentModel> get documents => _appState.documents;
 
   final _searchQueryController = BehaviorSubject<String>.seeded('');
-
+  List<DocumentModel> filteredDisplayDocuments=[];
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   bool _isRetrying = false;
   bool isBookMark = false;
+  bool _hasInitDocs = false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
+  bool _isSearching = false;
+  bool get isSearching => _isSearching;
 
   void updateState(AppState newState) {
     print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
     _appState = newState;
 
-    if(_appState.categories.isNotEmpty && _appState.documents.isEmpty) {
+    // if(_appState.categories.isNotEmpty && _appState.documents.isEmpty) {
+    //   readDocuments(_appState.categories);
+    // }
+
+    if(_appState.categories.isNotEmpty && !_hasInitDocs) {
+      _hasInitDocs = true;
       readDocuments(_appState.categories);
     }
   }
@@ -52,6 +60,11 @@ class DocViewModel extends ChangeNotifier {
 
     _subscription = _searchQueryController.stream
         .switchMap((keyword) {
+      if (_isSearching != keyword.isNotEmpty) {
+        _isSearching = keyword.isNotEmpty;
+        notifyListeners();
+      }
+      print('_isSearching : $_isSearching');
           if (keyword.isEmpty) {
             // 검색 키워드가 없을 땐, 전체 가져오기
             return _driftDocumentService.watchAllDocuments(categories);
@@ -133,6 +146,7 @@ class DocViewModel extends ChangeNotifier {
           await _driftDocumentService.remoteUploadDone(updateDoc);
         },
       );
+      //appstate update
     } catch (e) {
       debugPrint('AI 분석 업데이트 실패: $e');
     }
@@ -280,6 +294,94 @@ class DocViewModel extends ChangeNotifier {
     });
 
     _driftDocumentService.setSyncTime();
+  }
+
+// 란 추가 ------------------------------------------------------------------------------
+  ///DocumentCategoryListPage, AllTotalPage에서 카테고리마다 보여줄 documents를 구하기 위한 메소드
+  CategoryModel getCategory(String categoryId) {
+    return _appState.categories.where((c) => c.categoryId == categoryId).first;
+  }
+
+  List<CategoryModel> get rootCategories {
+    final rootList = _appState.categories.where((c) => c.isRootCategory).toList();
+    rootList.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+    return rootList;
+  }
+
+  List<String> _getFamilyCategoryIds(String rootId) {
+    final categories = _appState.categories;
+    final rootIds = categories.where((c) => c.categoryId == rootId).map((c) => c.categoryId);
+    final childrenIds = categories.where((c) => c.parentId == rootId).map((c) => c.categoryId);
+
+    return [...rootIds, ...childrenIds];
+  }
+
+  List<DocumentModel> getDocumentsByCategory(String categoryId) {
+
+    final category = getCategory(categoryId);
+    final bool isRoot = category.parentId == null;
+
+    if (isRoot) {
+      final familyCategoryIds = _getFamilyCategoryIds(categoryId);
+      return _appState.documents.where((doc) => familyCategoryIds.contains(doc.category.categoryId),
+      ).toList();
+    }
+    return _appState.documents.where((c) => c.category.categoryId == categoryId).toList();
+  }
+
+  void getDisplayDocuments({
+    String? categoryId,
+    required bool isLatest,
+    required bool isBookmarkMode,
+
+  }) {
+    print('categoryId in getDisplayDocuments : $categoryId');
+    ///문서 추출
+    List<DocumentModel> docs = categoryId == null
+        ? List.from(documents)
+        : List.from(getDocumentsByCategory(categoryId));
+
+    ///todo: 북마크 구현
+    if (isBookmarkMode) {
+      filteredDisplayDocuments= [];
+      notifyListeners();
+      return;
+    }else{//isLatest
+      ///문서 정렬
+      docs.sort(
+            (a, b) => isLatest
+            ? b.createdAt.compareTo(a.createdAt)
+            : a.createdAt.compareTo(b.createdAt),
+      );
+      filteredDisplayDocuments=docs;
+      notifyListeners();
+    }
+
+  }
+
+  ///DocumentDetailPage에서 보여줄 document를 documentId로 찾아서 반환
+  DocumentModel getDocumentById(String id, {DocumentModel? fallback}) {
+    return documents.firstWhere(
+          (doc) => doc.id == id,
+      orElse: () => fallback ?? documents.first,
+    );
+  }
+
+  Future<void> updateDocument(DocumentModel docToUpdate) async {
+    try {
+      await _driftDocumentService.updateDocument(docToUpdate).then(
+            (_) {},
+      );
+
+      await _firebaseDocumentService.createDocument(docToUpdate).then(
+            (_) async {
+          /// local의 SyncStatus 갱신
+          await _driftDocumentService.remoteUploadDone(docToUpdate);
+        },
+      );
+    } catch (e) {
+      debugPrint('AI 분석 업데이트 실패: $e');
+    }
   }
 }
 

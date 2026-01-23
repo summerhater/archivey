@@ -86,11 +86,20 @@ final GoRouter goRouter = GoRouter(
         /// all
         GoRoute(
           path: '/document_all_total',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: DocumentAllPage(
-              contentPage: DocumentAllTotalPage(),
-            ),
-          ),
+          pageBuilder: (context, state) {
+            //todo: jh, extra 보단 QueryParameter가 좋은 방식, 그 이유는 눈에 보이니까.
+            final isBookmarkMode = (state.extra is bool) ? (state.extra as bool) : false;
+            final isLatest = (state.extra is bool) ? (state.extra as bool) : false;
+
+            return NoTransitionPage(
+              child: DocumentAllPage(
+                contentPage: DocumentAllTotalPage(
+                  isBookmarkMode: isBookmarkMode,
+                  isLatest: isLatest,
+                ),
+              ),
+            );
+          },
           routes: [
             GoRoute(
               path: 'detail',

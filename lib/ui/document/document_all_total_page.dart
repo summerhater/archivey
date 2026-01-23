@@ -1,11 +1,15 @@
+import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class DocumentAllTotalPage extends StatefulWidget {
-  const DocumentAllTotalPage({super.key});
+  final bool isBookmarkMode;
+  final bool isLatest;
+  const DocumentAllTotalPage({super.key, required this.isBookmarkMode, required this.isLatest});
 
   @override
   State<DocumentAllTotalPage> createState() => _DocumentAllTotalPageState();
@@ -16,21 +20,56 @@ class _DocumentAllTotalPageState extends State<DocumentAllTotalPage> {
   @override
   void initState() {
     super.initState();
-    // Provider.of<DocumentViewModel>(context, listen: false).readDocuments();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      displayDoc();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant DocumentAllTotalPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isBookmarkMode != widget.isBookmarkMode ||
+        oldWidget.isLatest != widget.isLatest) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        displayDoc();
+      });
+    }
+
+  }
+
+
+
+  void displayDoc(){
+   context.read<DocViewModel>().getDisplayDocuments(
+      isLatest: widget.isLatest,
+      isBookmarkMode: widget.isBookmarkMode,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DocViewModel>(
       builder: (context, vm, _){
-        if (vm.documents.isEmpty) {
-          return const Center(child: Text("수집물이 없습니다."));
+        List<DocumentModel> displayDocuments=vm.filteredDisplayDocuments;
+        if (displayDocuments.isEmpty) {
+          return Center(
+            child: SizedBox(
+              child: SvgPicture.asset(
+                vm.isSearching
+                    ? 'assets/images/empty_state_no_search_result.svg'
+                    : widget.isBookmarkMode
+                    ? 'assets/images/empty_state_no_bookmark.svg'
+                    : 'assets/images/empty_state_no_document.svg',
+                width: MediaQuery.of(context).size.width * 0.7,
+              ),
+            ),
+          );
         }
         return ListView.builder(
-          itemCount: vm.documents.length,
+          itemCount: displayDocuments.length,
           itemBuilder: (context, index) {
             return DocumentCard(
-              document: vm.documents[index],
+              document: displayDocuments[index],
               isFirstItem: index == 0,
               isDetailPage: false,
               isOnAllPage: true,

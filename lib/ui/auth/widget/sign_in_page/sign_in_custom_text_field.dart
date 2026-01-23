@@ -26,6 +26,8 @@ class _SignInCustomTextFieldState extends State<SignInCustomTextField> {
     controller = widget.controller;
     guide = widget.guide;
     isPassword = widget.isPassword ?? false;
+
+
   }
 
   @override
@@ -34,6 +36,7 @@ class _SignInCustomTextFieldState extends State<SignInCustomTextField> {
     var appText = Theme.of(context).extension<AppTextTheme>()!;
 
     return TextField(
+
       controller: controller,
       decoration: InputDecoration(
         labelText: guide,

@@ -76,9 +76,11 @@ void main() async {
         // ),
         ChangeNotifierProxyProvider<AppState, CategoryViewModel>(
           create: (context) => CategoryViewModel(
-            context.read<FirebaseCategoryService>(), 
+            context.read<FirebaseCategoryService>(),
             context.read<AppState>(),
-          ), 
+            context.read<FirebaseDocumentService>(),
+            context.read<DriftDocumentService>(),
+          ),
           update: (context, appState, previous) {
             if(previous == null) throw Exception('CategoryVM 생성 안됨');
 
