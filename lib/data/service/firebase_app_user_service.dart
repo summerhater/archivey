@@ -41,5 +41,10 @@ class FirebaseAppUserService {
       throw Exception(e);
     }
   }
+  
+  /// 회원 삭제
+  Future<void> deleteAccount(String uid) async{
+    await _userRef.doc(uid).delete();
+  }
 
 }

@@ -8,7 +8,7 @@ class CustomElevatedButton extends StatelessWidget {
   final String guide;
   final Color backgroundColor;
   final double? fontSize;
-  final VoidCallback? asyncFunction;
+  final VoidCallback? onPressed;
 
   const CustomElevatedButton({
     super.key,
@@ -16,7 +16,7 @@ class CustomElevatedButton extends StatelessWidget {
     required this.guide,
     required this.backgroundColor,
     required this.fontSize,
-    this.asyncFunction,
+    this.onPressed,
   });
 
   @override
@@ -31,8 +31,8 @@ class CustomElevatedButton extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          if (asyncFunction != null) {
-            asyncFunction!();
+          if (onPressed != null) {
+            onPressed!();
           } else {
             context.go(path);
           }
