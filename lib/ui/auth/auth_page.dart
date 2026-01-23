@@ -51,7 +51,7 @@ class _AuthPageState extends State<AuthPage> {
                   guide: '시작하기',
                   backgroundColor: Colors.transparent,
                   fontSize: appText.headlineSmallKo.fontSize,
-                  asyncFunction: () async => await showModalBottomSheet(
+                  onPressed: () async => await showModalBottomSheet(
                     context: context,
                     builder: (context) => CustomTosBottomModal(path: '/auth/signup-email',),
                     backgroundColor: appColor.primary,

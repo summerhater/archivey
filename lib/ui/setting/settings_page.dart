@@ -1,6 +1,7 @@
 import 'package:archivey/ui/setting/view_model/setting_view_model.dart';
 import 'package:archivey/ui/setting/widget/build_setting_menu_item_widget.dart';
 import 'package:archivey/ui/setting/widget/delete_account_dialog_widget.dart';
+import 'package:archivey/ui/setting/widget/re_authentication_dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,7 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     _getAppVersion();
-    if(Provider.of<SettingViewModel>(context, listen: false).email.isEmpty) {
+    if (Provider.of<SettingViewModel>(context, listen: false).email.isEmpty) {
       isLoggedIn = false;
     }
   }
@@ -146,8 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
                                           appColorScheme.primaryStrong,
-                                      foregroundColor:
-                                          appColorScheme.primary,
+                                      foregroundColor: appColorScheme.primary,
                                     ),
                                   ),
                           ],
@@ -157,10 +157,14 @@ class _SettingsPageState extends State<SettingsPage> {
                           icon: Icons.notifications,
                           label: '공지사항',
                           onTap: () async {
-                            final url = 'https://www.notion.so/archivey-2e6299c18862802a91ddcc7dce6f10b0?source=copy_link';
+                            final url =
+                                'https://www.notion.so/archivey-2e6299c18862802a91ddcc7dce6f10b0?source=copy_link';
                             final uri = Uri.parse(url);
                             if (await canLaunchUrl(uri)) {
-                            launchUrl(uri, mode: LaunchMode.externalApplication);
+                              launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
                             }
                           },
                           appTextTheme: appTextTheme,
@@ -174,7 +178,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             final url = 'https://forms.gle/aPeFzWGP4mVna1eZ8';
                             final uri = Uri.parse(url);
                             if (await canLaunchUrl(uri)) {
-                              launchUrl(uri, mode: LaunchMode.externalApplication);
+                              launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
                             }
                           },
                           appTextTheme: appTextTheme,
@@ -184,7 +191,17 @@ class _SettingsPageState extends State<SettingsPage> {
                         SettingMenuItemWidget(
                           icon: Icons.code,
                           label: '앱 버전',
-                          onTap: () {},
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AboutDialog(
+                                  applicationName: 'Archivey',
+                                  applicationIcon: Icon(Icons.info),
+                                );
+                              },
+                            );
+                          },
                           appTextTheme: appTextTheme,
                           appColorScheme: appColorScheme,
                           suffix: Row(
@@ -202,11 +219,28 @@ class _SettingsPageState extends State<SettingsPage> {
 
                         SettingMenuItemWidget(
                           label: '탈퇴하기',
-                          onTap: () {
-                            showDialog(
+                          onTap: () async {
+                            final bool? reAuth = await showDialog(
                               context: context,
-                              builder: (context) => DeleteAccountDialogWidget(),
+                              builder: (context) =>
+                                  ReAuthenticationDialogWidget(
+                                    reAuthentication: vm.reAuthentication,
+                                    deleteAccount: () async =>
+                                        await vm.deleteAccount(),
+                                  ),
                             );
+                            if(reAuth == null || !reAuth) return;
+                            final bool? deleteAccount = await showDialog(
+                              context: context,
+                              builder: (context) => DeleteAccountDialogWidget(
+                                deleteAccount: () async =>
+                                    await vm.deleteAccount(),
+                              ),
+                            );
+                            if(deleteAccount == null || !deleteAccount) return;
+                            print('###### 탈퇴 성공 후, auth로 이동');
+                            // TODO auth로 안감 해결 해야 함
+                            // GoRouter.of(context).go('/auth'); 
                           },
                           appTextTheme: appTextTheme,
                           appColorScheme: appColorScheme,
