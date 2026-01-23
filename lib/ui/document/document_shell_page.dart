@@ -48,7 +48,6 @@ class DocumentShellPageState extends State<DocumentShellPage> {
 
     return Consumer<CategoryViewModel>(
       builder: (context, vm, _) {
-
         if (vm.errorMessage != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.showAppMessageSnackBar('에러 발생 : ${vm.errorMessage!}');
@@ -56,9 +55,6 @@ class DocumentShellPageState extends State<DocumentShellPage> {
           });
         }
 
-        final categoryIds = [
-          'ALL', ...vm.rootCategories.map((e) => e.categoryId)
-        ];
         final displayCategories = [
           {'id': 'ALL', 'name': '전체'},
           ...vm.rootCategories.map((c) => {'id': c.categoryId, 'name': c.categoryName}),

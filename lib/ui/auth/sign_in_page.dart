@@ -21,7 +21,12 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
-
+  initState(){
+    super.initState();
+    //jh delete
+    _emailController.text='thisisrchoi@gmail.com';
+    _pwController.text='123123';
+  }
   bool pwVisibility = false;
 
   @override

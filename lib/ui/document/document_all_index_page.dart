@@ -31,14 +31,8 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
     if (!mounted) return;
 
     if (newCategoryName != null && newCategoryName.isNotEmpty) {
-      context.showAppMessageSnackBar('카테고리가 추가 완료 되었습니다 ☻');
+      context.showAppMessageSnackBar('$newCategoryName 카테고리가 추가 완료 되었습니다 ☻');
     }
-  }
-
-  @override
-  void initState() {
-    // Provider.of<CategoryViewModel>(context, listen: false).initRootCategoryDocumentCount();
-    super.initState();
   }
 
   @override
@@ -52,7 +46,14 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
             builder: (context, vm, _) {
               var rootCategories = vm.rootCategories;
               if (rootCategories.isEmpty) {
-                return Center(child: Text('카테고리가 없습니다. 만들어주세요~'));
+                return Center(
+                  child: SizedBox(
+                    child: SvgPicture.asset(
+                        'assets/images/empty_state_no_category.svg',
+                      width: MediaQuery.of(context).size.width * 0.7,
+                    ),
+                  ),
+                );
               }
               if (vm.errorMessage != null) {
                 context.showAppMessageSnackBar('에러 발생 : ${vm.errorMessage!}');
@@ -87,7 +88,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                       },
                       itemBuilder: (context, index) {
                         final category = rootCategories[index];
-                        final documentCount = vm.docCountMap[category.categoryId] ?? 0;
+                        final documentCount = vm.getRootCategoryDocCount(category.categoryId);
                         return Container(
                           ///ReorderableListView 쓸라면 각 아이템에 반드시 고유한 Key가 필요
                           key: ValueKey(category.categoryName),

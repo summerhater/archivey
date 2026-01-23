@@ -38,27 +38,30 @@ class DocumentDetailTagWidget extends StatelessWidget {
                 color: appColorScheme.searchBackground,
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    tag,
-                    style: appTextTheme.labelLarge.copyWith(
-                      color: appColorScheme.categoryTagBg,
-                    ),
-                  ),
-                  if (isEditing) ...[
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () => onTagDeleted(tag),
-                      child: Icon(
-                        Icons.close,
-                        size: 12,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      tag,
+                      style: appTextTheme.labelLarge.copyWith(
                         color: appColorScheme.categoryTagBg,
                       ),
                     ),
+                    if (isEditing) ...[
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () => onTagDeleted(tag),
+                        child: Icon(
+                          Icons.close,
+                          size: 12,
+                          color: appColorScheme.categoryTagBg,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             );
           }).toList(),

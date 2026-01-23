@@ -16,7 +16,7 @@ class FirebaseCategoryService {
   Future<List<CategoryModel>> readCategory() async {
     final snapshot = await _db.collection(_collectionPath)
         .where('uid', isEqualTo: _currentUid)
-        .orderBy('order')
+        // .orderBy('order') todo: 루트카테고리만 골라서 order 순서로 sort해야함.
         .get();
 
     return snapshot.docs.map((doc) => CategoryModel.fromMap(doc.data())).toList();
