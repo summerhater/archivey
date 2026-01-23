@@ -75,7 +75,7 @@ class _SignInPageState extends State<SignInPage> {
                     guide: '로그인',
                     backgroundColor: appColor.primaryStrong,
                     fontSize: appText.bodyMedium.fontSize,
-                    asyncFunction: () async => await context
+                    onPressed: () async => await context
                         .read<AuthViewModel>()
                         .signInWithEmailAndPassword(
                           email: _emailController.text.trim(),

@@ -13,7 +13,9 @@ class AppState extends ChangeNotifier{
   String get email => _email;
   List<CategoryModel> get categories => _categories;
   List<DocumentModel> get documents => _documents;
-
+  AppState(){
+    print('create app state');
+  }
   void setUid(String? newUid) {
     _uid = newUid ?? '';
     notifyListeners();

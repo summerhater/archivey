@@ -36,30 +36,41 @@ void main() async {
           value: db,
         ),
         Provider<FirebaseAuthService>(create: (_) => FirebaseAuthService()),
-        Provider<FirebaseAppUserService>(create: (_) => FirebaseAppUserService()),
+        Provider<FirebaseAppUserService>(
+          create: (_) => FirebaseAppUserService(),
+        ),
         Provider<DriftDocumentService>(create: (_) => DriftDocumentService(db)),
-        Provider<FirebaseDocumentService>(create: (_) => FirebaseDocumentService()),
-        Provider<FirebaseCategoryService>(create: (_) => FirebaseCategoryService()),
+        Provider<FirebaseDocumentService>(
+          create: (_) => FirebaseDocumentService(),
+        ),
+        Provider<FirebaseCategoryService>(
+          create: (_) => FirebaseCategoryService(),
+        ),
 
         // ChangeNotifierProvider<AuthViewModel>(
         //   create: (context) => AuthViewModel(
         //     context.read<FirebaseAuthService>(),
         //     context.read<FirebaseAppUserService>(),
+        //     context.read<AppState>(),
         //   ),
+        //   lazy: false,
         // ),
         ChangeNotifierProxyProvider<AppState, AuthViewModel>(
-          create: (context) => AuthViewModel(
-          context.read<FirebaseAuthService>(),
-          context.read<FirebaseAppUserService>(),
-          context.read<AppState>(),
-        ),
+          create: (context) {
+            return AuthViewModel(
+              context.read<FirebaseAuthService>(),
+              context.read<FirebaseAppUserService>(),
+              context.read<AppState>(),
+            );
+          },
           update: (context, appState, previous) {
-            if(previous == null) throw Exception('AuthVM 생성 안됨');
+            if (previous == null) throw Exception('AuthVM 생성 안됨');
 
             previous.updateState(appState);
-            
+
             return previous;
           },
+          lazy: false,
         ),
 
         ChangeNotifierProvider<DocumentViewModel>(
@@ -70,8 +81,7 @@ void main() async {
         // ChangeNotifierProvider<CategoryViewModel>(
         //   create: (context) => CategoryViewModel(
         //     context.read<FirebaseCategoryService>(),
-        //     context.read<FirebaseAuthService>(),
-        //     context.read<FirebaseDocumentService>(),
+        //     context.read<AppState>(),
         //   ),
         // ),
         ChangeNotifierProxyProvider<AppState, CategoryViewModel>(
@@ -82,10 +92,10 @@ void main() async {
             context.read<DriftDocumentService>(),
           ),
           update: (context, appState, previous) {
-            if(previous == null) throw Exception('CategoryVM 생성 안됨');
+            if (previous == null) throw Exception('CategoryVM 생성 안됨');
 
             previous.updateState(appState);
-            
+
             return previous;
           },
         ),
@@ -93,18 +103,21 @@ void main() async {
         // ChangeNotifierProvider<SettingViewModel>(
         //   create: (context) => SettingViewModel(
         //     context.read<FirebaseAuthService>(),
+        //     context.read<FirebaseAppUserService>(),
+        //     context.read<AppState>(),
         //   ),
         // ),
         ChangeNotifierProxyProvider<AppState, SettingViewModel>(
           create: (context) => SettingViewModel(
-            context.read<FirebaseAuthService>(), 
+            context.read<FirebaseAuthService>(),
+            context.read<FirebaseAppUserService>(),
             context.read<AppState>(),
           ),
           update: (context, appState, previous) {
-            if(previous == null) throw Exception('SettingVM 생성 안됨');
+            if (previous == null) throw Exception('SettingVM 생성 안됨');
 
             previous.updateState(appState);
-            
+
             return previous;
           },
         ),
@@ -113,8 +126,7 @@ void main() async {
         //   create: (context) => DocViewModel(
         //     context.read<FirebaseDocumentService>(),
         //     context.read<DriftDocumentService>(),
-        //     context.read<CategoryViewModel>(),
-        //     context.read<AuthViewModel>(),
+        //     context.read<AppState>(),
         //   ),
         // ),
         ChangeNotifierProxyProvider<AppState, DocViewModel>(
@@ -124,7 +136,7 @@ void main() async {
             context.read<AppState>(),
           ),
           update: (context, appState, previous) {
-            if(previous == null) throw Exception('DocVM 생성 안됨');
+            if (previous == null) throw Exception('DocVM 생성 안됨');
 
             previous.updateState(appState);
 

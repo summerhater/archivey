@@ -20,6 +20,7 @@ class DocViewModel extends ChangeNotifier {
     this._appState,
   ) {
     pullAndPush();
+    // readDocuments(_appState.categories);
   }
 
   StreamSubscription<List<DocumentModel>>? _subscription;
