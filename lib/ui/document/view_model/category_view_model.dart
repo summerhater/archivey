@@ -2,12 +2,14 @@ import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
+import 'package:archivey/data/service/shared_category_link_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:archivey/config/share_category_link_config.dart';
 
 class CategoryViewModel extends ChangeNotifier {
   final FirebaseCategoryService _categoryService;
@@ -16,6 +18,7 @@ class CategoryViewModel extends ChangeNotifier {
   AppState _appState;
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
+  final SharedCategoryLinkService _sharedCategoryLinkService;
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
   CategoryViewModel(
@@ -25,6 +28,7 @@ class CategoryViewModel extends ChangeNotifier {
     this._appState,
     this._firebaseDocumentService,
     this._driftDocumentService,
+      this._sharedCategoryLinkService,
   );
   // List<CategoryModel> _categories = [];
   // List<CategoryModel> get categories => _categories;
@@ -38,17 +42,16 @@ class CategoryViewModel extends ChangeNotifier {
     _appState = newState;
     notifyListeners();
   }
-//   CategoryViewModel(this._categoryService, this._authService, this._documentService){
-//     readCategory();
-//     // print('######### 카테고리 수: ${_categories.length} ###########');
-//   }
-//   List<CategoryModel> _categories = [];
-//   List<CategoryModel> get categories => _categories;
+  //   CategoryViewModel(this._categoryService, this._authService, this._documentService){
+  //     readCategory();
+  //     // print('######### 카테고리 수: ${_categories.length} ###########');
+  //   }
+  //   List<CategoryModel> _categories = [];
+  //   List<CategoryModel> get categories => _categories;
 
-//   User? get user => _authService.user;
-//   final Map<String, int> _docCountMap = {};
-//   Map<String, int> get docCountMap => _docCountMap;
-
+  //   User? get user => _authService.user;
+  //   final Map<String, int> _docCountMap = {};
+  //   Map<String, int> get docCountMap => _docCountMap;
 
   ///에러 메세지 문자열 비우는 util
   void clearErrorMessage() {
@@ -71,7 +74,7 @@ class CategoryViewModel extends ChangeNotifier {
 
   ///특정 대분류의 소분류 카테고리들을 반환
   List<CategoryModel> getSubCategories(String? rootId) {
-    if(rootId == null) return [];
+    if (rootId == null) return [];
     final subList = categories.where((c) => c.parentId == rootId).toList();
     subList.sort((a, b) => a.categoryName.compareTo(b.categoryName));
 
@@ -118,8 +121,12 @@ class CategoryViewModel extends ChangeNotifier {
 
   List<String> _getFamilyCategoryIds(String rootId) {
     final categories = _appState.categories;
-    final rootIds = categories.where((c) => c.categoryId == rootId).map((c) => c.categoryId);
-    final childrenIds = categories.where((c) => c.parentId == rootId).map((c) => c.categoryId);
+    final rootIds = categories
+        .where((c) => c.categoryId == rootId)
+        .map((c) => c.categoryId);
+    final childrenIds = categories
+        .where((c) => c.parentId == rootId)
+        .map((c) => c.categoryId);
 
     return [...rootIds, ...childrenIds];
   }
@@ -307,23 +314,28 @@ class CategoryViewModel extends ChangeNotifier {
     //1. 삭제 대상인 카테고리가 root인지 sub인지 판단
     //2. root일시 familyCategoryIds 구하기
     //3. 삭제.
-      //3-1. root일시 삭제 규칙 : 해당 root 카테고리 + document / 하위 sub 카테고리 + 해당 document 모두 삭제,
-      //3-2. 그냥 단일 카테고리일 시 : 해당 카테고리 + document 삭제
+    //3-1. root일시 삭제 규칙 : 해당 root 카테고리 + document / 하위 sub 카테고리 + 해당 document 모두 삭제,
+    //3-2. 그냥 단일 카테고리일 시 : 해당 카테고리 + document 삭제
     //삭제 후 카테고리와 도큐먼트 모두 최신화 해야함.
 
     if (isRoot) {
       print('isRoot : $isRoot');
       familyCategoryIds = _getFamilyCategoryIds(categoryId);
       print('familyCategoryIds : $familyCategoryIds');
-      docsToDelete =  _appState.documents.where((doc) => familyCategoryIds.contains(doc.category.categoryId),
-      ).toList();
+      docsToDelete = _appState.documents
+          .where(
+            (doc) => familyCategoryIds.contains(doc.category.categoryId),
+          )
+          .toList();
     } else {
-      docsToDelete = _appState.documents.where((c) => c.category.categoryId == categoryId).toList();
+      docsToDelete = _appState.documents
+          .where((c) => c.category.categoryId == categoryId)
+          .toList();
     }
 
     // if (docsToDelete.isEmpty) {return;}
 
-    try{
+    try {
       clearErrorMessage();
       //도큐먼트부터 삭제
       print('here1');
@@ -333,8 +345,9 @@ class CategoryViewModel extends ChangeNotifier {
 
       print('here2');
       if (isRoot) {
-        final subCategoryIds =
-        familyCategoryIds.where((id) => id != categoryId).toList();
+        final subCategoryIds = familyCategoryIds
+            .where((id) => id != categoryId)
+            .toList();
 
         for (final subId in subCategoryIds) {
           await deleteCategory(subId);
@@ -342,14 +355,14 @@ class CategoryViewModel extends ChangeNotifier {
 
         // 모든 하위 삭제 후 root 삭제
         await _categoryService.deleteCategory(categoryId);
-      }else {
-      print('here4');
+      } else {
+        print('here4');
         await _categoryService.deleteCategory(categoryId);
       }
       print('here5');
 
       await readCategory();
-    }catch(e){
+    } catch (e) {
       print('error in deleteCategory: $e');
       _errorMessage = '카테고리 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.';
       notifyListeners();
@@ -359,10 +372,21 @@ class CategoryViewModel extends ChangeNotifier {
   Future<void> deleteDocument(String id) async {
     /// 서버에서 먼저 삭제 후, 성공하면 local delete TODO 삭제 매커니즘 변경해야 함
     await _firebaseDocumentService.deleteDocument(id).then(
-          (_) async {
+      (_) async {
         /// local delete
         await _driftDocumentService.deleteDocument(id);
       },
     );
+  }
+
+  ///카테고리 공유하기(웹) 구현을 위한 메소드 추가
+  Future<String?> createSharedCategoryLink(String categoryId) async {
+    try {
+      final shareId = await _sharedCategoryLinkService.createSharedCategoryLink(_appState.uid, categoryId);
+      return "${ShareCategoryLinkConfig.baseUrl}/share/category/$shareId";
+    } catch (e) {
+      print('error in createSharedCategoryLink: $e');
+      return null;
+    }
   }
 }

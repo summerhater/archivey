@@ -1,3 +1,4 @@
+import 'package:archivey/domain/model/more_icon_action_result_enum.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
 import 'package:flutter/material.dart';
@@ -23,18 +24,6 @@ class BottomSheetShareWidget extends StatefulWidget {
 class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-
-  void shareByShareSettingModeFromBottomSheet(){
-    final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
-    final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
-    if (widget.shareSettingMode == ShareSettingMode.category) {
-      ///todo: 카테고리 일 시 처리할 링크 생성+복사 로직
-      context.showAppMessageSnackBar('카테고리 링크가 복사되었습니다. ☻');
-    } else {
-      ///todo: 1개의 수집물(도큐먼트) 일 시 처리할 링크 복사 로직
-      context.showAppMessageSnackBar('수집물 링크가 복사되었습니다. ☻');
-    }
-  }
 
   @override
   void dispose() {
@@ -104,8 +93,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                 ),
                 child: TextButton(
                   onPressed: () {
-                    context.pop();
-                    shareByShareSettingModeFromBottomSheet();
+                      context.pop(MoreIconActionResultEnum.share);
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),

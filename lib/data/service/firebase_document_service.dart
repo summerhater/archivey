@@ -492,17 +492,17 @@ $commonInstructions
   }
 
   // READ: 실시간 스트림 (최신순)
-  Stream<List<DocumentModel>> getDocumentsStream() {
-    return _db
-        .collection(_collectionPath)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => DocumentModel.fromMap(doc.data()))
-              .toList(),
-        );
-  }
+  // Stream<List<DocumentModel>> getDocumentsStream() {
+  //   return _db
+  //       .collection(_collectionPath)
+  //       .orderBy('createdAt', descending: true)
+  //       .snapshots()
+  //       .map(
+  //         (snapshot) => snapshot.docs
+  //             .map((doc) => DocumentModel.fromMap(doc.data()))
+  //             .toList(),
+  //       );
+  // }
 
   // UPDATE: 특정 필드 혹은 전체 업데이트 (AI 요약 완료 시 호출)
   Future<void> updateDocument(DocumentModel document) async {

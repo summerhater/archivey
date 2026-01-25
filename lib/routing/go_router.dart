@@ -1,5 +1,7 @@
+import 'package:archivey/data/service/firebase_document_service.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
+import 'package:archivey/domain/state/shared_web_state.dart';
 // import 'package:archivey/ui/document/ai_summary_example.dart';
 import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/document/document_add_page.dart';
@@ -15,6 +17,8 @@ import 'package:archivey/ui/auth/signup_email_verify_page.dart';
 import 'package:archivey/ui/auth/signup_password_page.dart';
 import 'package:archivey/ui/auth/signup_success_page.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/shared_category_web/shared_web_document_list_page.dart';
+import 'package:archivey/ui/shared_category_web/view_model/shared_web_document_view_model.dart';
 
 import 'package:archivey/ui/onboarding/on_boarding_page.dart';
 import 'package:archivey/ui/setting/settings_page.dart';
@@ -164,5 +168,31 @@ final GoRouter goRouter = GoRouter(
       },
       // builder: (context, state) => AIValidationPage(),
     ),
+
+    /// 카테고리 공유 페이지
+    GoRoute(
+      path: '/share/:shareId',
+      builder: (context, state) {
+        final shareId = state.pathParameters['shareId']!;
+
+        /// 카테고리 공유 페이지만 SharedWebState 가짐
+        return ChangeNotifierProvider<SharedWebState>(
+          create: (_) => SharedWebState(),
+          child: Consumer<SharedWebState>(
+            builder: (context, webState, _) {
+              /// 여기서 DocumentViewModel도 이 범위 안에서만 존재하게
+              return ChangeNotifierProvider<SharedWebDocumentViewModel>(
+                create: (_) => SharedWebDocumentViewModel(
+                  context.read<FirebaseDocumentService>(),
+                  context.read<SharedWebState>(),
+                ),
+                child: SharedWebDocumentListPage(shareId: shareId),
+              );
+            },
+          ),
+        );
+      },
+    ),
+
   ],
 );

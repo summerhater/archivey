@@ -1,4 +1,5 @@
 import 'package:archivey/domain/model/category_model.dart';
+import 'package:archivey/domain/model/more_icon_action_result_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_more_action_widget.dart';
@@ -12,6 +13,7 @@ class MoreIconWidget extends StatelessWidget {
   final VoidCallback? onEditPressed;
   final CategoryModel? originalCategoryModel;
   final VoidCallback? onDeleteConfirmed;
+  final VoidCallback? onShareConfirmed;
 
   const MoreIconWidget({
     super.key,
@@ -20,6 +22,7 @@ class MoreIconWidget extends StatelessWidget {
     this.onEditPressed,
     this.originalCategoryModel,
     this.onDeleteConfirmed,
+    this.onShareConfirmed,
   });
 
   @override
@@ -27,7 +30,7 @@ class MoreIconWidget extends StatelessWidget {
     // print("전달 전 확인 in more icon widget: ${document?.title}, ${document?.memo}");
     return IconButton(
       onPressed: () async {
-        final result = await showModalBottomSheet<bool>(
+        final result = await showModalBottomSheet<MoreIconActionResultEnum>(
           isScrollControlled: true,
           context: context,
           useRootNavigator: true,
@@ -43,9 +46,20 @@ class MoreIconWidget extends StatelessWidget {
             originalCategoryModel: originalCategoryModel,
           ),
         );
-        if (result == true) {
-          onDeleteConfirmed!(); // 부모가 준 함수를 실행!
+
+        switch (result) {
+          case MoreIconActionResultEnum.delete:
+            onDeleteConfirmed!();
+            break;
+          case MoreIconActionResultEnum.share:
+            onShareConfirmed!();
+          case null:
+            print('null error in MoreIconWidget()');
+            // throw UnimplementedError();
         }
+        // if (result == MoreIconActionResultEnum.delete) {
+        //   onDeleteConfirmed!();
+        // }
       },
       icon: Icon(Icons.more_vert),
       iconSize: 18,
