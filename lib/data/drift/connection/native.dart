@@ -8,6 +8,6 @@ QueryExecutor openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'db.sqlite')); // 기존 DB 파일명 확인
-    return NativeDatabase(file);
+    return NativeDatabase.createInBackground(file);
   });
 }

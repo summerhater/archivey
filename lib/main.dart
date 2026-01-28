@@ -7,7 +7,7 @@ import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
-import 'package:archivey/data/service/shared_category_link_service.dart';
+import 'package:archivey/data/service/firebase_shared_category_link_service.dart';
 import 'package:archivey/domain/state/app_state.dart';
 import 'package:archivey/firebase_options.dart';
 import 'package:archivey/routing/go_router.dart';
@@ -19,18 +19,27 @@ import 'package:archivey/ui/setting/view_model/setting_view_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
-import 'package:flutter_sharing_intent/model/sharing_file.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+// import 'package:archivey/data/drift/connection/connection.dart'
+//   if (dart.library.io) 'connection/native.dart'
+//   if (dart.library.js_interop) 'connection/web.dart';
+import './mobile_conditional_import.dart'
+  if (dart.library.html) './web_conditional_import.dart';
+
+import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
+  initPathUrlStrategy();
+  KakaoSdk.init(
+    nativeAppKey: 'cb606197f0f386e941b49506653d6e87',
+  );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final db = AppDatabase.instance;
+  final keyHash = await KakaoSdk.origin;
+  print("실제 등록할 키 해시: $keyHash");
     runApp(
       MultiProvider(
         providers: [
@@ -50,8 +59,8 @@ void main() async {
           Provider<FirebaseCategoryService>(
             create: (_) => FirebaseCategoryService(),
           ),
-          Provider<SharedCategoryLinkService>(
-            create: (_) => SharedCategoryLinkService(),
+          Provider<FirebaseSharedCategoryWebService>(
+            create: (_) => FirebaseSharedCategoryWebService(),
           ),
           // ChangeNotifierProvider<AuthViewModel>(
           //   create: (context) => AuthViewModel(
@@ -96,7 +105,7 @@ void main() async {
               context.read<AppState>(),
               context.read<FirebaseDocumentService>(),
               context.read<DriftDocumentService>(),
-              context.read<SharedCategoryLinkService>(),
+              context.read<FirebaseSharedCategoryWebService>(),
             ),
             update: (context, appState, previous) {
               if (previous == null) throw Exception('CategoryVM 생성 안됨');
@@ -164,55 +173,43 @@ class Archivey extends StatefulWidget {
 }
 
 class _ArchiveyState extends State<Archivey> {
-  late StreamSubscription _intentDataStreamSubscription;
-  List<SharedFile>? list;
-
-  void _handleSharingIntent(value) {
-    if (value.isNotEmpty) {
-      List<String> temp = [];
-
-      for (final e in value) {
-        if (e.value is String) {
-          temp.add(e.value!);
-        }
-      }
-
-      final sharedText = temp.join(' ');
-      setState(() {
-        goRouter.push('/document_add', extra: sharedText);
-      });
-    }
+  late StreamSubscription? _intentDataStreamSubscription;
+  void goCallback(String sharedText){
+    print('document add jh');
+    goRouter.go('/document_add', extra: sharedText);
   }
+
+  // void _handleSharingIntent(value) {
+  //   if (value.isNotEmpty) {
+  //     List<String> temp = [];
+  //
+  //     for (final e in value) {
+  //       if (e.value is String) {
+  //         temp.add(e.value!);
+  //       }
+  //     }
+  //
+  //     final sharedText = temp.join(' ');
+  //     goRouter.go('/document_add', extra: sharedText);
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-
     ///앱이 실행 중 일때 (백그라운드 포함) : getMediaStream()
-    _intentDataStreamSubscription = FlutterSharingIntent.instance
-        .getMediaStream()
-        .listen(
-          (List<SharedFile> value) {
-            _handleSharingIntent(value);
-            // print("Shared: getMediaStream ${value.map((f) => f.value).join(",")}");
-          },
-          onError: (err) {
-            print("getIntentDataStream error: $err");
-          },
-        );
-
-    ///앱이 실행 중이 아닐 때: getInitialSharing()
-    FlutterSharingIntent.instance.getInitialSharing().then((
-      List<SharedFile> value,
-    ) {
-      print("Shared: getInitialMedia ${value.map((f) => f.value).join(",")}");
-      _handleSharingIntent(value);
-    });
+    if (!kIsWeb){
+      _intentDataStreamSubscription = SharingIntent.getMediaStream(goCallback);
+      ///앱이 실행 중이 아닐 때: getInitialSharing()
+      SharingIntent.getInitialSharing(goCallback);
+    }else{
+      print("xxxxxxx웹 환경: 공유 인텐트 기능 활성화xxxxxxx");
+    }
   }
 
   @override
   void dispose() {
-    _intentDataStreamSubscription.cancel();
+    _intentDataStreamSubscription?.cancel();
     super.dispose();
   }
 

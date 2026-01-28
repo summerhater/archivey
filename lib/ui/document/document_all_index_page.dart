@@ -1,4 +1,5 @@
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/utils/kakao_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -132,7 +133,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                       onDeleteConfirmed: () {
                                         vm.deleteCategory(category.categoryId);
                                       },
-                                      onShareConfirmed : () async {
+                                      onCopyLinkConfirmed : () async {
                                         final String? shareCategoryURL = await vm.createSharedCategoryLink(category.categoryId);
                                         if (shareCategoryURL != null && context.mounted) {
                                           await Clipboard.setData(ClipboardData(text: await shareCategoryURL));
@@ -142,7 +143,17 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                             context.showAppMessageSnackBar('카테고리 공유 링크 생성 중 오류가 발생했습니다.');
                                           }
                                         }
-                                      }
+                                      },
+                                      onShareKakaoConfirmed: () async {
+                                        final String? shareCategoryURL = await vm.createSharedCategoryLink(category.categoryId);
+                                        if (shareCategoryURL != null) {
+                                          kakaoShareCategoryURL(shareCategoryURL, category);
+                                        } else {
+                                          if (context.mounted) {
+                                            context.showAppMessageSnackBar('카테고리 카카오톡 공유 중 오류가 발생했습니다.');
+                                          }
+                                        }
+                                      },
                                     ),
                                     const SizedBox(width: 8),
 

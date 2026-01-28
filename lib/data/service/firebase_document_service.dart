@@ -448,7 +448,6 @@ $commonInstructions
 
 
   Future<List<DocumentModel>> getDocumentsByCategory(String categoryId) async {
-    print('categoryId in service : $categoryId');
     try {
       final querySnapshot = await _db
           .collection('documents')
@@ -552,5 +551,21 @@ $commonInstructions
 
     // 한번에 업로드 후 커밋
     await batch.commit();
+  }
+
+  Future<List<DocumentModel>> readDocumentsByUid(String uid) async {
+    try {
+      final querySnapshot = await _db
+          .collection(_collectionPath)
+          .where('uid', isEqualTo: uid)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => DocumentModel.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      print("readDocumentsByUid 불러오기 에러: $e");
+      return [];
+    }
   }
 }

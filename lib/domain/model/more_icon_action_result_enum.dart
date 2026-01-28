@@ -1,1 +1,1 @@
-enum MoreIconActionResultEnum {delete, share}
+enum MoreIconActionResultEnum {delete, copyLink, shareKakao}

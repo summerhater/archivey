@@ -93,7 +93,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                 ),
                 child: TextButton(
                   onPressed: () {
-                      context.pop(MoreIconActionResultEnum.share);
+                      context.pop(MoreIconActionResultEnum.copyLink);
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
@@ -118,13 +118,7 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
               width: double.infinity,
               child: TextButton(
                 onPressed: () {
-                  context.pop();
-                  if (widget.shareSettingMode == ShareSettingMode.category) {
-                    ///todo: 카테고리 공유하는 링크 생성 및 카카오톡 보내기 바텀시트
-                  } else {
-                    ///todo: 카카오톡 보내기 바텀시트
-                  }
-                  ;
+                  context.pop(MoreIconActionResultEnum.shareKakao);
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),

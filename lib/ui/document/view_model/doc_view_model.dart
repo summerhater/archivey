@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:archivey/config/share_category_link_config.dart';
 import 'package:archivey/data/mapper/document_mapper.dart';
 import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
@@ -334,9 +335,8 @@ class DocViewModel extends ChangeNotifier {
     String? categoryId,
     required bool isLatest,
     required bool isBookmarkMode,
-
   }) {
-    print('categoryId in getDisplayDocuments : $categoryId');
+    // print('categoryId in getDisplayDocuments : $categoryId');
     ///문서 추출
     List<DocumentModel> docs = categoryId == null
         ? List.from(documents)
@@ -357,7 +357,6 @@ class DocViewModel extends ChangeNotifier {
       filteredDisplayDocuments=docs;
       notifyListeners();
     }
-
   }
 
   ///DocumentDetailPage에서 보여줄 document를 documentId로 찾아서 반환
@@ -382,6 +381,31 @@ class DocViewModel extends ChangeNotifier {
       );
     } catch (e) {
       debugPrint('AI 분석 업데이트 실패: $e');
+    }
+  }
+
+  String getRootCategoryNameByDocument(DocumentModel doc) {
+    if (doc.category.parentId == null) {
+      return doc.category.categoryName;
+    }
+
+    final rootCategory = _appState.categories
+        .cast<CategoryModel?>()
+        .firstWhere(
+          (c) => c?.categoryId == doc.category.parentId,
+      orElse: () => null,
+    );
+
+    return rootCategory?.categoryName ?? '알수없는 대분류 카테고리';
+  }
+
+  ///수집물 카카오톡 공유하기 구현을 위한 메소드 추가
+  Future<String?> createSharedCategoryLink(String originalURL) async {
+    try {
+      return "${ShareCategoryLinkConfig.baseUrl}/share/document/go?target=$originalURL";
+    } catch (e) {
+      print('error in createSharedCategoryLink: $e');
+      return null;
     }
   }
 }

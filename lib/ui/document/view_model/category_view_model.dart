@@ -2,7 +2,7 @@ import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
-import 'package:archivey/data/service/shared_category_link_service.dart';
+import 'package:archivey/data/service/firebase_shared_category_link_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
@@ -18,7 +18,7 @@ class CategoryViewModel extends ChangeNotifier {
   AppState _appState;
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
-  final SharedCategoryLinkService _sharedCategoryLinkService;
+  final FirebaseSharedCategoryWebService _sharedCategoryLinkService;
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
   CategoryViewModel(

@@ -1,11 +1,11 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:archivey/data/dto/document_with_tags.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+// import 'package:drift/native.dart';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:path/path.dart' as p;
 import 'package:archivey/data/drift/connection/connection.dart'
   if (dart.library.io) 'connection/native.dart'
   if (dart.library.js_interop) 'connection/web.dart';
@@ -18,7 +18,8 @@ part 'app_database.g.dart';
 class AppDatabase extends _$AppDatabase {
   static final AppDatabase instance = AppDatabase._internal();
 
-  AppDatabase._internal() : super(_openConnection());
+  AppDatabase._internal() : super(openConnection());
+  // AppDatabase._internal() : super(_openConnection());
   // AppDatabase() : super(_openConnection());
 
   factory AppDatabase() => instance;
@@ -342,11 +343,11 @@ class AppDatabase extends _$AppDatabase {
   }
 }
 
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'db.sqlite'));
-
-    return NativeDatabase.createInBackground(file);
-  });
-}
+// LazyDatabase _openConnection() {
+//   return LazyDatabase(() async {
+//     final dbFolder = await getApplicationDocumentsDirectory();
+//     final file = File(p.join(dbFolder.path, 'db.sqlite'));
+//
+//     return NativeDatabase.createInBackground(file);
+//   });
+// }

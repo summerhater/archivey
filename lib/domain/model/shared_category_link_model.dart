@@ -15,7 +15,7 @@ class SharedCategoryLinkModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'sharedId' : shareId,
+      'shareId' : shareId,
       'ownerUid': ownerUid,
       'categoryId': categoryId,
       'createdAt': createdAt,

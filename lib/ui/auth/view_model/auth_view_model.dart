@@ -34,6 +34,9 @@ class AuthViewModel extends ChangeNotifier {
     _authService.authStateChanges().listen((user) async{
       if(user == null) {
         print('############### user 없음 #################');
+        print('############### 새로고침됨 #################');
+        print('############### 1111새로고침됨 #################');
+        print('############### 2222새로고침됨 #################');
         _appState.setUid(null);
         _appState.setEmail(null);
       } else {

@@ -13,7 +13,8 @@ class MoreIconWidget extends StatelessWidget {
   final VoidCallback? onEditPressed;
   final CategoryModel? originalCategoryModel;
   final VoidCallback? onDeleteConfirmed;
-  final VoidCallback? onShareConfirmed;
+  final VoidCallback? onCopyLinkConfirmed;
+  final VoidCallback? onShareKakaoConfirmed;
 
   const MoreIconWidget({
     super.key,
@@ -22,7 +23,8 @@ class MoreIconWidget extends StatelessWidget {
     this.onEditPressed,
     this.originalCategoryModel,
     this.onDeleteConfirmed,
-    this.onShareConfirmed,
+    this.onCopyLinkConfirmed,
+    this.onShareKakaoConfirmed,
   });
 
   @override
@@ -51,8 +53,10 @@ class MoreIconWidget extends StatelessWidget {
           case MoreIconActionResultEnum.delete:
             onDeleteConfirmed!();
             break;
-          case MoreIconActionResultEnum.share:
-            onShareConfirmed!();
+          case MoreIconActionResultEnum.copyLink:
+            onCopyLinkConfirmed!();
+          case MoreIconActionResultEnum.shareKakao:
+            onShareKakaoConfirmed!();
           case null:
             print('null error in MoreIconWidget()');
             // throw UnimplementedError();

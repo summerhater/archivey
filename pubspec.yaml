@@ -59,7 +59,9 @@ dependencies:
   package_info_plus: ^9.0.0
   flutter_web_plugins:
     sdk: flutter
-
+  kakao_flutter_sdk_share: ^1.10.0
+#  image_network: ^2.6.0
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:
