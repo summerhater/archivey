@@ -258,6 +258,7 @@ class FirebaseDocumentService {
         category: category,
         userMemo: memo ?? '',
         aiStatus: AiTaskStatus.analyzing,
+        isBookmark: false,
       );
 
       return (newDoc, contentText);

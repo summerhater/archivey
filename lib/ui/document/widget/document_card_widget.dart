@@ -1,7 +1,5 @@
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -440,15 +438,17 @@ Widget _buildNormalBottomTags(BuildContext context, DocumentModel document, bool
               ],
             ),
           ),
-          // if (isWeb == null && document.isBookmarked == false)
-          //todo: 북마크된 document일시 북마크된 아이콘 보여주고 아무 동작 안하게 처리 필요
+          /// 북마크
           if (isWeb == null)
             IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.bookmark_border),
+              onPressed: () async{
+                // TODO 함수 콜백으로 받기
+                await Provider.of<DocViewModel>(context, listen: false).updateDocument(document.copyWith(isBookmark: !document.isBookmark));
+              },
+              icon: document.isBookmark ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
               color: Colors.grey.shade400,
               iconSize: 24,
-              visualDensity: const VisualDensity(horizontal: -4.0),
+              visualDensity: VisualDensity(horizontal: -4.0),
             ),
         ],
       );

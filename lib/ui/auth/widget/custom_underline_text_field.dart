@@ -33,7 +33,12 @@ class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
     hintText = widget.hintText;
     isPassword = widget.isPassword ?? false;
   }
+  @override
+  void dispose() {
 
+    // TODO: implement dispose
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     var appColor = Theme.of(context).extension<AppColorScheme>()!;

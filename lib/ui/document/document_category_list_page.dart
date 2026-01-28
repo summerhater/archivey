@@ -47,7 +47,7 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
   void displayDoc(){
     context.read<DocViewModel>().getDisplayDocuments(
       categoryId: _getSelectedCategoryId,
-      isLatest: _isLatest,
+      isLatestMode: _isLatest,
       isBookmarkMode: _isBookmarkMode,
     );
   }
