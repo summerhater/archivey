@@ -7,15 +7,15 @@ class SettingViewModel extends ChangeNotifier{
 
   final FirebaseAuthService _authService;
   final FirebaseAppUserService _userService;
-  AppState _appState;
+  final AppState _appState;
 
   SettingViewModel(this._authService, this._userService, this._appState,);
 
   String get email => _appState.email;
 
-  void updateState(AppState newState) {
-    _appState = newState;
-  }
+  // void updateState(AppState newState) {
+  //   _appState = newState;
+  // }
 
   Future<void> logout() async{
     await _authService.logOut();

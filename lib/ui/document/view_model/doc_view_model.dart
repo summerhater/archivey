@@ -13,7 +13,7 @@ import 'package:rxdart/rxdart.dart';
 class DocViewModel extends ChangeNotifier {
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
-  AppState _appState;
+  final AppState _appState;
 
   DocViewModel(
     this._firebaseDocumentService,
@@ -21,7 +21,7 @@ class DocViewModel extends ChangeNotifier {
     this._appState,
   ) {
     pullAndPush();
-    // _appState.addListener(_onStateChanged);
+    _appState.addListener(_onStateChanged);
     // readDocuments(_appState.categories);
   }
 
@@ -40,21 +40,22 @@ class DocViewModel extends ChangeNotifier {
   bool _hasInitDocs = false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
   bool _isSearching = false;
   bool get isSearching => _isSearching;
+  String? _currentCategoryId;
 
-  void updateState(AppState newState) {
-    print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
-    _appState = newState;
-    getDisplayDocuments(isLatestMode: isLatest, isBookmarkMode: isBookMark);
-
-    // if(_appState.categories.isNotEmpty && _appState.documents.isEmpty) {
-    //   readDocuments(_appState.categories);
-    // }
-
-    if(_appState.categories.isNotEmpty && !_hasInitDocs) {
-      _hasInitDocs = true;
-      readDocuments();
-    }
-  }
+  // void updateState(AppState newState) {
+  //   print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
+  //   _appState = newState;
+  //   getDisplayDocuments(isLatestMode: isLatest, isBookmarkMode: isBookMark);
+  //
+  //   // if(_appState.categories.isNotEmpty && _appState.documents.isEmpty) {
+  //   //   readDocuments(_appState.categories);
+  //   // }
+  //
+  //   if(_appState.categories.isNotEmpty && !_hasInitDocs) {
+  //     _hasInitDocs = true;
+  //     readDocuments();
+  //   }
+  // }
 
   /// 초기 데이터 로드
   ///
@@ -224,7 +225,7 @@ class DocViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    // _appState.removeListener(_onStateChanged);
+    _appState.removeListener(_onStateChanged);
     _subscription?.cancel();
     super.dispose();
   }
@@ -302,6 +303,7 @@ class DocViewModel extends ChangeNotifier {
 
   /// 리스너
   void _onStateChanged() {
+    getDisplayDocuments(categoryId: _currentCategoryId, isLatestMode: isLatest, isBookmarkMode: isBookMark);
     if(_appState.categories.isNotEmpty && !_hasInitDocs) {
       _hasInitDocs = true;
       readDocuments();
@@ -354,6 +356,7 @@ class DocViewModel extends ChangeNotifier {
   }) {
     isBookMark = isBookmarkMode;
     isLatest = isLatestMode;
+    _currentCategoryId = categoryId;
     print('categoryId in getDisplayDocuments : $categoryId');
     ///문서 추출
     List<DocumentModel> docs = categoryId == null
