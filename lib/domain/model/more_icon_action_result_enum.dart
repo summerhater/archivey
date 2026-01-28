@@ -1,0 +1,1 @@
+enum MoreIconActionResultEnum {delete, copyLink, shareKakao}

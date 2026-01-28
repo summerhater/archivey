@@ -181,9 +181,10 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                     child: DocumentCard(
                       document: currentDoc,
                       isFirstItem: false,
-                      isDetailPage: true,
+                      outlineBorder: true,
                       showBottomBorder: false,
                       isOnAllPage: true,
+                      categoryName: vm.getRootCategoryNameByDocument(currentDoc),
                     ),
                   ),
 

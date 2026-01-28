@@ -449,7 +449,6 @@ $commonInstructions
 
 
   Future<List<DocumentModel>> getDocumentsByCategory(String categoryId) async {
-    print('categoryId in service : $categoryId');
     try {
       final querySnapshot = await _db
           .collection('documents')
@@ -493,17 +492,17 @@ $commonInstructions
   }
 
   // READ: 실시간 스트림 (최신순)
-  Stream<List<DocumentModel>> getDocumentsStream() {
-    return _db
-        .collection(_collectionPath)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => DocumentModel.fromMap(doc.data()))
-              .toList(),
-        );
-  }
+  // Stream<List<DocumentModel>> getDocumentsStream() {
+  //   return _db
+  //       .collection(_collectionPath)
+  //       .orderBy('createdAt', descending: true)
+  //       .snapshots()
+  //       .map(
+  //         (snapshot) => snapshot.docs
+  //             .map((doc) => DocumentModel.fromMap(doc.data()))
+  //             .toList(),
+  //       );
+  // }
 
   // UPDATE: 특정 필드 혹은 전체 업데이트 (AI 요약 완료 시 호출)
   Future<void> updateDocument(DocumentModel document) async {
@@ -553,5 +552,21 @@ $commonInstructions
 
     // 한번에 업로드 후 커밋
     await batch.commit();
+  }
+
+  Future<List<DocumentModel>> readDocumentsByUid(String uid) async {
+    try {
+      final querySnapshot = await _db
+          .collection(_collectionPath)
+          .where('uid', isEqualTo: uid)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => DocumentModel.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      print("readDocumentsByUid 불러오기 에러: $e");
+      return [];
+    }
   }
 }

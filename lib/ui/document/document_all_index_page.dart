@@ -1,8 +1,11 @@
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/utils/kakao_share.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../domain/model/document_model.dart';
 import 'document_shell_page.dart';
@@ -126,9 +129,30 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                     MoreIconWidget(
                                       moreIconSettingMode:
                                           MoreIconSettingMode.category,
-                                      originalCategoryModel: rootCategories[index],
+                                      originalCategoryModel: category,
                                       onDeleteConfirmed: () {
                                         vm.deleteCategory(category.categoryId);
+                                      },
+                                      onCopyLinkConfirmed : () async {
+                                        final String? shareCategoryURL = await vm.createSharedCategoryLink(category.categoryId);
+                                        if (shareCategoryURL != null && context.mounted) {
+                                          await Clipboard.setData(ClipboardData(text: await shareCategoryURL));
+                                          context.showAppMessageSnackBar('카테고리 링크가 복사되었습니다. ☻');
+                                        } else {
+                                          if (context.mounted) {
+                                            context.showAppMessageSnackBar('카테고리 공유 링크 생성 중 오류가 발생했습니다.');
+                                          }
+                                        }
+                                      },
+                                      onShareKakaoConfirmed: () async {
+                                        final String? shareCategoryURL = await vm.createSharedCategoryLink(category.categoryId);
+                                        if (shareCategoryURL != null) {
+                                          kakaoShareCategoryURL(shareCategoryURL, category);
+                                        } else {
+                                          if (context.mounted) {
+                                            context.showAppMessageSnackBar('카테고리 카카오톡 공유 중 오류가 발생했습니다.');
+                                          }
+                                        }
                                       },
                                     ),
                                     const SizedBox(width: 8),

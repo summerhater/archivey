@@ -1,5 +1,6 @@
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
+import 'package:archivey/domain/model/more_icon_action_result_enum.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +39,7 @@ class _BottomSheetMoreActionWidgetState
 
   Future<void> deleteByTypeSettingModeFromBottomSheet() async {
     if (widget.typeSettingMode == TypeSettingMode.category) {
-      final bool? result = await showDialog<bool>(
+      final MoreIconActionResultEnum? result = await showDialog<MoreIconActionResultEnum>(
         context: context,
         barrierDismissible: false,
         builder: (context) {
@@ -50,9 +51,8 @@ class _BottomSheetMoreActionWidgetState
       if (!context.mounted) return;
       Navigator.of(context).pop(result);
     } else {
-      ///1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
-      context.pop();
-      showDialog(
+      ///todo: 1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
+      final MoreIconActionResultEnum? result = await showDialog<MoreIconActionResultEnum>(
         context: context,
         barrierDismissible: false,
         builder: (context) {
@@ -61,6 +61,8 @@ class _BottomSheetMoreActionWidgetState
           );
         },
       );
+      if (!context.mounted) return;
+      context.pop(result);
     }
   }
 
@@ -117,9 +119,8 @@ class _BottomSheetMoreActionWidgetState
                   ),
                 ),
                 child: TextButton(
-                  onPressed: () {
-                    context.pop();
-                    showModalBottomSheet<String>(
+                  onPressed: () async {
+                    final MoreIconActionResultEnum result = await showModalBottomSheet(
                       isScrollControlled: true,
                       context: context,
                       useRootNavigator: true,
@@ -130,6 +131,7 @@ class _BottomSheetMoreActionWidgetState
                             : ShareSettingMode.document,
                       ),
                     );
+                    context.pop(result);
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),

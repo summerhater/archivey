@@ -11,39 +11,43 @@ import '../../../config/text_theme_extension.dart';
 import '../../../domain/model/document_model.dart';
 import 'more_icon_widget.dart';
 import 'dart:ui' as ui;
+// import 'package:image_network/image_network.dart';
 
 class DocumentCard extends StatelessWidget {
   final DocumentModel document;
   final bool isFirstItem;
-  final bool isDetailPage;
+  final bool outlineBorder;
   final bool showBottomBorder;
   final VoidCallback? onTap;
   final bool isOnAllPage;
+  final String categoryName;
+  final VoidCallback? onDeleteConfirmed;
+  final VoidCallback? onCopyLinkConfirmed;
+  final VoidCallback? onShareKakaoConfirmed;
+  final bool? isWeb;
 
   const DocumentCard({
     super.key,
     required this.document,
     required this.isFirstItem,
-    required this.isDetailPage,
+    required this.outlineBorder,
     this.showBottomBorder = true,
     this.onTap,
     required this.isOnAllPage,
+    required this.categoryName,
+    this.onShareKakaoConfirmed,
+    this.onCopyLinkConfirmed,
+    this.onDeleteConfirmed,
+    this.isWeb,
   });
 
   @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
-    final categoryVM = context.watch<CategoryViewModel>();
-    String categoryName;
-    if (document.category.parentId != null) {
-      final rootCategory = categoryVM.getRootCategoryByParentId(
-        document.category.parentId!,
-      );
-      categoryName = rootCategory?.categoryName ?? '알수없는 대분류 카테고리';
-    } else {
-      categoryName = document.category.categoryName;
-    }
+    final bool showMoreIcon = onShareKakaoConfirmed == null &&
+            onCopyLinkConfirmed == null &&
+            onDeleteConfirmed == null;
     final AiTaskStatus aiStatus = document.aiStatus;
     final bool isProcessing =
         aiStatus == AiTaskStatus.pending || aiStatus == AiTaskStatus.analyzing;
@@ -61,10 +65,10 @@ class DocumentCard extends StatelessWidget {
         }
       },
       child: Container(
-        padding: isDetailPage
+        padding: outlineBorder
             ? EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16)
             : EdgeInsets.only(bottom: 10, left: 16, right: 16),
-        decoration: isDetailPage
+        decoration: outlineBorder
             ? BoxDecoration(
                 color: appColorScheme.primary,
                 borderRadius: BorderRadius.circular(20),
@@ -105,7 +109,7 @@ class DocumentCard extends StatelessWidget {
                     color: Colors.grey.shade600,
                   ),
                 ),
-                !isDetailPage
+                !showMoreIcon
                     ? Opacity(
                         opacity: isProcessing ? 0.4 : 1.0,
                         child: IgnorePointer(
@@ -113,6 +117,9 @@ class DocumentCard extends StatelessWidget {
                           child: MoreIconWidget(
                             moreIconSettingMode: MoreIconSettingMode.document,
                             document: document,
+                            onDeleteConfirmed: onDeleteConfirmed,
+                            onCopyLinkConfirmed: onCopyLinkConfirmed,
+                            onShareKakaoConfirmed: onShareKakaoConfirmed,
                           ),
                         ),
                       )
@@ -127,30 +134,83 @@ class DocumentCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// 썸네일 이미지
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    color: Colors.grey.shade300,
-                    child: Image.network(
-                      document.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade300,
-                          child: Center(
-                            child: Icon(
-                              Icons.image,
-                              color: Colors.grey.shade500,
-                              size: 40,
+                // if(kIsWeb)
+                //   ImageNetwork(
+                //     image: document.imageUrl,
+                //     height: 80.0,
+                //     width: 80.0,
+                //     duration: 500,
+                //     curve: Curves.easeIn,
+                //     onPointer: true,
+                //     fitAndroidIos: BoxFit.cover,
+                //     fitWeb: BoxFitWeb.fill,
+                //     borderRadius: BorderRadius.circular(8),
+                //     backgroundColor: Colors.grey.shade300,
+                //     onLoading: Center(
+                //       child: CircularProgressIndicator(
+                //         strokeWidth: 2,
+                //         color: Colors.grey.shade500,
+                //       ),
+                //     ),
+                //     onError: Container(
+                //       color: Colors.grey.shade300,
+                //       child: Center(
+                //         child: Icon(
+                //           Icons.image,
+                //           color: Colors.grey.shade500,
+                //           size: 40,
+                //         ),
+                //       ),
+                //     ),
+                //   )
+                // else
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey.shade300,
+                      child: Image.network(
+                        // document.imageUrl,
+                         'https://proxy-gqfi74i22a-uc.a.run.app/proxy?url=${document.imageUrl}',
+                        fit: BoxFit.cover,
+                        webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade300,
+                            child: Center(
+                              child: Icon(
+                                Icons.image,
+                                color: Colors.grey.shade500,
+                                size: 40,
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
+                // ClipRRect(
+                //   borderRadius: BorderRadius.circular(8),
+                //   child: CachedNetworkImage(
+                //     imageUrl: document.imageUrl,
+                //     width: 80,
+                //     height: 80,
+                //     fit: BoxFit.cover,
+                //     // 로딩 중 표시
+                //     placeholder: (context, url) => Container(
+                //       color: Colors.grey.shade300,
+                //       child: const Center(
+                //         child: CircularProgressIndicator(strokeWidth: 2),
+                //       ),
+                //     ),
+                //     // 에러 발생 시 표시
+                //     errorWidget: (context, url, error) => Container(
+                //       color: Colors.grey.shade300,
+                //       child: Icon(Icons.image, color: Colors.grey.shade500, size: 40),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(width: 16),
                 Expanded(
                   child: SizedBox(
@@ -248,7 +308,7 @@ class DocumentCard extends StatelessWidget {
             SizedBox(height: 15),
 
             /// 하단 태그, 북마크 아이콘
-            _buildBottomTags(context, document),
+            _buildBottomTags(context, document, isWeb),
           ],
         ),
       ),
@@ -271,7 +331,7 @@ Widget _buildTitleShimmer() {
   );
 }
 
-Widget _buildBottomTags(BuildContext context, DocumentModel document) {
+Widget _buildBottomTags(BuildContext context, DocumentModel document, isWeb) {
   final status = document.aiStatus;
 
   if (status == AiTaskStatus.pending || status == AiTaskStatus.analyzing) {
@@ -297,7 +357,7 @@ Widget _buildBottomTags(BuildContext context, DocumentModel document) {
     return _buildAiRetryTag(context, document);
   }
 
-  return _buildNormalBottomTags(context, document);
+  return _buildNormalBottomTags(context, document, isWeb);
 }
 
 Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
@@ -327,7 +387,7 @@ Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
   );
 }
 
-Widget _buildNormalBottomTags(BuildContext context, DocumentModel document) {
+Widget _buildNormalBottomTags(BuildContext context, DocumentModel document, bool? isWeb) {
   final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
   final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
 
@@ -354,7 +414,7 @@ Widget _buildNormalBottomTags(BuildContext context, DocumentModel document) {
         /// 컨테이너 패딩(12*2) + 태그 간격(8) 포함 너비
         final tagWidth = textPainter.width + 24 + tagSpacing;
 
-        /// '+N'표시하기 위한 최소 공간(35px)을 고려해 계산
+        /// '+N'표시하기 위한 최소 공간 계산
         if (currentWidth + tagWidth + 35 < maxWidth) {
           visibleTags.add(tag);
           currentWidth += tagWidth;
@@ -379,16 +439,17 @@ Widget _buildNormalBottomTags(BuildContext context, DocumentModel document) {
             ),
           ),
           /// 북마크
-          IconButton(
-            onPressed: () async{
-              // TODO 함수 콜백으로 받기
-              await Provider.of<DocViewModel>(context, listen: false).updateDocument(document.copyWith(isBookmark: !document.isBookmark));
-            },
-            icon: document.isBookmark ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
-            color: Colors.grey.shade400,
-            iconSize: 24,
-            visualDensity: VisualDensity(horizontal: -4.0),
-          ),
+          if (isWeb == null)
+            IconButton(
+              onPressed: () async{
+                // TODO 함수 콜백으로 받기
+                await Provider.of<DocViewModel>(context, listen: false).updateDocument(document.copyWith(isBookmark: !document.isBookmark));
+              },
+              icon: document.isBookmark ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
+              color: Colors.grey.shade400,
+              iconSize: 24,
+              visualDensity: VisualDensity(horizontal: -4.0),
+            ),
         ],
       );
     },

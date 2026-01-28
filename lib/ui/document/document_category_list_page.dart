@@ -1,5 +1,9 @@
+import 'package:archivey/config/share_category_link_config.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
+import 'package:archivey/utils/app_snack_bar_widget.dart';
+import 'package:archivey/utils/kakao_share.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:archivey/ui/document/widget/document_card_widget.dart';
@@ -38,7 +42,6 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       displayDoc();
     });
-
   }
 
   void displayDoc(){
@@ -107,8 +110,22 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
                         return DocumentCard(
                           document: displayDocuments[index],
                           isFirstItem: index == 0,
-                          isDetailPage: false,
+                          outlineBorder: false,
                           isOnAllPage: false,
+                          categoryName: vm.getRootCategoryNameByDocument(displayDocuments[index]),
+                          onDeleteConfirmed: () {
+                            vm.deleteDocument(displayDocuments[index].id);
+                          },
+                          onCopyLinkConfirmed: () async {
+                            await Clipboard.setData(ClipboardData(text: displayDocuments[index].url));
+                            if(!context.mounted) return;
+                            context.showAppMessageSnackBar('수집물 원문 링크가 복사되었습니다. ☻');
+                          },
+                          onShareKakaoConfirmed: () {
+                            String originalUrl = displayDocuments[index].url;
+                            String url = "${ShareCategoryLinkConfig.baseUrl}/share/go.html?target=$originalUrl";
+                            kakaoShareDocumentURL(url, displayDocuments[index]);
+                          },
                         );
                       },
                     ),

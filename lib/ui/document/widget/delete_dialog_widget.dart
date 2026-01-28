@@ -1,3 +1,4 @@
+import 'package:archivey/domain/model/more_icon_action_result_enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -107,7 +108,7 @@ class DeleteDialogWidget extends StatelessWidget {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop(true);
+                      Navigator.of(context).pop(MoreIconActionResultEnum.delete);
                     },
                     style: TextButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,

@@ -81,4 +81,38 @@ class FirebaseCategoryService {
 
     await batch.commit();
   }
+
+  Future<CategoryModel?> getCategoryByCategoryId(String categoryId) async {
+    try {
+      final querySnapshot = await _db
+          .collection('categories')
+          .where('categoryId', isEqualTo: categoryId)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {return null;}
+
+      final data = querySnapshot.docs.first.data();
+      return CategoryModel.fromMap(data);
+    } catch (e) {
+      print('getCategoryByCategoryId: 카테고리 조회 중 오류 발생: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<CategoryModel>> readCategoryByUid(String uid) async {
+    try {
+      final querySnapshot = await _db
+          .collection('categories')
+          .where('uid', isEqualTo: uid)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return CategoryModel.fromMap(doc.data());
+      }).toList();
+
+    } catch (e) {
+      print("readCategoryByUid 에러 : $e");
+      return [];
+    }
+  }
 }
