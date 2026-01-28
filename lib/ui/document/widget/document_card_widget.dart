@@ -1,5 +1,6 @@
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -171,8 +172,9 @@ class DocumentCard extends StatelessWidget {
                       height: 80,
                       color: Colors.grey.shade300,
                       child: Image.network(
-                        // document.imageUrl,
-                         'https://proxy-gqfi74i22a-uc.a.run.app/proxy?url=${document.imageUrl}',
+                        kIsWeb
+                            ? 'https://proxy-gqfi74i22a-uc.a.run.app/proxy?url=${document.imageUrl}'
+                            : document.imageUrl,
                         fit: BoxFit.cover,
                         webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
                         errorBuilder: (context, error, stackTrace) {

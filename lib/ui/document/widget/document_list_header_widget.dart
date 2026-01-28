@@ -1,4 +1,5 @@
 import 'package:archivey/domain/model/category_model.dart';
+import 'package:archivey/domain/model/more_icon_action_result_enum.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
@@ -203,7 +204,8 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(24),
                               onLongPress: () async {
-                                final result = await showModalBottomSheet<bool>(
+                                final result =
+                                    await showModalBottomSheet<MoreIconActionResultEnum>(
                                   isScrollControlled: true,
                                   context: context,
                                   useRootNavigator: true,
@@ -213,10 +215,15 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                     originalCategoryModel: sub,
                                   ),
                                 );
-                                print('result is : $result');
-                                if (result == true) {
-                                  print('ondelete subcategory');
-                                    vm.deleteCategory(sub.categoryId);
+                                if (result == MoreIconActionResultEnum.delete) {
+                                  /// 소분류 카테고리 롱탭 해서 삭제 했을시 '전체'로 자동 선택되게 리셋
+                                  setState(() => _selectedIndex = 0);
+                                  widget.selectedSubCategory?.call(null);
+                                  final categoryNameToDelete = sub.categoryName;
+                                  vm.deleteCategory(sub.categoryId);
+                                  if (context.mounted){
+                                    context.showAppMessageSnackBar('$categoryNameToDelete 소분류 카테고리가 삭제 완료되었습니다 ☻');
+                                  }
                                 }
                               },
                               child: ChoiceChip(
@@ -400,7 +407,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  widget.isLatest ? '최신순' : '과거순',
+                                  widget.isLatest ? '최신순' : '등록순',
                                   style: appTextTheme.labelLarge.copyWith(
                                     fontWeight: FontWeight.w500,
                                     color: !widget.isBookmarkSelected
