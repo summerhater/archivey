@@ -37,33 +37,24 @@ class _BottomSheetMoreActionWidgetState
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  Future<void> deleteByTypeSettingModeFromBottomSheet() async {
-    if (widget.typeSettingMode == TypeSettingMode.category) {
-      final MoreIconActionResultEnum? result = await showDialog<MoreIconActionResultEnum>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return DeleteDialogWidget(
-            deleteSettingMode: DeleteSettingMode.category,
-          );
-        },
-      );
-      if (!context.mounted) return;
-      Navigator.of(context).pop(result);
-    } else {
-      ///todo: 1개의 수집물(도큐먼트) 일 시 처리할 삭제 로직
-      final MoreIconActionResultEnum? result = await showDialog<MoreIconActionResultEnum>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return DeleteDialogWidget(
-            deleteSettingMode: DeleteSettingMode.document,
-          );
-        },
-      );
-      if (!context.mounted) return;
-      context.pop(result);
-    }
+  /// 삭제 다이얼로그를 띄우고, 사용자의 선택 결과를 반환한다.
+  Future<MoreIconActionResultEnum?> deleteByTypeSettingModeFromBottomSheet() async {
+    final deleteMode = widget.typeSettingMode == TypeSettingMode.category
+        ? DeleteSettingMode.category
+        : DeleteSettingMode.document;
+
+    final MoreIconActionResultEnum? result =
+        await showDialog<MoreIconActionResultEnum>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return DeleteDialogWidget(
+          deleteSettingMode: deleteMode,
+        );
+      },
+    );
+
+    return result;
   }
 
   @override
@@ -218,7 +209,12 @@ class _BottomSheetMoreActionWidgetState
               width: double.infinity,
               child: TextButton(
                 onPressed: () async {
-                  await deleteByTypeSettingModeFromBottomSheet();
+                  final MoreIconActionResultEnum? result =
+                      await deleteByTypeSettingModeFromBottomSheet();
+                  if (!context.mounted) return;
+                  if (result != null) {
+                    context.pop(result);
+                  }
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),

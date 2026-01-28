@@ -37,6 +37,7 @@ class DocViewModel extends ChangeNotifier {
   bool _isRetrying = false;
   bool isBookMark = false;
   bool isLatest = true;
+  String? _currentCategoryId; /// 현재 화면에서 선택된 카테고리/서브카테고리 ID (null이면 전체)
   bool _hasInitDocs = false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
   bool _isSearching = false;
   bool get isSearching => _isSearching;
@@ -44,7 +45,12 @@ class DocViewModel extends ChangeNotifier {
   void updateState(AppState newState) {
     print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
     _appState = newState;
-    getDisplayDocuments(isLatestMode: isLatest, isBookmarkMode: isBookMark);
+    /// 기존에 선택되어 있던 카테고리/정렬/북마크 필터 상태를 저장해서 싱크 돌때마다 재계산
+    getDisplayDocuments(
+      categoryId: _currentCategoryId,
+      isLatestMode: isLatest,
+      isBookmarkMode: isBookMark,
+    );
 
     // if(_appState.categories.isNotEmpty && _appState.documents.isEmpty) {
     //   readDocuments(_appState.categories);
@@ -352,6 +358,15 @@ class DocViewModel extends ChangeNotifier {
     required bool isLatestMode,
     required bool isBookmarkMode,
   }) {
+    // 삭제된 카테고리를 참조하지 않도록 방어 로직 추가
+    if (categoryId != null &&
+        !_appState.categories.any((c) => c.categoryId == categoryId)) {
+      // 해당 ID의 카테고리가 더 이상 없으면 '전체'로 간주
+      categoryId = null;
+    }
+
+    // 현재 선택된 카테고리 상태를 기억해 둔다. (null이면 '전체')
+    _currentCategoryId = categoryId;
     isBookMark = isBookmarkMode;
     isLatest = isLatestMode;
     print('categoryId in getDisplayDocuments : $categoryId');
@@ -359,6 +374,7 @@ class DocViewModel extends ChangeNotifier {
     List<DocumentModel> docs = categoryId == null
         ? List.from(documents)
         : List.from(getDocumentsByCategory(categoryId));
+    print('doc count in getDisplayDocuments: ${docs.length}');
 
     if (isBookMark) {
       filteredDisplayDocuments= docs.where((doc) => doc.isBookmark == true).toList();
