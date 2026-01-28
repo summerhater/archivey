@@ -20,6 +20,7 @@ class DocViewModel extends ChangeNotifier {
     this._appState,
   ) {
     pullAndPush();
+    // _appState.addListener(_onStateChanged);
     // readDocuments(_appState.categories);
   }
 
@@ -34,6 +35,7 @@ class DocViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool _isRetrying = false;
   bool isBookMark = false;
+  bool isLatest = true;
   bool _hasInitDocs = false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
   bool _isSearching = false;
   bool get isSearching => _isSearching;
@@ -41,6 +43,7 @@ class DocViewModel extends ChangeNotifier {
   void updateState(AppState newState) {
     print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
     _appState = newState;
+    getDisplayDocuments(isLatestMode: isLatest, isBookmarkMode: isBookMark);
 
     // if(_appState.categories.isNotEmpty && _appState.documents.isEmpty) {
     //   readDocuments(_appState.categories);
@@ -48,14 +51,14 @@ class DocViewModel extends ChangeNotifier {
 
     if(_appState.categories.isNotEmpty && !_hasInitDocs) {
       _hasInitDocs = true;
-      readDocuments(_appState.categories);
+      readDocuments();
     }
   }
 
   /// 초기 데이터 로드
   ///
   /// Stream으로 데이터를 받아옴
-  void readDocuments(List<CategoryModel> categories) {
+  void readDocuments() {
     print('################## 데이터들 불러오기!!!!');
     _subscription?.cancel();
 
@@ -68,10 +71,10 @@ class DocViewModel extends ChangeNotifier {
       print('_isSearching : $_isSearching');
           if (keyword.isEmpty) {
             // 검색 키워드가 없을 땐, 전체 가져오기
-            return _driftDocumentService.watchAllDocuments(categories);
+            return _driftDocumentService.watchAllDocuments(_appState.categories);
           } else {
             // 검색한 값만 가져오기
-            return _driftDocumentService.searchDocuments(keyword, categories);
+            return _driftDocumentService.searchDocuments(keyword, _appState.categories);
           }
         })
         .listen(
@@ -88,8 +91,6 @@ class DocViewModel extends ChangeNotifier {
             print('############ 스택 트레이스: $stackTrace ###############');
           },
         );
-
-    // TODO 북마크 어떻게 할건지? SQL을 다시 호출? 아니면 Client 에서 sort?
   }
 
   List<DocumentModel> getDocumentsByCategoryId(String categoryId) {
@@ -222,6 +223,7 @@ class DocViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    // _appState.removeListener(_onStateChanged);
     _subscription?.cancel();
     super.dispose();
   }
@@ -297,6 +299,20 @@ class DocViewModel extends ChangeNotifier {
     _driftDocumentService.setSyncTime();
   }
 
+  /// 리스너
+  void _onStateChanged() {
+    if(_appState.categories.isNotEmpty && !_hasInitDocs) {
+      _hasInitDocs = true;
+      readDocuments();
+    }
+  }
+
+  /// 북마크 함수
+  Future<void> changeBookmark(DocumentModel doc) async{
+    await _driftDocumentService.updateDocument(doc.copyWith(isBookmark: !doc.isBookmark));
+    // notifyListeners();
+  }
+
 // 란 추가 ------------------------------------------------------------------------------
   ///DocumentCategoryListPage, AllTotalPage에서 카테고리마다 보여줄 documents를 구하기 위한 메소드
   CategoryModel getCategory(String categoryId) {
@@ -332,19 +348,20 @@ class DocViewModel extends ChangeNotifier {
 
   void getDisplayDocuments({
     String? categoryId,
-    required bool isLatest,
+    required bool isLatestMode,
     required bool isBookmarkMode,
 
   }) {
+    isBookMark = isBookmarkMode;
+    isLatest = isLatestMode;
     print('categoryId in getDisplayDocuments : $categoryId');
     ///문서 추출
     List<DocumentModel> docs = categoryId == null
         ? List.from(documents)
         : List.from(getDocumentsByCategory(categoryId));
 
-    ///todo: 북마크 구현
-    if (isBookmarkMode) {
-      filteredDisplayDocuments= [];
+    if (isBookMark) {
+      filteredDisplayDocuments= docs.where((doc) => doc.isBookmark == true).toList();
       notifyListeners();
       return;
     }else{//isLatest
@@ -370,9 +387,7 @@ class DocViewModel extends ChangeNotifier {
 
   Future<void> updateDocument(DocumentModel docToUpdate) async {
     try {
-      await _driftDocumentService.updateDocument(docToUpdate).then(
-            (_) {},
-      );
+      await _driftDocumentService.updateDocument(docToUpdate);
 
       await _firebaseDocumentService.createDocument(docToUpdate).then(
             (_) async {

@@ -4,6 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum AiTaskStatus { pending, analyzing, completed, failed }
 enum SyncStatus { synced, pending }
 
+/// 앱 내에서 사용하는 Document Model
+///
+/// 변수 수정 시, 아래의 method 업데이트 필요
+///
+/// document_model의 copyWith, toMap, fromMap
+///
+/// document_mapper의 toDocumentCompanion, toDomain, toDocumentCompanion
+///
+/// tables.drift의 CREATE TABLE Documents(필요 시 FTS, TRIGGER, JOIN TABLE 포함)
+///
+/// app_database의 migration, pullSyncUpdate
 class DocumentModel {
   final String uid; ///사용자 id
   final String id;///도큐먼트 고유 id
@@ -19,6 +30,7 @@ class DocumentModel {
   final String aiSummary;///AI 요약 텍스트
   final List<String> tags;///AI 생성 태그 리스트
   final AiTaskStatus aiStatus;///AI 상태
+  final bool isBookmark;///북마크 상태
 
   DocumentModel({
     required this.uid,
@@ -35,6 +47,7 @@ class DocumentModel {
     this.aiSummary = '',
     this.tags = const [],
     this.aiStatus = AiTaskStatus.pending,
+    required this.isBookmark,
   });
 
   DocumentModel copyWith({
@@ -52,6 +65,7 @@ class DocumentModel {
     String? aiSummary,
     List<String>? tags,
     AiTaskStatus? aiStatus,
+    bool? isBookmark,
   }) {
     return DocumentModel(
       uid: uid ?? this.uid,
@@ -68,6 +82,7 @@ class DocumentModel {
       aiSummary: aiSummary ?? this.aiSummary,
       tags: tags ?? this.tags,
       aiStatus: aiStatus ?? this.aiStatus,
+      isBookmark: isBookmark ?? this.isBookmark,
     );
   }
 
@@ -87,10 +102,12 @@ class DocumentModel {
       'aiSummary': aiSummary,
       'tags': tags,
       'aiStatus': aiStatus.name,
+      'isBookmark': isBookmark,
     };
   }
 
   factory DocumentModel.fromMap(Map<String, dynamic> map) {
+    print('################################# isBookmark: ${map['isBookmark']} ##############################');
     return DocumentModel(
       uid: map['uid'],
       id: map['id'],
@@ -106,6 +123,7 @@ class DocumentModel {
       aiSummary: map['aiSummary'],
       tags: List<String>.from(map['tags']),
       aiStatus: AiTaskStatus.values.byName(map['aiStatus'] ?? 'pending'),
+      isBookmark: map['isBookmark'] ?? false,
     );
   }
 }

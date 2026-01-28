@@ -21,7 +21,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase() => instance;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -33,7 +33,12 @@ class AppDatabase extends _$AppDatabase {
           lastSyncTime: Value(DateTime.fromMillisecondsSinceEpoch(0)),
         ),
       );
-    }
+    },
+    onUpgrade: (m, from, to) async{
+      if(from < 2) {
+        await m.addColumn(documents, documents.isBookmark);
+      }
+    },
   );
 
   /**
@@ -62,9 +67,9 @@ class AppDatabase extends _$AppDatabase {
       INSERT INTO documents (
         id, uid, created_at, updated_at, sync_status,
         category, user_memo, title, url, image_url,
-        platform, ai_summary, ai_status
+        platform, ai_summary, ai_status, is_bookmark
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
       ON CONFLICT(id) DO UPDATE SET
         uid = excluded.uid,
@@ -78,7 +83,8 @@ class AppDatabase extends _$AppDatabase {
         image_url = excluded.image_url,
         platform = excluded.platform,
         ai_summary = excluded.ai_summary,
-        ai_status = excluded.ai_status
+        ai_status = excluded.ai_status,
+        is_bookmark = excluded.is_bookmark
       ''',
       variables: [
         Variable<String>(companion.id.value),
@@ -94,6 +100,7 @@ class AppDatabase extends _$AppDatabase {
         Variable<String>(companion.platform.value),
         Variable<String>(companion.aiSummary.value),
         Variable<String>(companion.aiStatus.value),
+        Variable<int>(companion.isBookmark.value ? 1 : 0),
       ],
       updates: {documents},
     );

@@ -368,6 +368,18 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
+  static const VerificationMeta _isBookmarkMeta = const VerificationMeta(
+    'isBookmark',
+  );
+  late final GeneratedColumn<bool> isBookmark = GeneratedColumn<bool>(
+    'is_bookmark',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     localId,
@@ -384,6 +396,7 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     platform,
     aiSummary,
     aiStatus,
+    isBookmark,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -504,6 +517,12 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
     } else if (isInserting) {
       context.missing(_aiStatusMeta);
     }
+    if (data.containsKey('is_bookmark')) {
+      context.handle(
+        _isBookmarkMeta,
+        isBookmark.isAcceptableOrUnknown(data['is_bookmark']!, _isBookmarkMeta),
+      );
+    }
     return context;
   }
 
@@ -569,6 +588,10 @@ class Documents extends Table with TableInfo<Documents, DocumentEntity> {
         DriftSqlType.string,
         data['${effectivePrefix}ai_status'],
       )!,
+      isBookmark: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_bookmark'],
+      )!,
     );
   }
 
@@ -596,6 +619,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
   final String platform;
   final String aiSummary;
   final String aiStatus;
+  final bool isBookmark;
   const DocumentEntity({
     required this.localId,
     required this.id,
@@ -611,6 +635,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     required this.platform,
     required this.aiSummary,
     required this.aiStatus,
+    required this.isBookmark,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -629,6 +654,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     map['platform'] = Variable<String>(platform);
     map['ai_summary'] = Variable<String>(aiSummary);
     map['ai_status'] = Variable<String>(aiStatus);
+    map['is_bookmark'] = Variable<bool>(isBookmark);
     return map;
   }
 
@@ -648,6 +674,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       platform: Value(platform),
       aiSummary: Value(aiSummary),
       aiStatus: Value(aiStatus),
+      isBookmark: Value(isBookmark),
     );
   }
 
@@ -671,6 +698,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       platform: serializer.fromJson<String>(json['platform']),
       aiSummary: serializer.fromJson<String>(json['ai_summary']),
       aiStatus: serializer.fromJson<String>(json['ai_status']),
+      isBookmark: serializer.fromJson<bool>(json['is_bookmark']),
     );
   }
   @override
@@ -691,6 +719,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       'platform': serializer.toJson<String>(platform),
       'ai_summary': serializer.toJson<String>(aiSummary),
       'ai_status': serializer.toJson<String>(aiStatus),
+      'is_bookmark': serializer.toJson<bool>(isBookmark),
     };
   }
 
@@ -709,6 +738,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     String? platform,
     String? aiSummary,
     String? aiStatus,
+    bool? isBookmark,
   }) => DocumentEntity(
     localId: localId ?? this.localId,
     id: id ?? this.id,
@@ -724,6 +754,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     platform: platform ?? this.platform,
     aiSummary: aiSummary ?? this.aiSummary,
     aiStatus: aiStatus ?? this.aiStatus,
+    isBookmark: isBookmark ?? this.isBookmark,
   );
   DocumentEntity copyWithCompanion(DocumentsCompanion data) {
     return DocumentEntity(
@@ -743,6 +774,9 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
       platform: data.platform.present ? data.platform.value : this.platform,
       aiSummary: data.aiSummary.present ? data.aiSummary.value : this.aiSummary,
       aiStatus: data.aiStatus.present ? data.aiStatus.value : this.aiStatus,
+      isBookmark: data.isBookmark.present
+          ? data.isBookmark.value
+          : this.isBookmark,
     );
   }
 
@@ -762,7 +796,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
           ..write('imageUrl: $imageUrl, ')
           ..write('platform: $platform, ')
           ..write('aiSummary: $aiSummary, ')
-          ..write('aiStatus: $aiStatus')
+          ..write('aiStatus: $aiStatus, ')
+          ..write('isBookmark: $isBookmark')
           ..write(')'))
         .toString();
   }
@@ -783,6 +818,7 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
     platform,
     aiSummary,
     aiStatus,
+    isBookmark,
   );
   @override
   bool operator ==(Object other) =>
@@ -801,7 +837,8 @@ class DocumentEntity extends DataClass implements Insertable<DocumentEntity> {
           other.imageUrl == this.imageUrl &&
           other.platform == this.platform &&
           other.aiSummary == this.aiSummary &&
-          other.aiStatus == this.aiStatus);
+          other.aiStatus == this.aiStatus &&
+          other.isBookmark == this.isBookmark);
 }
 
 class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
@@ -819,6 +856,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
   final Value<String> platform;
   final Value<String> aiSummary;
   final Value<String> aiStatus;
+  final Value<bool> isBookmark;
   const DocumentsCompanion({
     this.localId = const Value.absent(),
     this.id = const Value.absent(),
@@ -834,6 +872,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     this.platform = const Value.absent(),
     this.aiSummary = const Value.absent(),
     this.aiStatus = const Value.absent(),
+    this.isBookmark = const Value.absent(),
   });
   DocumentsCompanion.insert({
     this.localId = const Value.absent(),
@@ -850,6 +889,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     required String platform,
     required String aiSummary,
     required String aiStatus,
+    this.isBookmark = const Value.absent(),
   }) : id = Value(id),
        uid = Value(uid),
        createdAt = Value(createdAt),
@@ -878,6 +918,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     Expression<String>? platform,
     Expression<String>? aiSummary,
     Expression<String>? aiStatus,
+    Expression<bool>? isBookmark,
   }) {
     return RawValuesInsertable({
       if (localId != null) 'local_id': localId,
@@ -894,6 +935,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
       if (platform != null) 'platform': platform,
       if (aiSummary != null) 'ai_summary': aiSummary,
       if (aiStatus != null) 'ai_status': aiStatus,
+      if (isBookmark != null) 'is_bookmark': isBookmark,
     });
   }
 
@@ -912,6 +954,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     Value<String>? platform,
     Value<String>? aiSummary,
     Value<String>? aiStatus,
+    Value<bool>? isBookmark,
   }) {
     return DocumentsCompanion(
       localId: localId ?? this.localId,
@@ -928,6 +971,7 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
       platform: platform ?? this.platform,
       aiSummary: aiSummary ?? this.aiSummary,
       aiStatus: aiStatus ?? this.aiStatus,
+      isBookmark: isBookmark ?? this.isBookmark,
     );
   }
 
@@ -976,6 +1020,9 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
     if (aiStatus.present) {
       map['ai_status'] = Variable<String>(aiStatus.value);
     }
+    if (isBookmark.present) {
+      map['is_bookmark'] = Variable<bool>(isBookmark.value);
+    }
     return map;
   }
 
@@ -995,7 +1042,8 @@ class DocumentsCompanion extends UpdateCompanion<DocumentEntity> {
           ..write('imageUrl: $imageUrl, ')
           ..write('platform: $platform, ')
           ..write('aiSummary: $aiSummary, ')
-          ..write('aiStatus: $aiStatus')
+          ..write('aiStatus: $aiStatus, ')
+          ..write('isBookmark: $isBookmark')
           ..write(')'))
         .toString();
   }
@@ -1949,6 +1997,7 @@ typedef $DocumentsCreateCompanionBuilder =
       required String platform,
       required String aiSummary,
       required String aiStatus,
+      Value<bool> isBookmark,
     });
 typedef $DocumentsUpdateCompanionBuilder =
     DocumentsCompanion Function({
@@ -1966,6 +2015,7 @@ typedef $DocumentsUpdateCompanionBuilder =
       Value<String> platform,
       Value<String> aiSummary,
       Value<String> aiStatus,
+      Value<bool> isBookmark,
     });
 
 final class $DocumentsReferences
@@ -2068,6 +2118,11 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
 
   ColumnFilters<String> get aiStatus => $composableBuilder(
     column: $table.aiStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isBookmark => $composableBuilder(
+    column: $table.isBookmark,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2174,6 +2229,11 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     column: $table.aiStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isBookmark => $composableBuilder(
+    column: $table.isBookmark,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
@@ -2227,6 +2287,11 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
 
   GeneratedColumn<String> get aiStatus =>
       $composableBuilder(column: $table.aiStatus, builder: (column) => column);
+
+  GeneratedColumn<bool> get isBookmark => $composableBuilder(
+    column: $table.isBookmark,
+    builder: (column) => column,
+  );
 
   Expression<T> documentTagsRefs<T extends Object>(
     Expression<T> Function($DocumentTagsAnnotationComposer a) f,
@@ -2296,6 +2361,7 @@ class $DocumentsTableManager
                 Value<String> platform = const Value.absent(),
                 Value<String> aiSummary = const Value.absent(),
                 Value<String> aiStatus = const Value.absent(),
+                Value<bool> isBookmark = const Value.absent(),
               }) => DocumentsCompanion(
                 localId: localId,
                 id: id,
@@ -2311,6 +2377,7 @@ class $DocumentsTableManager
                 platform: platform,
                 aiSummary: aiSummary,
                 aiStatus: aiStatus,
+                isBookmark: isBookmark,
               ),
           createCompanionCallback:
               ({
@@ -2328,6 +2395,7 @@ class $DocumentsTableManager
                 required String platform,
                 required String aiSummary,
                 required String aiStatus,
+                Value<bool> isBookmark = const Value.absent(),
               }) => DocumentsCompanion.insert(
                 localId: localId,
                 id: id,
@@ -2343,6 +2411,7 @@ class $DocumentsTableManager
                 platform: platform,
                 aiSummary: aiSummary,
                 aiStatus: aiStatus,
+                isBookmark: isBookmark,
               ),
           withReferenceMapper: (p0) => p0
               .map(

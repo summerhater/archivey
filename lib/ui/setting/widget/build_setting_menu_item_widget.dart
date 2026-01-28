@@ -5,7 +5,7 @@ import 'package:archivey/config/text_theme_extension.dart';
 class SettingMenuItemWidget extends StatelessWidget {
   final IconData? icon;
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final AppTextTheme appTextTheme;
   final AppColorScheme appColorScheme;
   final Widget? suffix;

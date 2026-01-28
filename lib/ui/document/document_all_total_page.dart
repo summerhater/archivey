@@ -41,7 +41,7 @@ class _DocumentAllTotalPageState extends State<DocumentAllTotalPage> {
 
   void displayDoc(){
    context.read<DocViewModel>().getDisplayDocuments(
-      isLatest: widget.isLatest,
+      isLatestMode: widget.isLatest,
       isBookmarkMode: widget.isBookmarkMode,
     );
   }
