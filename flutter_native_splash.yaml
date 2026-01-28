@@ -20,7 +20,7 @@ flutter_native_splash:
   #                   Padding: 100px top & bottom in image
   background_image: "assets/images/archivey_background_image.png"
   image: "assets/icons/archivey_logo.png"
-#  branding:
+  #  branding:
 
   # Android 12 이상 이미지 가이드 라인
   # Background Image: 지원 안함
@@ -34,5 +34,4 @@ flutter_native_splash:
   #                   Format: PNG
   android_12:
     color: "#000000"
-    image: "assets/icons/archivey_logo.png"
-#   branding:
+    image: "assets/icons/archivey_logo_android.png"

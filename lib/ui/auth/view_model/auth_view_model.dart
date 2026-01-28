@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class AuthViewModel extends ChangeNotifier {
   final FirebaseAuthService _authService;
   final FirebaseAppUserService _userService;
-  AppState _appState;
+  final AppState _appState;
 
   AuthViewModel(this._authService, this._userService, this._appState){
     print('########################## 앱 시작해서 user 정보 받아오려고 함!!!!');
@@ -20,9 +20,9 @@ class AuthViewModel extends ChangeNotifier {
 
   bool isLoading = false;
 
-  void updateState(AppState newState) {
-    _appState = newState;
-  }
+  // void updateState(AppState newState) {
+  //   _appState = newState;
+  // }
 
   void _setLoading(bool isLoading) {
     this.isLoading = isLoading;
@@ -43,6 +43,7 @@ class AuthViewModel extends ChangeNotifier {
         print('################## user 있음 ##################');
         _appState.setUid(_authService.user?.uid);
         _appState.setEmail(_authService.user?.email);
+        print('uid: ${_appState.uid}');
       }
     });
   }

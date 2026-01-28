@@ -15,7 +15,7 @@ class CategoryViewModel extends ChangeNotifier {
   final FirebaseCategoryService _categoryService;
   // final FirebaseAuthService _authService;
   // final FirebaseDocumentService _documentService;
-  AppState _appState;
+  final AppState _appState;
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
   final FirebaseSharedCategoryWebService _sharedCategoryLinkService;
@@ -38,10 +38,10 @@ class CategoryViewModel extends ChangeNotifier {
   final Map<String, int> _docCountMap = {};
   Map<String, int> get docCountMap => _docCountMap;
 
-  void updateState(AppState newState) {
-    _appState = newState;
-    notifyListeners();
-  }
+  // void updateState(AppState newState) {
+  //   _appState = newState;
+  //   notifyListeners();
+  // }
   //   CategoryViewModel(this._categoryService, this._authService, this._documentService){
   //     readCategory();
   //     // print('######### 카테고리 수: ${_categories.length} ###########');

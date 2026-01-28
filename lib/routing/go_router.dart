@@ -4,8 +4,6 @@ import 'package:archivey/data/service/firebase_shared_category_link_service.dart
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
 import 'package:archivey/domain/state/shared_web_state.dart';
-// import 'package:archivey/ui/document/ai_summary_example.dart';
-import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/document/document_add_page.dart';
 import 'package:archivey/ui/document/document_all_total_page.dart';
 import 'package:archivey/ui/document/document_all_index_page.dart';
@@ -18,7 +16,6 @@ import 'package:archivey/ui/auth/signup_email_page.dart';
 import 'package:archivey/ui/auth/signup_email_verify_page.dart';
 import 'package:archivey/ui/auth/signup_password_page.dart';
 import 'package:archivey/ui/auth/signup_success_page.dart';
-import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/shared_category_web/shared_web_category_list_page.dart';
 import 'package:archivey/ui/shared_category_web/view_model/shared_category_web_view_model.dart';
 
@@ -34,8 +31,9 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter goRouter = GoRouter(
+
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/auth',
+  initialLocation: '/document_all_total',
   redirect: (context, state) {
     // 공유 링크 경로는 인증 체크 없이 접근 허용
     if (state.uri.path.startsWith('/share/category/')) {
@@ -51,11 +49,6 @@ final GoRouter goRouter = GoRouter(
     ),
     GoRoute(
       path: '/auth',
-      redirect: (context, state) {
-        if(Provider.of<AppState>(context, listen: false).uid.isNotEmpty) {
-          return '/document_all_total';
-        }
-      },
       builder: (context, state) => AuthPage(),
       routes: [
         GoRoute(
@@ -100,6 +93,15 @@ final GoRouter goRouter = GoRouter(
         /// all
         GoRoute(
           path: '/document_all_total',
+          redirect: (context, state) async{
+            await Future.delayed(Duration(microseconds: 1));
+            if(context.read<AppState>().uid.isEmpty) {
+              print('########### router에서의 uid: ${context.read<AppState>().uid}');
+              return '/auth';
+            }
+            print('########### router에서 uid 있음!!');
+            return null;
+          },
           pageBuilder: (context, state) {
             //todo: jh, extra 보단 QueryParameter가 좋은 방식, 그 이유는 눈에 보이니까.
             final isBookmarkMode = (state.extra is bool) ? (state.extra as bool) : false;

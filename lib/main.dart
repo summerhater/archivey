@@ -19,9 +19,6 @@ import 'package:archivey/ui/setting/view_model/setting_view_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:archivey/data/drift/connection/connection.dart'
-//   if (dart.library.io) 'connection/native.dart'
-//   if (dart.library.js_interop) 'connection/web.dart';
 import './mobile_conditional_import.dart'
   if (dart.library.html) './web_conditional_import.dart';
 
@@ -62,44 +59,38 @@ void main() async {
           Provider<FirebaseSharedCategoryWebService>(
             create: (_) => FirebaseSharedCategoryWebService(),
           ),
-          // ChangeNotifierProvider<AuthViewModel>(
-          //   create: (context) => AuthViewModel(
-          //     context.read<FirebaseAuthService>(),
-          //     context.read<FirebaseAppUserService>(),
-          //     context.read<AppState>(),
-          //   ),
-          //   lazy: false,
-          // ),
-          ChangeNotifierProxyProvider<AppState, AuthViewModel>(
-            create: (context) {
-              return AuthViewModel(
-                context.read<FirebaseAuthService>(),
-                context.read<FirebaseAppUserService>(),
-                context.read<AppState>(),
-              );
-            },
-            update: (context, appState, previous) {
-              if (previous == null) throw Exception('AuthVM 생성 안됨');
-
-              previous.updateState(appState);
-
-              return previous;
-            },
+          ChangeNotifierProvider<AuthViewModel>(
+            create: (context) => AuthViewModel(
+              context.read<FirebaseAuthService>(),
+              context.read<FirebaseAppUserService>(),
+              context.read<AppState>(),
+            ),
             lazy: false,
           ),
+          // ChangeNotifierProxyProvider<AppState, AuthViewModel>(
+          //   create: (context) {
+          //     return AuthViewModel(
+          //       context.read<FirebaseAuthService>(),
+          //       context.read<FirebaseAppUserService>(),
+          //       context.read<AppState>(),
+          //     );
+          //   },
+          //   update: (context, appState, previous) {
+          //     if (previous == null) throw Exception('AuthVM 생성 안됨');
+          //
+          //     previous.updateState(appState);
+          //
+          //     return previous;
+          //   },
+          //   lazy: false,
+          // ),
 
           ChangeNotifierProvider<DocumentViewModel>(
             create: (context) => DocumentViewModel(
               context.read<FirebaseDocumentService>(),
             ),
           ),
-          // ChangeNotifierProvider<CategoryViewModel>(
-          //   create: (context) => CategoryViewModel(
-          //     context.read<FirebaseCategoryService>(),
-          //     context.read<AppState>(),
-          //   ),
-          // ),
-          ChangeNotifierProxyProvider<AppState, CategoryViewModel>(
+          ChangeNotifierProvider<CategoryViewModel>(
             create: (context) => CategoryViewModel(
               context.read<FirebaseCategoryService>(),
               context.read<AppState>(),
@@ -107,58 +98,67 @@ void main() async {
               context.read<DriftDocumentService>(),
               context.read<FirebaseSharedCategoryWebService>(),
             ),
-            update: (context, appState, previous) {
-              if (previous == null) throw Exception('CategoryVM 생성 안됨');
-
-              previous.updateState(appState);
-
-              return previous;
-            },
           ),
-          // setting VM
-          // ChangeNotifierProvider<SettingViewModel>(
-          //   create: (context) => SettingViewModel(
-          //     context.read<FirebaseAuthService>(),
-          //     context.read<FirebaseAppUserService>(),
+          // ChangeNotifierProxyProvider<AppState, CategoryViewModel>(
+          //   create: (context) => CategoryViewModel(
+          //     context.read<FirebaseCategoryService>(),
           //     context.read<AppState>(),
+          //     context.read<FirebaseDocumentService>(),
+          //     context.read<DriftDocumentService>(),
+          //     context.read<FirebaseSharedCategoryWebService>(),
           //   ),
+          //   update: (context, appState, previous) {
+          //     if (previous == null) throw Exception('CategoryVM 생성 안됨');
+          //
+          //     previous.updateState(appState);
+          //
+          //     return previous;
+          //   },
           // ),
-          ChangeNotifierProxyProvider<AppState, SettingViewModel>(
+          // setting VM
+          ChangeNotifierProvider<SettingViewModel>(
             create: (context) => SettingViewModel(
               context.read<FirebaseAuthService>(),
               context.read<FirebaseAppUserService>(),
               context.read<AppState>(),
             ),
-            update: (context, appState, previous) {
-              if (previous == null) throw Exception('SettingVM 생성 안됨');
-
-              previous.updateState(appState);
-
-              return previous;
-            },
           ),
-          // 테스트용 VM
-          // ChangeNotifierProvider<DocViewModel>(
-          //   create: (context) => DocViewModel(
-          //     context.read<FirebaseDocumentService>(),
-          //     context.read<DriftDocumentService>(),
+          // ChangeNotifierProxyProvider<AppState, SettingViewModel>(
+          //   create: (context) => SettingViewModel(
+          //     context.read<FirebaseAuthService>(),
+          //     context.read<FirebaseAppUserService>(),
           //     context.read<AppState>(),
           //   ),
+          //   update: (context, appState, previous) {
+          //     if (previous == null) throw Exception('SettingVM 생성 안됨');
+          //
+          //     previous.updateState(appState);
+          //
+          //     return previous;
+          //   },
           // ),
-          ChangeNotifierProxyProvider<AppState, DocViewModel>(
+          // 테스트용 VM
+          ChangeNotifierProvider<DocViewModel>(
             create: (context) => DocViewModel(
               context.read<FirebaseDocumentService>(),
               context.read<DriftDocumentService>(),
               context.read<AppState>(),
             ),
-            update: (context, appState, previous) {
-              if (previous == null) throw Exception('DocVM 생성 안됨');
-
-              previous.updateState(appState);
-
-              return previous;
-            },
           ),
+          // ChangeNotifierProxyProvider<AppState, DocViewModel>(
+          //   create: (context) => DocViewModel(
+          //     context.read<FirebaseDocumentService>(),
+          //     context.read<DriftDocumentService>(),
+          //     context.read<AppState>(),
+          //   ),
+          //   update: (context, appState, previous) {
+          //     if (previous == null) throw Exception('DocVM 생성 안됨');
+          //
+          //     previous.updateState(appState);
+          //
+          //     return previous;
+          //   },
+          // ),
         ],
         child: const Archivey(),
       ),
