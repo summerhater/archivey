@@ -1,6 +1,5 @@
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
-import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -379,9 +378,13 @@ Widget _buildNormalBottomTags(BuildContext context, DocumentModel document) {
               ],
             ),
           ),
+          /// 북마크
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.bookmark_border),
+            onPressed: () async{
+              // TODO 함수 콜백으로 받기
+              await Provider.of<DocViewModel>(context, listen: false).updateDocument(document.copyWith(isBookmark: !document.isBookmark));
+            },
+            icon: document.isBookmark ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
             color: Colors.grey.shade400,
             iconSize: 24,
             visualDensity: VisualDensity(horizontal: -4.0),

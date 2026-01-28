@@ -29,8 +29,8 @@ class CustomNextButton extends StatelessWidget {
           try {
             if(onPressed != null) {
               await onPressed!();
-              if(!context.mounted) return;
             }
+            if(!context.mounted) return;
             context.go(path);
           } catch (error) {
             print(error);

@@ -34,7 +34,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _handleLogout() {
-    ///todo: 로그아웃 로직 여기에
     Provider.of<SettingViewModel>(context, listen: false).logout().then((_) {
       setState(() {
         isLoggedIn = false;
@@ -191,17 +190,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         SettingMenuItemWidget(
                           icon: Icons.code,
                           label: '앱 버전',
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AboutDialog(
-                                  applicationName: 'Archivey',
-                                  applicationIcon: Icon(Icons.info),
-                                );
-                              },
-                            );
-                          },
+                          onTap: null,
                           appTextTheme: appTextTheme,
                           appColorScheme: appColorScheme,
                           suffix: Row(
@@ -218,6 +207,22 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
 
                         SettingMenuItemWidget(
+                          icon: Icons.info,
+                          label: '라이선스',
+                          onTap: () {
+                            showLicensePage(
+                              context: context,
+                              applicationName: 'Archivey',
+                              applicationVersion: appVersion,
+                              applicationLegalese: 'ⓒ 2025 archivey All rights reserved.',
+                              useRootNavigator: true,
+                            );
+                          },
+                          appTextTheme: appTextTheme,
+                          appColorScheme: appColorScheme,
+                        ),
+
+                        SettingMenuItemWidget(
                           label: '탈퇴하기',
                           onTap: () async {
                             final bool? reAuth = await showDialog(
@@ -229,7 +234,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         await vm.deleteAccount(),
                                   ),
                             );
-                            if(reAuth == null || !reAuth) return;
+                            if (reAuth == null || !reAuth) return;
                             final bool? deleteAccount = await showDialog(
                               context: context,
                               builder: (context) => DeleteAccountDialogWidget(
@@ -237,10 +242,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                     await vm.deleteAccount(),
                               ),
                             );
-                            if(deleteAccount == null || !deleteAccount) return;
+                            if (deleteAccount == null || !deleteAccount) return;
                             print('###### 탈퇴 성공 후, auth로 이동');
                             // TODO auth로 안감 해결 해야 함
-                            // GoRouter.of(context).go('/auth'); 
+                            // GoRouter.of(context).go('/auth');
                           },
                           appTextTheme: appTextTheme,
                           appColorScheme: appColorScheme,

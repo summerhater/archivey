@@ -82,6 +82,8 @@ void main() async {
         //   create: (context) => CategoryViewModel(
         //     context.read<FirebaseCategoryService>(),
         //     context.read<AppState>(),
+        //     context.read<FirebaseDocumentService>(),
+        //     context.read<DriftDocumentService>(),
         //   ),
         // ),
         ChangeNotifierProxyProvider<AppState, CategoryViewModel>(

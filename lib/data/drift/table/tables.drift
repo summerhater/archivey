@@ -19,7 +19,8 @@ CREATE TABLE documents (
     image_url TEXT NOT NULL,
     platform TEXT NOT NULL,
     ai_summary TEXT NOT NULL,
-    ai_status TEXT NOT NULL
+    ai_status TEXT NOT NULL,
+    is_bookmark BOOLEAN NOT NULL DEFAULT 0
 ) AS DocumentEntity;
 
 -- tag table

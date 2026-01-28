@@ -8,14 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SignupEmailPage extends StatelessWidget {
-  const SignupEmailPage({super.key});
+   SignupEmailPage({super.key});
+   //todo: jh controller는 반드시 dispose해야함. staefulWidget에서 사용.
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     var appColor = Theme.of(context).extension<AppColorScheme>()!;
     var appText = Theme.of(context).extension<AppTextTheme>()!;
-
-    final TextEditingController _controller = TextEditingController();
 
     return SafeArea(
       child: Scaffold(
@@ -64,6 +64,7 @@ class SignupEmailPage extends StatelessWidget {
             ],
           ),
         ),
+        //todo:jh CustomNextButton action을 onPressed에 모아서 처리하는 방향도 생각해보기
         bottomSheet: CustomNextButton(
           path: '/auth/signup-email/signup-password',
           guide: '다음',

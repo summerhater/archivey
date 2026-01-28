@@ -1,0 +1,38 @@
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+
+  # 실행 dart run flutter_native_splash:create --path=flutter_native_splash.yaml
+  # 삭제 dart run flutter_native_splash:remove --path=flutter_native_splash.yaml
+
+  # 가이드라인 말고 더 큰 이미지를 넣으면 자동으로 만들어줌?
+  # iOS & Android 11 이하 이미지 가이드라인
+  # Background Image: Resolution: 1290*2796px
+  #                   Scaled Resolution: 430*932px @3x
+  #                   Format: PNG
+  # Logo:             Resolution: 600*600px
+  #                   Scaled Resolution: 200*200px @3x
+  #                   Format: PNG
+  # Branding Image:   Resolution: 750*750px
+  #                   Scaled Resolution: 250*250px @3x
+  #                   Format: PNG
+  #                   Padding: 100px top & bottom in image
+  background_image: "assets/images/archivey_background_image.png"
+  image: "assets/icons/archivey_logo.png"
+#  branding:
+
+  # Android 12 이상 이미지 가이드 라인
+  # Background Image: 지원 안함
+  # Logo:             with background:
+  #                     Dimensions: 768px circle inside 1152px square
+  #                   w/o background:
+  #                     Dimensions: 640px circle inside 960px square
+  #                   Format: PNG
+  # Branding Image:   Resolution: 600*240px
+  #                   Scaled Resolution: 200*80px @3x
+  #                   Format: PNG
+  android_12:
+    color: "#000000"
+    image: "assets/icons/archivey_logo.png"
+#   branding:
