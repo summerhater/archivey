@@ -219,7 +219,7 @@ class _DocumentListHeaderWidgetForWebState extends State<DocumentListHeaderWidge
                           const SizedBox(width: 15),
                           // 날짜 정렬
                           _buildSortButton(
-                            label: widget.isLatest ? '최신순' : '과거순',
+                            label: widget.isLatest ? '최신순' : '등록순',
                             isSelected: !widget.isBookmarkSelected,
                             onPressed: widget.onDateSortPressed,
                             appTextTheme: appTextTheme,
