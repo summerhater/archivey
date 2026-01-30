@@ -9,14 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FindEmailPasswordPage extends StatelessWidget {
-  const FindEmailPasswordPage({super.key});
+  FindEmailPasswordPage({super.key});
+
+  String _email = '';
+
+  void _getEmail(String text) {
+    _email = text;
+  }
 
   @override
   Widget build(BuildContext context) {
     var appColor = Theme.of(context).extension<AppColorScheme>()!;
     var appText = Theme.of(context).extension<AppTextTheme>()!;
-
-    final TextEditingController _controller = TextEditingController();
 
     return SafeArea(
       child: Scaffold(
@@ -62,7 +66,7 @@ class FindEmailPasswordPage extends StatelessWidget {
                 height: 40,
               ),
               CustomUnderlineTextField(
-                controller: _controller,
+                getText: _getEmail,
                 hintText: '이메일 주소 입력',
               ),
             ],
@@ -73,13 +77,13 @@ class FindEmailPasswordPage extends StatelessWidget {
           guide: '비밀번호 재설정 메일 보내기',
           onPressed: () => context
               .read<AuthViewModel>()
-              .resetPasswordWithEmail(_controller.text)
+              .resetPasswordWithEmail(_email)
               .then(
                 (_) {
                   if(!context.mounted) return;
                   showSnackBar(
                     context,
-                    '${_controller.text}로 비밀번호 재설정 메일을 보냈습니다.',
+                    '$_email로 비밀번호 재설정 메일을 보냈습니다.',
                   );
                 },
               ),

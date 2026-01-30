@@ -15,10 +15,16 @@ class SignupPasswordPage extends StatefulWidget {
 }
 
 class _SignupPasswordPageState extends State<SignupPasswordPage> {
-  bool pwVisibility = false;
-  bool rePwVisibility = false;
-  final TextEditingController _pw = TextEditingController();
-  final TextEditingController _pwVerify = TextEditingController();
+  String _password = '';
+  String _passwordVerify = '';
+
+  void _getPassword(String text) {
+    _password = text;
+  }
+
+  void _getPasswordVerify(String text) {
+    _passwordVerify = text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,18 +68,18 @@ class _SignupPasswordPageState extends State<SignupPasswordPage> {
               SizedBox(
                 height: 40,
               ),
-              CustomUnderlineTextField(controller: _pw, hintText: '비밀번호 입력', isPassword: true,),
+              CustomUnderlineTextField(getText: _getPassword, hintText: '비밀번호 입력', isPassword: true,),
               SizedBox(
                 height: 20,
               ),
-              CustomUnderlineTextField(controller: _pwVerify, hintText: '비밀번호를 다시 한번 입력해 주세요', isPassword: true,),
+              CustomUnderlineTextField(getText: _getPasswordVerify, hintText: '비밀번호를 다시 한번 입력해 주세요', isPassword: true,),
             ],
           ),
         ),
         bottomSheet: CustomNextButton(
           path: '/auth/signup-email/signup-password/signup-email-verify',
           guide: '다음',
-          onPressed: () async => await context.read<AuthViewModel>().signUpWithEmailAndPassword(_pw.text, _pwVerify.text),
+          onPressed: () async => await context.read<AuthViewModel>().signUpWithEmailAndPassword(_password, _passwordVerify),
         ),
       ),
     );

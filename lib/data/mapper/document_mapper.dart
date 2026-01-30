@@ -7,7 +7,6 @@ import 'package:drift/drift.dart';
 extension DocumentDomainToCompanion on DocumentModel {
   /// Domain Model -> Companion, DB에 저장하기 위한 타입, 타입 안정성을 위해 변환해서 저장
   DocumentsCompanion toDocumentCompanion({required SyncStatus sync}) {
-    print('############# isBookmark in mapper $isBookmark #######################');
     return DocumentsCompanion(
       uid: Value(uid),
       id: Value(id),
@@ -50,7 +49,6 @@ extension DocumentWithTagsToDomain on DocumentWithTags {
 
   /// DTO Model을 Domain Model로 변환해 VM에 전달해주기 위함
   DocumentModel toDomain({required List<CategoryModel> categories}) {
-    print('############ isBookmark in DTO toDomain ${documentEntity.isBookmark} ##################');
     return DocumentModel(
       uid: documentEntity.uid,
       id: documentEntity.id,

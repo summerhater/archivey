@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_app_user_service.dart';
 import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/domain/model/app_user.dart';
@@ -10,8 +11,9 @@ class AuthViewModel extends ChangeNotifier {
   final FirebaseAuthService _authService;
   final FirebaseAppUserService _userService;
   final AppState _appState;
+  final DriftDocumentService _driftDocumentService;
 
-  AuthViewModel(this._authService, this._userService, this._appState){
+  AuthViewModel(this._authService, this._userService, this._appState, this._driftDocumentService){
     print('########################## 앱 시작해서 user 정보 받아오려고 함!!!!');
     fetchUser();
   }
@@ -43,7 +45,7 @@ class AuthViewModel extends ChangeNotifier {
         print('################## user 있음 ##################');
         _appState.setUid(_authService.user?.uid);
         _appState.setEmail(_authService.user?.email);
-        print('uid: ${_appState.uid}');
+        await _driftDocumentService.ensureUserSettings(_appState.uid);
       }
     });
   }

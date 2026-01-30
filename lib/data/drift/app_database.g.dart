@@ -8,15 +8,14 @@ class AppSettings extends Table with TableInfo<AppSettings, AppSetting> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   AppSettings(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  late final GeneratedColumn<String> uid = GeneratedColumn<String>(
+    'uid',
     aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'PRIMARY KEY DEFAULT 0',
-    defaultValue: const CustomExpression('0'),
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
   );
   static const VerificationMeta _lastSyncTimeMeta = const VerificationMeta(
     'lastSyncTime',
@@ -30,7 +29,7 @@ class AppSettings extends Table with TableInfo<AppSettings, AppSetting> {
     $customConstraints: '',
   );
   @override
-  List<GeneratedColumn> get $columns => [id, lastSyncTime];
+  List<GeneratedColumn> get $columns => [uid, lastSyncTime];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -43,8 +42,13 @@ class AppSettings extends Table with TableInfo<AppSettings, AppSetting> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_uidMeta);
     }
     if (data.containsKey('last_sync_time')) {
       context.handle(
@@ -59,15 +63,15 @@ class AppSettings extends Table with TableInfo<AppSettings, AppSetting> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {uid};
   @override
   AppSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AppSetting(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      ),
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uid'],
+      )!,
       lastSyncTime: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_sync_time'],
@@ -85,15 +89,13 @@ class AppSettings extends Table with TableInfo<AppSettings, AppSetting> {
 }
 
 class AppSetting extends DataClass implements Insertable<AppSetting> {
-  final int? id;
+  final String uid;
   final DateTime? lastSyncTime;
-  const AppSetting({this.id, this.lastSyncTime});
+  const AppSetting({required this.uid, this.lastSyncTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
-    }
+    map['uid'] = Variable<String>(uid);
     if (!nullToAbsent || lastSyncTime != null) {
       map['last_sync_time'] = Variable<DateTime>(lastSyncTime);
     }
@@ -102,7 +104,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
 
   AppSettingsCompanion toCompanion(bool nullToAbsent) {
     return AppSettingsCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      uid: Value(uid),
       lastSyncTime: lastSyncTime == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncTime),
@@ -115,7 +117,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AppSetting(
-      id: serializer.fromJson<int?>(json['id']),
+      uid: serializer.fromJson<String>(json['uid']),
       lastSyncTime: serializer.fromJson<DateTime?>(json['last_sync_time']),
     );
   }
@@ -123,21 +125,21 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int?>(id),
+      'uid': serializer.toJson<String>(uid),
       'last_sync_time': serializer.toJson<DateTime?>(lastSyncTime),
     };
   }
 
   AppSetting copyWith({
-    Value<int?> id = const Value.absent(),
+    String? uid,
     Value<DateTime?> lastSyncTime = const Value.absent(),
   }) => AppSetting(
-    id: id.present ? id.value : this.id,
+    uid: uid ?? this.uid,
     lastSyncTime: lastSyncTime.present ? lastSyncTime.value : this.lastSyncTime,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
-      id: data.id.present ? data.id.value : this.id,
+      uid: data.uid.present ? data.uid.value : this.uid,
       lastSyncTime: data.lastSyncTime.present
           ? data.lastSyncTime.value
           : this.lastSyncTime,
@@ -147,61 +149,71 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   @override
   String toString() {
     return (StringBuffer('AppSetting(')
-          ..write('id: $id, ')
+          ..write('uid: $uid, ')
           ..write('lastSyncTime: $lastSyncTime')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, lastSyncTime);
+  int get hashCode => Object.hash(uid, lastSyncTime);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AppSetting &&
-          other.id == this.id &&
+          other.uid == this.uid &&
           other.lastSyncTime == this.lastSyncTime);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
-  final Value<int?> id;
+  final Value<String> uid;
   final Value<DateTime?> lastSyncTime;
+  final Value<int> rowid;
   const AppSettingsCompanion({
-    this.id = const Value.absent(),
+    this.uid = const Value.absent(),
     this.lastSyncTime = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   AppSettingsCompanion.insert({
-    this.id = const Value.absent(),
+    required String uid,
     this.lastSyncTime = const Value.absent(),
-  });
+    this.rowid = const Value.absent(),
+  }) : uid = Value(uid);
   static Insertable<AppSetting> custom({
-    Expression<int>? id,
+    Expression<String>? uid,
     Expression<DateTime>? lastSyncTime,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
+      if (uid != null) 'uid': uid,
       if (lastSyncTime != null) 'last_sync_time': lastSyncTime,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   AppSettingsCompanion copyWith({
-    Value<int?>? id,
+    Value<String>? uid,
     Value<DateTime?>? lastSyncTime,
+    Value<int>? rowid,
   }) {
     return AppSettingsCompanion(
-      id: id ?? this.id,
+      uid: uid ?? this.uid,
       lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
     }
     if (lastSyncTime.present) {
       map['last_sync_time'] = Variable<DateTime>(lastSyncTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -209,8 +221,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   @override
   String toString() {
     return (StringBuffer('AppSettingsCompanion(')
-          ..write('id: $id, ')
-          ..write('lastSyncTime: $lastSyncTime')
+          ..write('uid: $uid, ')
+          ..write('lastSyncTime: $lastSyncTime, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1064,6 +1077,15 @@ class Tags extends Table with TableInfo<Tags, TagEntity> {
     requiredDuringInsert: false,
     $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
   );
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  late final GeneratedColumn<String> uid = GeneratedColumn<String>(
+    'uid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
@@ -1071,10 +1093,10 @@ class Tags extends Table with TableInfo<Tags, TagEntity> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL UNIQUE',
+    $customConstraints: 'NOT NULL',
   );
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  List<GeneratedColumn> get $columns => [id, uid, name];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1090,6 +1112,14 @@ class Tags extends Table with TableInfo<Tags, TagEntity> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_uidMeta);
+    }
     if (data.containsKey('name')) {
       context.handle(
         _nameMeta,
@@ -1104,12 +1134,20 @@ class Tags extends Table with TableInfo<Tags, TagEntity> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {uid, name},
+  ];
+  @override
   TagEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return TagEntity(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
+      )!,
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uid'],
       )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1124,23 +1162,27 @@ class Tags extends Table with TableInfo<Tags, TagEntity> {
   }
 
   @override
+  List<String> get customConstraints => const ['UNIQUE(uid, name)'];
+  @override
   bool get dontWriteConstraints => true;
 }
 
 class TagEntity extends DataClass implements Insertable<TagEntity> {
   final int id;
+  final String uid;
   final String name;
-  const TagEntity({required this.id, required this.name});
+  const TagEntity({required this.id, required this.uid, required this.name});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['uid'] = Variable<String>(uid);
     map['name'] = Variable<String>(name);
     return map;
   }
 
   TagsCompanion toCompanion(bool nullToAbsent) {
-    return TagsCompanion(id: Value(id), name: Value(name));
+    return TagsCompanion(id: Value(id), uid: Value(uid), name: Value(name));
   }
 
   factory TagEntity.fromJson(
@@ -1150,6 +1192,7 @@ class TagEntity extends DataClass implements Insertable<TagEntity> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return TagEntity(
       id: serializer.fromJson<int>(json['id']),
+      uid: serializer.fromJson<String>(json['uid']),
       name: serializer.fromJson<String>(json['name']),
     );
   }
@@ -1158,15 +1201,20 @@ class TagEntity extends DataClass implements Insertable<TagEntity> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'uid': serializer.toJson<String>(uid),
       'name': serializer.toJson<String>(name),
     };
   }
 
-  TagEntity copyWith({int? id, String? name}) =>
-      TagEntity(id: id ?? this.id, name: name ?? this.name);
+  TagEntity copyWith({int? id, String? uid, String? name}) => TagEntity(
+    id: id ?? this.id,
+    uid: uid ?? this.uid,
+    name: name ?? this.name,
+  );
   TagEntity copyWithCompanion(TagsCompanion data) {
     return TagEntity(
       id: data.id.present ? data.id.value : this.id,
+      uid: data.uid.present ? data.uid.value : this.uid,
       name: data.name.present ? data.name.value : this.name,
     );
   }
@@ -1175,40 +1223,60 @@ class TagEntity extends DataClass implements Insertable<TagEntity> {
   String toString() {
     return (StringBuffer('TagEntity(')
           ..write('id: $id, ')
+          ..write('uid: $uid, ')
           ..write('name: $name')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, uid, name);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is TagEntity && other.id == this.id && other.name == this.name);
+      (other is TagEntity &&
+          other.id == this.id &&
+          other.uid == this.uid &&
+          other.name == this.name);
 }
 
 class TagsCompanion extends UpdateCompanion<TagEntity> {
   final Value<int> id;
+  final Value<String> uid;
   final Value<String> name;
   const TagsCompanion({
     this.id = const Value.absent(),
+    this.uid = const Value.absent(),
     this.name = const Value.absent(),
   });
-  TagsCompanion.insert({this.id = const Value.absent(), required String name})
-    : name = Value(name);
+  TagsCompanion.insert({
+    this.id = const Value.absent(),
+    required String uid,
+    required String name,
+  }) : uid = Value(uid),
+       name = Value(name);
   static Insertable<TagEntity> custom({
     Expression<int>? id,
+    Expression<String>? uid,
     Expression<String>? name,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (uid != null) 'uid': uid,
       if (name != null) 'name': name,
     });
   }
 
-  TagsCompanion copyWith({Value<int>? id, Value<String>? name}) {
-    return TagsCompanion(id: id ?? this.id, name: name ?? this.name);
+  TagsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? uid,
+    Value<String>? name,
+  }) {
+    return TagsCompanion(
+      id: id ?? this.id,
+      uid: uid ?? this.uid,
+      name: name ?? this.name,
+    );
   }
 
   @override
@@ -1216,6 +1284,9 @@ class TagsCompanion extends UpdateCompanion<TagEntity> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -1227,6 +1298,7 @@ class TagsCompanion extends UpdateCompanion<TagEntity> {
   String toString() {
     return (StringBuffer('TagsCompanion(')
           ..write('id: $id, ')
+          ..write('uid: $uid, ')
           ..write('name: $name')
           ..write(')'))
         .toString();
@@ -1854,13 +1926,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $AppSettingsCreateCompanionBuilder =
     AppSettingsCompanion Function({
-      Value<int?> id,
+      required String uid,
       Value<DateTime?> lastSyncTime,
+      Value<int> rowid,
     });
 typedef $AppSettingsUpdateCompanionBuilder =
     AppSettingsCompanion Function({
-      Value<int?> id,
+      Value<String> uid,
       Value<DateTime?> lastSyncTime,
+      Value<int> rowid,
     });
 
 class $AppSettingsFilterComposer extends Composer<_$AppDatabase, AppSettings> {
@@ -1871,8 +1945,8 @@ class $AppSettingsFilterComposer extends Composer<_$AppDatabase, AppSettings> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
+  ColumnFilters<String> get uid => $composableBuilder(
+    column: $table.uid,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1891,8 +1965,8 @@ class $AppSettingsOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
+  ColumnOrderings<String> get uid => $composableBuilder(
+    column: $table.uid,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1911,8 +1985,8 @@ class $AppSettingsAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<String> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastSyncTime => $composableBuilder(
     column: $table.lastSyncTime,
@@ -1948,16 +2022,23 @@ class $AppSettingsTableManager
               $AppSettingsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int?> id = const Value.absent(),
+                Value<String> uid = const Value.absent(),
                 Value<DateTime?> lastSyncTime = const Value.absent(),
-              }) => AppSettingsCompanion(id: id, lastSyncTime: lastSyncTime),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion(
+                uid: uid,
+                lastSyncTime: lastSyncTime,
+                rowid: rowid,
+              ),
           createCompanionCallback:
               ({
-                Value<int?> id = const Value.absent(),
+                required String uid,
                 Value<DateTime?> lastSyncTime = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion.insert(
-                id: id,
+                uid: uid,
                 lastSyncTime: lastSyncTime,
+                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -2465,9 +2546,17 @@ typedef $DocumentsProcessedTableManager =
       PrefetchHooks Function({bool documentTagsRefs})
     >;
 typedef $TagsCreateCompanionBuilder =
-    TagsCompanion Function({Value<int> id, required String name});
+    TagsCompanion Function({
+      Value<int> id,
+      required String uid,
+      required String name,
+    });
 typedef $TagsUpdateCompanionBuilder =
-    TagsCompanion Function({Value<int> id, Value<String> name});
+    TagsCompanion Function({
+      Value<int> id,
+      Value<String> uid,
+      Value<String> name,
+    });
 
 final class $TagsReferences
     extends BaseReferences<_$AppDatabase, Tags, TagEntity> {
@@ -2502,6 +2591,11 @@ class $TagsFilterComposer extends Composer<_$AppDatabase, Tags> {
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uid => $composableBuilder(
+    column: $table.uid,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2549,6 +2643,11 @@ class $TagsOrderingComposer extends Composer<_$AppDatabase, Tags> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -2565,6 +2664,9 @@ class $TagsAnnotationComposer extends Composer<_$AppDatabase, Tags> {
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -2624,11 +2726,15 @@ class $TagsTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String> uid = const Value.absent(),
                 Value<String> name = const Value.absent(),
-              }) => TagsCompanion(id: id, name: name),
+              }) => TagsCompanion(id: id, uid: uid, name: name),
           createCompanionCallback:
-              ({Value<int> id = const Value.absent(), required String name}) =>
-                  TagsCompanion.insert(id: id, name: name),
+              ({
+                Value<int> id = const Value.absent(),
+                required String uid,
+                required String name,
+              }) => TagsCompanion.insert(id: id, uid: uid, name: name),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), $TagsReferences(db, table, e)))
               .toList(),

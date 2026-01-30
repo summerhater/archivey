@@ -64,6 +64,7 @@ void main() async {
               context.read<FirebaseAuthService>(),
               context.read<FirebaseAppUserService>(),
               context.read<AppState>(),
+              context.read<DriftDocumentService>(),
             ),
             lazy: false,
           ),

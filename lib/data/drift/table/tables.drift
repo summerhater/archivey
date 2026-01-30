@@ -1,6 +1,6 @@
 -- setting table
 CREATE TABLE app_settings(
-    id INT PRIMARY KEY DEFAULT 0,
+    uid TEXT NOT NULL PRIMARY KEY,
     last_sync_time DATETIME
 );
 
@@ -26,7 +26,9 @@ CREATE TABLE documents (
 -- tag table
 CREATE TABLE tags (
     id INT NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
+    uid TEXT NOT NULL,
+    name TEXT NOT NULL,
+    UNIQUE (uid, name)
 ) AS TagEntity;
 
 -- document, tag join table
