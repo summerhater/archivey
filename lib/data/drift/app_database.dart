@@ -29,15 +29,6 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (migration) async{
-      await migration.createAll();
-
-      await into(appSettings).insert(
-        AppSettingsCompanion.insert(
-          lastSyncTime: Value(DateTime.fromMillisecondsSinceEpoch(0)),
-        ),
-      );
-    },
     onUpgrade: (m, from, to) async{
       if(from < 2) {
         await m.addColumn(documents, documents.isBookmark);
@@ -48,17 +39,28 @@ class AppDatabase extends _$AppDatabase {
   /**
    * Sync
    */
+  
+  /// 사용자가 처음 로그인하면 기본값 생성, 아니면 무시
+  Future<void> ensureUserSettings(String uid) async{
+    await customStatement(
+      '''
+      INSERT OR IGNORE INTO app_settings (uid, last_sync_time)
+      VALUES (?, ?)
+      ''',
+      [uid, DateTime.fromMillisecondsSinceEpoch(0).millisecondsSinceEpoch]
+    );
+  }
 
   /// 마지막 Sync 실행한 시간 받아오기
-  Future<DateTime> getSyncTime() async {
-    final setting = await select(appSettings).getSingle();
+  Future<DateTime> getSyncTime(String uid) async {
+    final setting = await (select(appSettings)..where((tbl) => tbl.uid.equals(uid),)).getSingle();
 
     return setting.lastSyncTime ?? DateTime.fromMillisecondsSinceEpoch(0);
   }
 
   /// Sync 실행한 시점의 시간 저장
-  Future<void> setSyncTime() async {
-    await (update(appSettings)).write(
+  Future<void> setSyncTime(String uid) async {
+    await (update(appSettings)..where((tbl) => tbl.uid.equals(uid),)).write(
       AppSettingsCompanion(lastSyncTime: Value(DateTime.now())),
     );
   }
@@ -118,7 +120,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   /// Push Sync, 모종의 이유로 싱크가 되지 않은 데이터들을 remote에 업로드하기 위함
-  Future<List<DocumentWithTags>> getPendingDocuments() async {
+  Future<List<DocumentWithTags>> getPendingDocuments(String uid) async {
     // final documents = await (select(documents)..where((tbl) => tbl.syncStatus.equals(SyncStatus.pending.name),)).get();
 
     final query = customSelect(
@@ -127,11 +129,11 @@ class AppDatabase extends _$AppDatabase {
       FROM documents d
       LEFT JOIN document_tags dt ON dt.document_id = d.local_id
       LEFT JOIN tags t ON t.id = dt.tag_id
-      WHERE d.sync_status LIKE ?
+      WHERE d.sync_status LIKE ? AND d.uid = ?
       GROUP BY d.id
       ORDER BY d.created_at DESC
       ''',
-      variables: [Variable.withString(SyncStatus.pending.name)],
+      variables: [Variable.withString(SyncStatus.pending.name), Variable.withString(uid)],
       readsFrom: {documents, documentTags, tags},
     );
 
@@ -161,10 +163,10 @@ class AppDatabase extends _$AppDatabase {
 
   /// Insert Or Update Tag -> 따로 Update 만들 필요 없음
   /// tags는 List형태라 Service layer에서 for in으로 반복 작업 해줘야 함
-  Future<int> insertOrGetTagId(String name) async {
+  Future<int> insertOrGetTagId(String name, String uid) async {
     // return await into(tags).insertOnConflictUpdate(companion); // tag name이 unique 인데, id로 업데이트 하고 있어서 중복 값이 들어감. 그러면 중복 값이 들어가니 unique 에서 오류
     await into(tags).insert(
-      TagsCompanion(name: Value(name)),
+      TagsCompanion(name: Value(name), uid: Value(uid)),
       mode: InsertMode.insertOrIgnore,
     ); // 이 코드는 insert가 안되면 항상 0을 return, 오류 발생할 수 있음
 
@@ -187,16 +189,18 @@ class AppDatabase extends _$AppDatabase {
    */
 
   /// Document Entity와 Tag Entity가 결합한 DTO를 반환, Stream은 async 필요 없음
-  Stream<List<DocumentWithTags>> watchAllDocuments() {
+  Stream<List<DocumentWithTags>> watchAllDocuments(String uid) {
     final query = customSelect(
       '''
       SELECT d.*, GROUP_CONCAT(t.name) AS tags
       FROM documents d
       LEFT JOIN document_tags dt ON dt.document_id = d.local_id
       LEFT JOIN tags t ON t.id = dt.tag_id
+      WHERE d.uid = ?
       GROUP BY d.id
       ORDER BY d.created_at DESC
       ''',
+      variables: [Variable.withString(uid)],
       readsFrom: {documents, documentTags, tags},
     );
 
@@ -245,9 +249,9 @@ class AppDatabase extends _$AppDatabase {
   }
 
   /// 검색 기능. 입력받은 String값은 fts에서 유사 검색, tag에서는 일치하는것만 return
-  Stream<List<DocumentWithTags>> searchAll(String keyword) {
+  Stream<List<DocumentWithTags>> searchAll(String keyword, String uid) {
     if (keyword.trim().isEmpty) {
-      return watchAllDocuments();
+      return watchAllDocuments(uid);
     }
 
     final ftsQuery = '$keyword*';
@@ -260,18 +264,21 @@ class AppDatabase extends _$AppDatabase {
       JOIN documents_fts fts ON fts.rowid = d.local_id
       LEFT JOIN document_tags dt ON dt.document_id = d.local_id
       LEFT JOIN tags t ON t.id = dt.tag_id
-      WHERE d.local_id IN (
-        SELECT rowid FROM documents_fts WHERE documents_fts MATCH ?
-        UNION
-        SELECT dt2.document_id
-        FROM document_tags dt2
-        JOIN tags t2 ON t2.id = dt.tag_id
-        WHERE t2.name LIKE ?
+      WHERE d.uid = ? AND (
+        d.local_id IN (
+          SELECT rowid FROM documents_fts WHERE documents_fts MATCH ?
+          UNION
+          SELECT dt2.document_id
+          FROM document_tags dt2
+          JOIN tags t2 ON t2.id = dt.tag_id
+          WHERE t2.name LIKE ?
+        )
       )
       GROUP BY d.id
       ORDER BY d.created_at DESC
       ''',
       variables: [
+        Variable.withString(uid),
         Variable.withString(ftsQuery),
         Variable.withString(tagQuery),
       ],

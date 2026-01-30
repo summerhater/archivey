@@ -6,14 +6,20 @@ import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/auth/widget/custom_next_button.dart';
 import 'package:archivey/ui/auth/widget/custom_underline_text_field.dart';
 import 'package:archivey/ui/auth/widget/custom_appbar.dart';
-import 'package:archivey/utils/show_snackbar.dart';
+import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
 class FindEmailPasswordPage extends StatelessWidget {
-  const FindEmailPasswordPage({super.key});
+  FindEmailPasswordPage({super.key});
+
+  String _email = '';
+
+  void _getEmail(String text) {
+    _email = text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +76,7 @@ class FindEmailPasswordPage extends StatelessWidget {
                   height: 40,
                 ),
                 CustomUnderlineTextField(
-                  controller: _controller,
+                  getText: _getEmail,
                   hintText: '이메일 주소 입력',
                 ),
               ],
@@ -81,13 +87,12 @@ class FindEmailPasswordPage extends StatelessWidget {
             guide: '비밀번호 재설정 메일 보내기',
             onPressed: () => context
                 .read<AuthViewModel>()
-                .resetPasswordWithEmail(_controller.text)
+                .resetPasswordWithEmail(_email)
                 .then(
                   (_) {
-                    if(!context.mounted) return;
-                    showSnackBar(
-                      context,
-                      '${_controller.text}로 비밀번호 재설정 메일을 보냈습니다.',
+                    if (!context.mounted) return;
+                    context.showAppMessageSnackBar(
+                      '$_email로 비밀번호 재설정 메일을 보냈습니다.',
                     );
                   },
                 ),

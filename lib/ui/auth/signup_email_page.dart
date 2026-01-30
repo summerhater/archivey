@@ -12,9 +12,14 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
 class SignupEmailPage extends StatelessWidget {
-   SignupEmailPage({super.key});
-   //todo: jh controller는 반드시 dispose해야함. staefulWidget에서 사용.
-  final TextEditingController _controller = TextEditingController();
+  SignupEmailPage({super.key});
+
+  String _email = '';
+
+  void _getEmail(String text) {
+    _email = text;
+  }
+
   bool isIosMobile = !kIsWeb && Platform.isIOS;
 
   @override
@@ -69,15 +74,18 @@ class SignupEmailPage extends StatelessWidget {
                 SizedBox(
                   height: 40,
                 ),
-                CustomUnderlineTextField(controller: _controller, hintText: '이메일 주소 입력'),
+                CustomUnderlineTextField(
+                  getText: _getEmail,
+                  hintText: '이메일 주소 입력',
+                ),
               ],
             ),
           ),
-          //todo:jh CustomNextButton action을 onPressed에 모아서 처리하는 방향도 생각해보기
           bottomSheet: CustomNextButton(
             path: '/auth/signup-email/signup-password',
             guide: '다음',
-            onPressed: () => context.read<AuthViewModel>().isAlreadyExistEmail(_controller.text),
+            onPressed: () =>
+                context.read<AuthViewModel>().isAlreadyExistEmail(_email),
           ),
         ),
       ),

@@ -97,29 +97,37 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SizedBox(width: 16),
                                 isLoggedIn
-                                ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '이메일',
-                                      style: appTextTheme.bodyMedium.copyWith(
-                                        color: appColorScheme.textLight,
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '이메일',
+                                            style: appTextTheme.bodyMedium
+                                                .copyWith(
+                                                  color:
+                                                      appColorScheme.textLight,
+                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 6,
+                                          ),
+                                          Text(
+                                            vm.email,
+                                            style: appTextTheme.bodySmall
+                                                .copyWith(
+                                                  color:
+                                                      appColorScheme.textDark,
+                                                ),
+                                          ),
+                                        ],
+                                      )
+                                    : Text(
+                                        '로그인을 해주세요',
+                                        style: appTextTheme.bodyMedium.copyWith(
+                                          color: appColorScheme.textDark,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 6,
-                                    ),
-                                    Text(
-                                      vm.email,
-                                      style: appTextTheme.bodySmall.copyWith(
-                                        color: appColorScheme.textDark,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                                    : Text('로그인을 해주세요', style: appTextTheme.bodyMedium.copyWith(
-                                  color: appColorScheme.textDark,
-                                ),)
                               ],
                             ),
                             SizedBox(height: 24),
@@ -174,6 +182,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           appColorScheme: appColorScheme,
                         ),
 
+                        Divider(height: 48, color: appColorScheme.strokeLight),
+
                         SettingMenuItemWidget(
                           icon: Icons.mail,
                           label: '문의하기',
@@ -190,6 +200,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           appTextTheme: appTextTheme,
                           appColorScheme: appColorScheme,
                         ),
+
+                        Divider(height: 48, color: appColorScheme.strokeLight),
 
                         SettingMenuItemWidget(
                           icon: Icons.code,
@@ -210,70 +222,145 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
 
-                        SettingMenuItemWidget(
-                          icon: Icons.info,
-                          label: '라이선스',
-                          onTap: () {
-                            // showLicensePage(
-                            //   context: context,
-                            //   applicationName: 'Archivey',
-                            //   applicationVersion: appVersion,
-                            //   applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
-                            //   useRootNavigator: true,
-                            // );
-                            Navigator.of(context, rootNavigator: true).push(
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) => Theme(
-                                  data: Theme.of(context).copyWith(
-                                    scaffoldBackgroundColor: appColorScheme.primary,
-                                    appBarTheme: AppBarTheme(
-                                      backgroundColor: appColorScheme.primary,
-                                      scrolledUnderElevation: 0,
-                                      elevation: 0,
-                                    ),
-                                    cardColor: appColorScheme.documentDetailBg,
-                                  ),
-                                  child: LicensePage(
-                                    applicationName: 'Archivey',
-                                    applicationVersion: appVersion,
-                                    applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
-                                  ),
-                                ),
+                        Divider(height: 48, color: appColorScheme.strokeLight),
+
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.info,
+                              size: 20,
+                              color: appColorScheme.primaryStrong,
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              '약관 및 정책',
+                              style: appTextTheme.bodyMedium.copyWith(
+                                color: appColorScheme.primaryStrong,
                               ),
-                            );
-                          },
-                          appTextTheme: appTextTheme,
-                          appColorScheme: appColorScheme,
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 14),
+                          child: Column(
+                            children: [
+                              SettingMenuItemWidget(
+                                label: '서비스 이용약관',
+                                onTap: () async {
+                                  final url =
+                                      'https://gigantic-sycamore-e89.notion.site/2f860523334d80169aeef60c7554c56f?pvs=74';
+                                  final uri = Uri.parse(url);
+                                  if (await canLaunchUrl(uri)) {
+                                    launchUrl(
+                                      uri,
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  }
+                                },
+                                appTextTheme: appTextTheme,
+                                appColorScheme: appColorScheme,
+                                isSubWidget: true,
+                              ),
+                              SettingMenuItemWidget(
+                                label: '개인정보 처리방침',
+                                onTap: () async {
+                                  final url =
+                                      'https://gigantic-sycamore-e89.notion.site/2f860523334d80c69cd9e72ba72603c0?pvs=74';
+                                  final uri = Uri.parse(url);
+                                  if (await canLaunchUrl(uri)) {
+                                    launchUrl(
+                                      uri,
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  }
+                                },
+                                appTextTheme: appTextTheme,
+                                appColorScheme: appColorScheme,
+                                isSubWidget: true,
+                              ),
+                              SettingMenuItemWidget(
+                                label: '라이선스',
+                                onTap: () {
+                                  // showLicensePage(
+                                  //   context: context,
+                                  //   applicationName: 'Archivey',
+                                  //   applicationVersion: appVersion,
+                                  //   applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
+                                  //   useRootNavigator: true,
+                                  // );
+                                  Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (BuildContext context) => Theme(
+                                        data: Theme.of(context).copyWith(
+                                          scaffoldBackgroundColor:
+                                              appColorScheme.primary,
+                                          appBarTheme: AppBarTheme(
+                                            backgroundColor:
+                                                appColorScheme.primary,
+                                            scrolledUnderElevation: 0,
+                                            elevation: 0,
+                                          ),
+                                          cardColor:
+                                              appColorScheme.documentDetailBg,
+                                        ),
+                                        child: LicensePage(
+                                          applicationName: 'Archivey',
+                                          applicationVersion: appVersion,
+                                          applicationLegalese:
+                                              'ⓒ 2026 archivey All rights reserved.',
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                isSubWidget: true,
+                                appTextTheme: appTextTheme,
+                                appColorScheme: appColorScheme,
+                              ),
+                            ],
+                          ),
                         ),
 
-                        SettingMenuItemWidget(
-                          label: '탈퇴하기',
-                          onTap: () async {
-                            final bool? reAuth = await showDialog(
-                              context: context,
-                              builder: (context) =>
-                                  ReAuthenticationDialogWidget(
-                                    reAuthentication: vm.reAuthentication,
-                                    deleteAccount: () async =>
-                                        await vm.deleteAccount(),
-                                  ),
-                            );
-                            if (reAuth == null || !reAuth) return;
-                            final bool? deleteAccount = await showDialog(
-                              context: context,
-                              builder: (context) => DeleteAccountDialogWidget(
-                                deleteAccount: () async =>
-                                    await vm.deleteAccount(),
-                              ),
-                            );
-                            if (deleteAccount == null || !deleteAccount) return;
-                            print('###### 탈퇴 성공 후, auth로 이동');
-                            // TODO auth로 안감 해결 해야 함
-                            // GoRouter.of(context).go('/auth');
-                          },
-                          appTextTheme: appTextTheme,
-                          appColorScheme: appColorScheme,
-                        ),
+                        Divider(height: 48, color: appColorScheme.strokeLight),
+
+                        if (isLoggedIn) ...[
+                          SettingMenuItemWidget(
+                            label: '탈퇴하기',
+                            onTap: () async {
+                              final bool? reAuth = await showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    ReAuthenticationDialogWidget(
+                                      reAuthentication: vm.reAuthentication,
+                                      deleteAccount: () async =>
+                                          await vm.deleteAccount(),
+                                    ),
+                              );
+                              if (reAuth == null || !reAuth) return;
+                              final bool? deleteAccount = await showDialog(
+                                context: context,
+                                builder: (context) => DeleteAccountDialogWidget(
+                                  deleteAccount: () async =>
+                                      await vm.deleteAccount(),
+                                ),
+                              );
+                              if (deleteAccount == null || !deleteAccount)
+                                return;
+                              print('###### 탈퇴 성공 후, auth로 이동');
+                              // TODO auth로 안감 해결 해야 함
+                              // GoRouter.of(context).go('/auth');
+                            },
+                            appTextTheme: appTextTheme,
+                            appColorScheme: appColorScheme,
+                          ),
+                          Divider(
+                            height: 48,
+                            color: appColorScheme.strokeLight,
+                          ),
+                        ],
                         Text(
                           'ⓒ 2026 archivey All rights reserved.',
                           style: appTextTheme.labelMedium.copyWith(

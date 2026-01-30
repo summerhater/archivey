@@ -14,6 +14,12 @@ class DriftDocumentService {
    * Create
    */
 
+  /// 사용자가 처음 로그인하면 기본값 생성, 아니면 무시
+  Future<void> ensureUserSettings(String uid) async{
+    await _db.ensureUserSettings(uid);
+  }
+
+
   /// Local DB에 Document와 Tag 저장 후 연결, PK 필요 없음
   Future<void> createDocument(DocumentModel document) async {
     await _db.runTransaction(() async {
@@ -23,7 +29,7 @@ class DriftDocumentService {
       );
 
       // tag 저장
-      for (int tagId in await insertOrGetTagIds(document.tags)) {
+      for (int tagId in await insertOrGetTagIds(document.tags, document.uid)) {
         // 연결된 테이블에 저장
         await _db.insertDocumentTag(
           DocumentTagsCompanion(
@@ -56,10 +62,10 @@ class DriftDocumentService {
   // }
 
   /// 태그 저장 후 저장한 tagId 반환, 업데이트에도 사용(중복 태그는 무시함)
-  Future<List<int>> insertOrGetTagIds(List<String> tags) async {
+  Future<List<int>> insertOrGetTagIds(List<String> tags, String uid) async {
     if (tags.isEmpty) return [];
     for (String tag in tags) {
-      await _db.insertOrGetTagId(tag);
+      await _db.insertOrGetTagId(tag, uid);
     }
 
     final entities = await _db.getTagsByNames(tags);
@@ -72,20 +78,21 @@ class DriftDocumentService {
    */
 
   /// local Sync Time 가져오기
-  Future<DateTime> getSyncTime() async{
-    return await _db.getSyncTime();
+  Future<DateTime> getSyncTime(String uid) async{
+    return await _db.getSyncTime(uid);
   }
   
   /// local db에서 pending인 값 가져오기
-  Future<List<DocumentWithTags>> getPendingDocuments() async {
-    return _db.getPendingDocuments();
+  Future<List<DocumentWithTags>> getPendingDocuments(String uid) async {
+    return _db.getPendingDocuments(uid);
   }
 
   /// 모든 Document 가져오기
   Stream<List<DocumentModel>> watchAllDocuments(
     List<CategoryModel> categories,
+    String uid,
   ) {
-    return _db.watchAllDocuments().map((docs) {
+    return _db.watchAllDocuments(uid).map((docs) {
       return docs.map((doc) => doc.toDomain(categories:categories,)).toList();
     });
   }
@@ -99,8 +106,9 @@ class DriftDocumentService {
   Stream<List<DocumentModel>> searchDocuments(
     String keyword,
     List<CategoryModel> categories,
+    String uid,
   ) {
-    return _db.searchAll(keyword).map((docs) {
+    return _db.searchAll(keyword, uid).map((docs) {
       return docs.map((doc) => doc.toDomain(categories: categories,)).toList();
     });
   }
@@ -110,8 +118,8 @@ class DriftDocumentService {
    */
   
   /// Sync Time 현재 시각으로 변경
-  Future<void> setSyncTime() async{
-    await _db.setSyncTime();
+  Future<void> setSyncTime(String uid) async{
+    await _db.setSyncTime(uid);
   }
 
   /// Sync Update -> 없으면 create, 있으면 update
@@ -122,7 +130,7 @@ class DriftDocumentService {
         document.toDocumentCompanion(sync: SyncStatus.synced),
       );
 
-      await _syncTags(localId, document.tags);
+      await _syncTags(localId, document.tags, document.uid);
     });
   }
 
@@ -149,12 +157,12 @@ class DriftDocumentService {
       );
 
       // 기존 tag 목록 조회 후 변경
-      await _syncTags(localId, doc.tags);
+      await _syncTags(localId, doc.tags, doc.uid);
     });
   }
 
   /// Tag Diff, tag의 이전 상태와 현재 상태 차이 계산 후 업데이트
-  Future<void> _syncTags(int localId, List<String> newTags) async {
+  Future<void> _syncTags(int localId, List<String> newTags, String uid) async {
     // 현재 저장되있는 tag들 가져오기
     final oldTags = await getTagsByDocumentId(localId);
 
@@ -165,7 +173,7 @@ class DriftDocumentService {
 
     // 추가할 태그가 있으면 실행
     if (toInsert.isNotEmpty) {
-      final ids = await insertOrGetTagIds(toInsert.toList());
+      final ids = await insertOrGetTagIds(toInsert.toList(), uid);
 
       for (final tagId in ids) {
         await _db.insertDocumentTag(

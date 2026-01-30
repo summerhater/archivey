@@ -42,8 +42,10 @@ class _AuthPageState extends State<AuthPage> {
                 children: [
                   SizedBox(
                     height: MediaQuery.heightOf(context) * 0.45,
-                    child: SvgPicture.asset('assets/icons/archivey_white.svg',
-                      width: MediaQuery.widthOf(context) * 0.5,),
+                    child: SvgPicture.asset(
+                      'assets/icons/archivey_white.svg',
+                      width: MediaQuery.widthOf(context) * 0.5,
+                    ),
                   ),
                   Expanded(
                     flex: 2,
@@ -62,7 +64,9 @@ class _AuthPageState extends State<AuthPage> {
                     fontSize: appText.headlineSmallKo.fontSize,
                     onPressed: () async => await showModalBottomSheet(
                       context: context,
-                      builder: (context) => CustomTosBottomModal(path: '/auth/signup-email',),
+                      builder: (context) => CustomTosBottomModal(
+                        path: '/auth/signup-email',
+                      ),
                       backgroundColor: appColor.primary,
                       useSafeArea: true,
                     ),

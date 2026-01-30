@@ -3,13 +3,13 @@ import 'package:archivey/config/text_theme_extension.dart';
 import 'package:flutter/material.dart';
 
 class CustomUnderlineTextField extends StatefulWidget {
-  final TextEditingController controller;
+  final void Function(String)? getText;
   final String hintText;
   final bool? isPassword;
 
   const CustomUnderlineTextField({
     super.key,
-    required this.controller,
+    this.getText,
     required this.hintText,
     this.isPassword,
   });
@@ -20,23 +20,24 @@ class CustomUnderlineTextField extends StatefulWidget {
 
 class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
 
-  late final TextEditingController _controller;
+  final TextEditingController _controller = TextEditingController();
   late final String hintText;
   late final bool isPassword;
+
+  late bool isGetText;
 
   bool visibility = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller;
     hintText = widget.hintText;
     isPassword = widget.isPassword ?? false;
+    isGetText = widget.getText != null;
   }
   @override
   void dispose() {
-
-    // TODO: implement dispose
+    _controller.dispose();
     super.dispose();
   }
   @override
@@ -75,6 +76,7 @@ class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
         )
         : null,
       ),
+      onChanged: isGetText ? (value) => widget.getText!(value) : null,
       keyboardType: isPassword ? TextInputType.text : TextInputType.emailAddress,
       cursorColor: appColor.primaryStrong,
       style: appText.bodyMedium.copyWith(

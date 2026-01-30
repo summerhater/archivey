@@ -237,6 +237,7 @@ class CategoryViewModel extends ChangeNotifier {
       // _categories = await _categoryService.readCategory();
       final _categories = await _categoryService.readCategory();
       _appState.setCategories(_categories);
+      print('########### read Category 실행함!! ${_appState.categories.length} #########');
 
       // await initRootCategoryDocumentCount();
     } catch (e) {

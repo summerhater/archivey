@@ -35,7 +35,6 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
 
   @override
   ThemeExtension<AppColorScheme> copyWith() {
-    // TODO: implement copyWith
     throw UnimplementedError();
   }
 

@@ -107,7 +107,6 @@ class DocumentModel {
   }
 
   factory DocumentModel.fromMap(Map<String, dynamic> map) {
-    print('################################# isBookmark: ${map['isBookmark']} ##############################');
     return DocumentModel(
       uid: map['uid'],
       id: map['id'],

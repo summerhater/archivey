@@ -23,6 +23,7 @@ class DocViewModel extends ChangeNotifier {
     this._kakaoSdkShareService,
     this._appState,
   ) {
+    _lastUid = _appState.uid;
     pullAndPush();
     _appState.addListener(_onStateChanged);
     // readDocuments(_appState.categories);
@@ -44,6 +45,8 @@ class DocViewModel extends ChangeNotifier {
   bool _hasInitDocs = false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
   bool _isSearching = false;
   bool get isSearching => _isSearching;
+  int _lastWatchedCategories = 0;
+  String _lastUid = '';
 
   // void updateState(AppState newState) {
   //   print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
@@ -63,7 +66,7 @@ class DocViewModel extends ChangeNotifier {
   /// 초기 데이터 로드
   ///
   /// Stream으로 데이터를 받아옴
-  void readDocuments() {
+  void readDocuments(List<CategoryModel> categories) {
     print('################## 데이터들 불러오기!!!!');
     _subscription?.cancel();
 
@@ -76,10 +79,10 @@ class DocViewModel extends ChangeNotifier {
       print('_isSearching : $_isSearching');
           if (keyword.isEmpty) {
             // 검색 키워드가 없을 땐, 전체 가져오기
-            return _driftDocumentService.watchAllDocuments(_appState.categories);
+            return _driftDocumentService.watchAllDocuments(categories, _appState.uid);
           } else {
             // 검색한 값만 가져오기
-            return _driftDocumentService.searchDocuments(keyword, _appState.categories);
+            return _driftDocumentService.searchDocuments(keyword, categories, _appState.uid);
           }
         })
         .listen(
@@ -243,7 +246,7 @@ class DocViewModel extends ChangeNotifier {
     print('############# pull Sync 시작 #################');
 
     // local sync
-    final localSyncTime = await _driftDocumentService.getSyncTime();
+    final localSyncTime = await _driftDocumentService.getSyncTime(_appState.uid);
     print('################## local 시간: $localSyncTime ##############');
 
     // local sync보다 오래된 data들을 가져옴
@@ -256,7 +259,7 @@ class DocViewModel extends ChangeNotifier {
     // sync 데이터 없으면 그대로 종료
     if (documents.isEmpty) {
       print('############# sync data 없어서 pull 종료함 #############');
-      await _driftDocumentService.setSyncTime();
+      await _driftDocumentService.setSyncTime(_appState.uid);
       return;
     }
 
@@ -270,7 +273,7 @@ class DocViewModel extends ChangeNotifier {
     }
 
     // local sync 업데이트
-    await _driftDocumentService.setSyncTime();
+    await _driftDocumentService.setSyncTime(_appState.uid);
   }
 
   /// Sync가 되지 않은 local의 데이터를 보내 sync 맞추기
@@ -278,7 +281,7 @@ class DocViewModel extends ChangeNotifier {
     print('############# push Sync 시작 #################');
 
     // pending인 값 가져오기
-    final pendingDocuments = await _driftDocumentService.getPendingDocuments();
+    final pendingDocuments = await _driftDocumentService.getPendingDocuments(_appState.uid);
 
     if (pendingDocuments.isEmpty) {
       print('############### pending data 없어서 push 종료함 ##################');
@@ -301,16 +304,27 @@ class DocViewModel extends ChangeNotifier {
       }
     });
 
-    _driftDocumentService.setSyncTime();
+    _driftDocumentService.setSyncTime(_appState.uid);
   }
 
   /// 리스너
   void _onStateChanged() {
-    getDisplayDocuments(categoryId: _currentCategoryId, isLatestMode: isLatest, isBookmarkMode: isBookMark);
-    if(_appState.categories.isNotEmpty && !_hasInitDocs) {
-      _hasInitDocs = true;
-      readDocuments();
+    bool isCategoryChanged = _lastWatchedCategories != _appState.categories.length;
+    bool isUserChanged = _lastUid != _appState.uid;
+
+    // 로그인 할 때마다 싱크 맞춰주기
+    if(isUserChanged) {
+      pullAndPush();
     }
+    if(isCategoryChanged || !_hasInitDocs) {
+      _hasInitDocs = true;
+      _lastWatchedCategories = _appState.categories.length;
+
+      readDocuments(_appState.categories);
+    } else {
+      getDisplayDocuments(categoryId: _currentCategoryId, isLatestMode: isLatest, isBookmarkMode: isBookMark);
+    }
+
   }
 
   /// 북마크 함수
