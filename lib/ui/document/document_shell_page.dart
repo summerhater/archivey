@@ -88,6 +88,7 @@ class DocumentShellPageState extends State<DocumentShellPage> {
                       context.go('/document_category/$id?name=$name');
                     }
                   },
+                    isCategoryExist: vm.categories.isEmpty ? false : true,
                 ),
             ],
           ),

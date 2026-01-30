@@ -7,12 +7,14 @@ class VerticalTabNavigation extends StatelessWidget {
   final ValueChanged<int> onTapChanged;
   final int? selectedIndex;
   final List<String> categories;
+  final bool isCategoryExist;
 
   const VerticalTabNavigation({
     super.key,
     required this.onTapChanged,
     required this.selectedIndex,
     required this.categories,
+    required this.isCategoryExist,
   });
 
   ///탭 하나가 차지할 고정 높이
@@ -93,6 +95,8 @@ class VerticalTabNavigation extends StatelessWidget {
               child: Center(
                 child: IconButton(
                   onPressed: () {
+                    if (isCategoryExist == false)
+                      return;
                     context.push('/document_add');
                   },
                   padding: EdgeInsets.zero,

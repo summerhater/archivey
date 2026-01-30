@@ -28,9 +28,9 @@ class SignupEmailPage extends StatelessWidget {
     var appText = Theme.of(context).extension<AppTextTheme>()!;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
+      value: SystemUiOverlayStyle.light,
       child: SafeArea(
-        top: !isIosMobile,
+        top: false,
         bottom: !isIosMobile,
         child: Scaffold(
           backgroundColor: appColor.primary,
