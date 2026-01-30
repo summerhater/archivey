@@ -165,16 +165,19 @@ class SharedCategoryWebViewModel extends ChangeNotifier {
 
     /// 검색어가 남아있을때 검색어 필터 중첩 적용
     if (_searchKeyword.isNotEmpty) {
-      docs = docs.where((doc) =>
-      doc.title.contains(_searchKeyword) ||
-          doc.tags.contains(_searchKeyword) ||
-          doc.aiSummary.contains(_searchKeyword)
-      ).toList();
+      final keyword = _searchKeyword.trim().toLowerCase(); // 전처리
+
+      docs = docs.where((doc) {
+        return doc.title.toLowerCase().contains(keyword) ||
+            doc.aiSummary.toLowerCase().contains(keyword) ||
+            doc.tags.any((tag) => tag.toLowerCase().contains(keyword));
+      }).toList();
     }
 
     if (isBookmarkMode) {
-      /// todo: isBookmarked 가져오기
-      filteredDisplayDocuments = [];
+      filteredDisplayDocuments= docs.where((doc) => doc.isBookmark == true).toList();
+      notifyListeners();
+      return;
     } else {
       docs.sort((a, b) => isLatest
           ? b.createdAt.compareTo(a.createdAt)
@@ -188,18 +191,24 @@ class SharedCategoryWebViewModel extends ChangeNotifier {
   void search(String keyword) {
     _searchKeyword = keyword;
     _isSearching = keyword.isNotEmpty;
-    _searchFilters(); // 검색어+ 카테고리 필터를 동시사용
+    // _searchFilters(); /// 검색어랑 카테고리 필터 동시사용
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFilters();
+    });
   }
 
   void _searchFilters() {
     List<DocumentModel> docs = List.from(_sharedWebState.documents);
 
     if (_searchKeyword.isNotEmpty) {
-      docs = docs.where((doc) =>
-      doc.title.contains(_searchKeyword) ||
-          doc.tags.contains(_searchKeyword) ||
-          doc.aiSummary.contains(_searchKeyword)
-      ).toList();
+      final keyword = _searchKeyword.trim().toLowerCase();
+
+      docs = docs.where((doc) {
+        return doc.title.toLowerCase().contains(keyword) ||
+            doc.aiSummary.toLowerCase().contains(keyword) ||
+            doc.tags.any((tag) => tag.toLowerCase().contains(keyword));
+      }).toList();
     }
 
     filteredDisplayDocuments = docs;

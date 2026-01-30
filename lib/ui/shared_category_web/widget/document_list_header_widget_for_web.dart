@@ -156,6 +156,10 @@ class _DocumentListHeaderWidgetForWebState extends State<DocumentListHeaderWidge
                       cursorColor: appColorScheme.categoryTagBg,
                       cursorWidth: 1.0,
                       cursorHeight: 18,
+                      style: appTextTheme.bodySmall.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: appColorScheme.textDark,
+                      ),
                       decoration: InputDecoration(
                         hintText: '키워드 입력',
                         hintStyle: appTextTheme.bodySmall.copyWith(
@@ -210,7 +214,7 @@ class _DocumentListHeaderWidgetForWebState extends State<DocumentListHeaderWidge
                         children: [
                           // 북마크 정렬
                           _buildSortButton(
-                            label: '북마크순',
+                            label: '북마크',
                             isSelected: widget.isBookmarkSelected,
                             onPressed: widget.onBookmarkSortPressed,
                             appTextTheme: appTextTheme,
@@ -224,7 +228,7 @@ class _DocumentListHeaderWidgetForWebState extends State<DocumentListHeaderWidge
                             onPressed: widget.onDateSortPressed,
                             appTextTheme: appTextTheme,
                             appColorScheme: appColorScheme,
-                            iconPath: '../../../../assets/icons/sort.svg',
+                            iconPath: '../../../../../assets/icons/sort.svg',
                           ),
                         ],
                       ),

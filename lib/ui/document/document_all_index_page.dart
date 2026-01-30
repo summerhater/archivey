@@ -1,5 +1,6 @@
+
+import 'package:archivey/data/service/kakao_sdk_share_service.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
-import 'package:archivey/utils/kakao_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -104,6 +105,11 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                             ),
                           ),
                           child: ListTile(
+                            onTap: () {
+                              context.go(
+                                '/document_category/${category.categoryId}?name=${Uri.encodeComponent(category.categoryName)}',
+                              );
+                            },
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 18,
                               vertical: 9,
@@ -117,7 +123,8 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: appTextTheme.headlineSmallKo.copyWith(
-                                      fontWeight: FontWeight.w300,
+                                      fontWeight: FontWeight.w400,
+                                      color: appColorScheme.categoryTagBg,
                                     ),
                                   ),
                                 ),
@@ -147,7 +154,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                       onShareKakaoConfirmed: () async {
                                         final String? shareCategoryURL = await vm.createSharedCategoryLink(category.categoryId);
                                         if (shareCategoryURL != null) {
-                                          kakaoShareCategoryURL(shareCategoryURL, category);
+                                          vm.kakaoShareCategoryURL(shareCategoryURL, category);
                                         } else {
                                           if (context.mounted) {
                                             context.showAppMessageSnackBar('카테고리 카카오톡 공유 중 오류가 발생했습니다.');
@@ -158,10 +165,13 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                     const SizedBox(width: 8),
 
                                     /// 아이템을 꾹 누르지 않아도 핸들 아이콘으로 드래그 가능하게 함
-                                    Icon(
-                                      Icons.menu,
-                                      color: appColorScheme.textLight,
-                                      size: 20,
+                                    ReorderableDragStartListener(
+                                      index: index,
+                                      child: Icon(
+                                        Icons.menu,
+                                        color: appColorScheme.textLight,
+                                        size: 20,
+                                      ),
                                     ),
                                   ],
                                 ),

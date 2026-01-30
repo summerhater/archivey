@@ -4,6 +4,7 @@ import 'package:archivey/config/share_category_link_config.dart';
 import 'package:archivey/data/mapper/document_mapper.dart';
 import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
+import 'package:archivey/data/service/kakao_sdk_share_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
@@ -13,11 +14,13 @@ import 'package:rxdart/rxdart.dart';
 class DocViewModel extends ChangeNotifier {
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
+  final KakaoSdkShareService _kakaoSdkShareService;
   final AppState _appState;
 
   DocViewModel(
     this._firebaseDocumentService,
     this._driftDocumentService,
+    this._kakaoSdkShareService,
     this._appState,
   ) {
     _lastUid = _appState.uid;
@@ -448,6 +451,14 @@ class DocViewModel extends ChangeNotifier {
     } catch (e) {
       print('error in createSharedCategoryLink: $e');
       return null;
+    }
+  }
+
+  Future<void> kakaoShareDocumentURL(String urlToShare, DocumentModel doc) async {
+    try {
+      await _kakaoSdkShareService.kakaoShareDocumentURL(urlToShare, doc);
+    }catch(e){
+      print('Error in kakaoShareDocumentURL: $e');
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
 import 'package:archivey/data/service/firebase_shared_category_link_service.dart';
+import 'package:archivey/data/service/kakao_sdk_share_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
@@ -13,8 +14,7 @@ import 'package:archivey/config/share_category_link_config.dart';
 
 class CategoryViewModel extends ChangeNotifier {
   final FirebaseCategoryService _categoryService;
-  // final FirebaseAuthService _authService;
-  // final FirebaseDocumentService _documentService;
+  final KakaoSdkShareService _kakaoSdkShareService;
   final AppState _appState;
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
@@ -23,8 +23,7 @@ class CategoryViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   CategoryViewModel(
     this._categoryService,
-    // this._authService,
-    // this._documentService,
+    this._kakaoSdkShareService,
     this._appState,
     this._firebaseDocumentService,
     this._driftDocumentService,
@@ -388,6 +387,14 @@ class CategoryViewModel extends ChangeNotifier {
     } catch (e) {
       print('error in createSharedCategoryLink: $e');
       return null;
+    }
+  }
+
+  Future<void> kakaoShareCategoryURL(String urlToShare, CategoryModel category) async {
+    try {
+      await _kakaoSdkShareService.kakaoShareCategoryURL(urlToShare, category);
+    }catch(e){
+      print('Error in kakaoShareDocumentURL: $e');
     }
   }
 }

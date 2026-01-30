@@ -3,6 +3,7 @@ import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -55,6 +56,8 @@ class DocumentCard extends StatelessWidget {
     final bool isTitleGenerating =
         document.title == '제목 없는 링크' &&
         document.aiStatus != AiTaskStatus.completed;
+    final String currentPath = GoRouterState.of(context).uri.path;
+    final bool isReadOnlyPath = currentPath.startsWith('/share/category/');
 
     return InkWell(
       onTap: () async {
@@ -171,25 +174,7 @@ class DocumentCard extends StatelessWidget {
                       width: 80,
                       height: 80,
                       color: Colors.grey.shade300,
-                      child: Image.network(
-                        kIsWeb
-                            ? 'https://proxy-gqfi74i22a-uc.a.run.app/proxy?url=${document.imageUrl}'
-                            : document.imageUrl,
-                        fit: BoxFit.cover,
-                        webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey.shade300,
-                            child: Center(
-                              child: Icon(
-                                Icons.image,
-                                color: Colors.grey.shade500,
-                                size: 40,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      child: _buildThumbnailImage(document.imageUrl),
                     ),
                   ),
                 // ClipRRect(
@@ -318,6 +303,43 @@ class DocumentCard extends StatelessWidget {
   }
 }
 
+Widget _buildThumbnailImage(String imageUrl) {
+  // 인스타그램 등 403을 자주 내는 도메인이나 빈 URL은 바로 플레이스홀더 표시
+  final uri = Uri.tryParse(imageUrl);
+  final isBlockedHost = uri == null ||
+      imageUrl.isEmpty ||
+      uri.host.contains('instagram.com') ||
+      uri.host.contains('cdninstagram.com');
+
+  if (isBlockedHost) {
+    return _thumbnailPlaceholder();
+  }
+
+  return Image.network(
+    kIsWeb
+        ? 'https://proxy-gqfi74i22a-uc.a.run.app/proxy?url=$imageUrl'
+        : imageUrl,
+    fit: BoxFit.cover,
+    webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
+    errorBuilder: (context, error, stackTrace) {
+      return _thumbnailPlaceholder();
+    },
+  );
+}
+
+Widget _thumbnailPlaceholder() {
+  return Container(
+    color: Colors.grey.shade300,
+    child: const Center(
+      child: Icon(
+        Icons.image,
+        color: Colors.grey,
+        size: 40,
+      ),
+    ),
+  );
+}
+
 Widget _buildTitleShimmer() {
   return Shimmer.fromColors(
     baseColor: Colors.grey.shade300,
@@ -441,17 +463,42 @@ Widget _buildNormalBottomTags(BuildContext context, DocumentModel document, bool
             ),
           ),
           /// 북마크
-          if (isWeb == null)
-            IconButton(
-              onPressed: () async{
-                // TODO 함수 콜백으로 받기
-                await Provider.of<DocViewModel>(context, listen: false).updateDocument(document.copyWith(isBookmark: !document.isBookmark));
-              },
-              icon: document.isBookmark ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
-              color: Colors.grey.shade400,
-              iconSize: 24,
-              visualDensity: VisualDensity(horizontal: -4.0),
-            ),
+          // if (isWeb == null)
+          //   IconButton(
+          //     onPressed: () async{
+          //       // TODO 함수 콜백으로 받기
+          //       await Provider.of<DocViewModel>(context, listen: false).updateDocument(document.copyWith(isBookmark: !document.isBookmark));
+          //     },
+          //     icon: document.isBookmark ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
+          //     color: Colors.grey.shade400,
+          //     iconSize: 24,
+          //     visualDensity: VisualDensity(horizontal: -4.0),
+          //   ),
+            () {
+            final String currentPath = GoRouterState.of(context).uri.path;
+            final bool isReadOnlyPath = currentPath.startsWith('/share/category/');
+
+            if (isReadOnlyPath) {
+              ///공유 경로(Read-only)일 때
+              return document.isBookmark
+                  ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: Icon(Icons.bookmark, color: appColorScheme.textLight, size: 24),
+              )
+                  : const SizedBox.shrink();
+            } else {
+              return IconButton(
+                onPressed: () async {
+                  await Provider.of<DocViewModel>(context, listen: false)
+                      .updateDocument(document.copyWith(isBookmark: !document.isBookmark));
+                },
+                icon: Icon(document.isBookmark ? Icons.bookmark : Icons.bookmark_border),
+                color: appColorScheme.textLight,
+                iconSize: 24,
+                visualDensity: const VisualDensity(horizontal: -4.0),
+              );
+            }
+          }(),
         ],
       );
     },

@@ -70,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Text(
                           '설정',
                           style: appTextTheme.headlineLargeKo.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             color: appColorScheme.textDark,
                           ),
                         ),
@@ -96,7 +96,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                 ),
                                 SizedBox(width: 16),
-                                Column(
+                                isLoggedIn
+                                ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
@@ -115,7 +116,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                       ),
                                     ),
                                   ],
-                                ),
+                                )
+                                    : Text('로그인을 해주세요', style: appTextTheme.bodyMedium.copyWith(
+                                  color: appColorScheme.textDark,
+                                ),)
                               ],
                             ),
                             SizedBox(height: 24),
@@ -261,23 +265,43 @@ class _SettingsPageState extends State<SettingsPage> {
                                 isSubWidget: true,
                               ),
                               SettingMenuItemWidget(
-                                label: '라이선스',
-                                onTap: () {
-                                  showLicensePage(
-                                    context: context,
+                          icon: Icons.info,
+                          label: '라이선스',
+                          onTap: () {
+                            // showLicensePage(
+                            //   context: context,
+                            //   applicationName: 'Archivey',
+                            //   applicationVersion: appVersion,
+                            //   applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
+                            //   useRootNavigator: true,
+                            // );
+                            Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) => Theme(
+                                  data: Theme.of(context).copyWith(
+                                    scaffoldBackgroundColor: appColorScheme.primary,
+                                    appBarTheme: AppBarTheme(
+                                      backgroundColor: appColorScheme.primary,
+                                      scrolledUnderElevation: 0,
+                                      elevation: 0,
+                                    ),
+                                    cardColor: appColorScheme.documentDetailBg,
+                                  ),
+                                  child: LicensePage(
                                     applicationName: 'Archivey',
                                     applicationVersion: appVersion,
-                                    applicationLegalese: 'ⓒ 2025 archivey All rights reserved.',
-                                    useRootNavigator: true,
-                                  );
-                                },
-                                appTextTheme: appTextTheme,
-                                appColorScheme: appColorScheme,
-                                isSubWidget: true,
+                                    applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
+                                  ),
+                                ),
                               ),
+                            );
+                          },
+                          appTextTheme: appTextTheme,
+                          appColorScheme: appColorScheme,
+                        ),
                             ],
                           ),
-                        ),
+                        
 
                         Divider(height: 48, color: appColorScheme.strokeLight),
 
@@ -313,7 +337,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           Divider(height: 48, color: appColorScheme.strokeLight),
                         ],
                         Text(
-                          'ⓒ 2025 archivey All rights reserved.',
+                          'ⓒ 2026 archivey All rights reserved.',
                           style: appTextTheme.labelMedium.copyWith(
                             color: appColorScheme.textLight,
                           ),
