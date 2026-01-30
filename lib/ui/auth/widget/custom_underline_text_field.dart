@@ -52,13 +52,13 @@ class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
         ),
         hintText: hintText,
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: appColor.primaryStrong),
+          borderSide: BorderSide(color: appColor.primaryStrong, width: .5),
         ),
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: appColor.primaryStrong),
+          borderSide: BorderSide(color: appColor.primaryStrong, width: 1),
         ),
         focusedErrorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: appColor.primaryStrong),
+          borderSide: BorderSide(color: appColor.primaryStrong, width: 1),
         ),
         suffixIcon: isPassword ? IconButton(
           onPressed: () {

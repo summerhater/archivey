@@ -4,6 +4,7 @@ import 'package:archivey/config/share_category_link_config.dart';
 import 'package:archivey/data/mapper/document_mapper.dart';
 import 'package:archivey/data/service/drift_document_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
+import 'package:archivey/data/service/kakao_sdk_share_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
@@ -13,11 +14,13 @@ import 'package:rxdart/rxdart.dart';
 class DocViewModel extends ChangeNotifier {
   final FirebaseDocumentService _firebaseDocumentService;
   final DriftDocumentService _driftDocumentService;
+  final KakaoSdkShareService _kakaoSdkShareService;
   final AppState _appState;
 
   DocViewModel(
     this._firebaseDocumentService,
     this._driftDocumentService,
+    this._kakaoSdkShareService,
     this._appState,
   ) {
     pullAndPush();
@@ -41,7 +44,6 @@ class DocViewModel extends ChangeNotifier {
   bool _hasInitDocs = false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
   bool _isSearching = false;
   bool get isSearching => _isSearching;
-  String? _currentCategoryId;
 
   // void updateState(AppState newState) {
   //   print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
@@ -435,6 +437,14 @@ class DocViewModel extends ChangeNotifier {
     } catch (e) {
       print('error in createSharedCategoryLink: $e');
       return null;
+    }
+  }
+
+  Future<void> kakaoShareDocumentURL(String urlToShare, DocumentModel doc) async {
+    try {
+      await _kakaoSdkShareService.kakaoShareDocumentURL(urlToShare, doc);
+    }catch(e){
+      print('Error in kakaoShareDocumentURL: $e');
     }
   }
 }

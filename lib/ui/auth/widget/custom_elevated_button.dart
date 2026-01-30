@@ -38,10 +38,13 @@ class CustomElevatedButton extends StatelessWidget {
           }
         },
         style: ElevatedButton.styleFrom(
+          overlayColor: Colors.transparent,
+          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(
               color: appColor.primary,
+              width: .5,
             ),
           ),
           backgroundColor: backgroundColor,

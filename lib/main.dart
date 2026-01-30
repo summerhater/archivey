@@ -8,6 +8,7 @@ import 'package:archivey/data/service/firebase_auth_service.dart';
 import 'package:archivey/data/service/firebase_category_service.dart';
 import 'package:archivey/data/service/firebase_document_service.dart';
 import 'package:archivey/data/service/firebase_shared_category_link_service.dart';
+import 'package:archivey/data/service/kakao_sdk_share_service.dart';
 import 'package:archivey/domain/state/app_state.dart';
 import 'package:archivey/firebase_options.dart';
 import 'package:archivey/routing/go_router.dart';
@@ -56,6 +57,7 @@ void main() async {
           Provider<FirebaseCategoryService>(
             create: (_) => FirebaseCategoryService(),
           ),
+          Provider<KakaoSdkShareService>(create: (_) => KakaoSdkShareService(),),
           Provider<FirebaseSharedCategoryWebService>(
             create: (_) => FirebaseSharedCategoryWebService(),
           ),
@@ -93,6 +95,7 @@ void main() async {
           ChangeNotifierProvider<CategoryViewModel>(
             create: (context) => CategoryViewModel(
               context.read<FirebaseCategoryService>(),
+              context.read<KakaoSdkShareService>(),
               context.read<AppState>(),
               context.read<FirebaseDocumentService>(),
               context.read<DriftDocumentService>(),
@@ -142,6 +145,7 @@ void main() async {
             create: (context) => DocViewModel(
               context.read<FirebaseDocumentService>(),
               context.read<DriftDocumentService>(),
+              context.read<KakaoSdkShareService>(),
               context.read<AppState>(),
             ),
           ),
