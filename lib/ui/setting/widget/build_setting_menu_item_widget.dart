@@ -9,6 +9,7 @@ class SettingMenuItemWidget extends StatelessWidget {
   final AppTextTheme appTextTheme;
   final AppColorScheme appColorScheme;
   final Widget? suffix;
+  final bool? isSubWidget;
 
   const SettingMenuItemWidget({
     super.key,
@@ -18,6 +19,7 @@ class SettingMenuItemWidget extends StatelessWidget {
     required this.appTextTheme,
     required this.appColorScheme,
     this.suffix,
+    this.isSubWidget,
   });
 
   @override
@@ -30,7 +32,7 @@ class SettingMenuItemWidget extends StatelessWidget {
             InkWell(
               onTap: onTap,
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 14),
+                padding: !(isSubWidget ?? false) ? EdgeInsets.symmetric(vertical: 14) : EdgeInsetsGeometry.symmetric(vertical: 5),
                 child: Row(
                   children: [
                     if (icon != null)
@@ -38,7 +40,10 @@ class SettingMenuItemWidget extends StatelessWidget {
                     if (icon != null) SizedBox(width: 12),
                     Text(
                       label,
-                      style: appTextTheme.bodyMedium.copyWith(
+                      style: (isSubWidget ?? false) ? appTextTheme.bodySmall.copyWith(
+                        color: appColorScheme.primaryStrong,
+                        fontWeight: FontWeight.w300,
+                      ) : appTextTheme.bodyMedium.copyWith(
                         color: icon != null
                             ? appColorScheme.primaryStrong
                             : appColorScheme.textLight,
@@ -51,7 +56,7 @@ class SettingMenuItemWidget extends StatelessWidget {
             ?suffix,
           ],
         ),
-        Divider(height: 48, color: appColorScheme.strokeLight),
+        // Divider(height: 48, color: appColorScheme.strokeLight),
       ],
     );
   }

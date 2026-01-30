@@ -20,6 +20,7 @@ class DocViewModel extends ChangeNotifier {
     this._driftDocumentService,
     this._appState,
   ) {
+    _lastUid = _appState.uid;
     pullAndPush();
     _appState.addListener(_onStateChanged);
     // readDocuments(_appState.categories);
@@ -42,6 +43,7 @@ class DocViewModel extends ChangeNotifier {
   bool _isSearching = false;
   bool get isSearching => _isSearching;
   int _lastWatchedCategories = 0;
+  String _lastUid = '';
 
   // void updateState(AppState newState) {
   //   print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
@@ -305,7 +307,12 @@ class DocViewModel extends ChangeNotifier {
   /// 리스너
   void _onStateChanged() {
     bool isCategoryChanged = _lastWatchedCategories != _appState.categories.length;
+    bool isUserChanged = _lastUid != _appState.uid;
 
+    // 로그인 할 때마다 싱크 맞춰주기
+    if(isUserChanged) {
+      pullAndPush();
+    }
     if(isCategoryChanged || !_hasInitDocs) {
       _hasInitDocs = true;
       _lastWatchedCategories = _appState.categories.length;

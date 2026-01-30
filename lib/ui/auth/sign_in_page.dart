@@ -3,9 +3,9 @@ import 'package:archivey/config/text_theme_extension.dart';
 import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/auth/widget/custom_tos_bottom_modal.dart';
 import 'package:archivey/ui/auth/widget/custom_elevated_button.dart';
-import 'package:archivey/ui/auth/widget/sign_in_page/sign_in_custom_text_button.dart';
-import 'package:archivey/ui/auth/widget/sign_in_page/sign_in_custom_text_field.dart';
-import 'package:archivey/utils/show_snackbar.dart';
+import 'package:archivey/ui/auth/widget/sign_in_custom_text_button.dart';
+import 'package:archivey/ui/auth/widget/sign_in_custom_text_field.dart';
+import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -87,7 +87,7 @@ class _SignInPageState extends State<SignInPage> {
                         })
                         .catchError((e) {
                           if (!context.mounted) return;
-                          showSnackBar(context, e.toString());
+                          context.showAppMessageSnackBar(e.toString());
                         }),
                   ),
                   Row(
@@ -117,6 +117,7 @@ class _SignInPageState extends State<SignInPage> {
                           guide: '이메일 가입하기',
                           asyncFunction: () async => await showModalBottomSheet(
                             context: context,
+                            isScrollControlled: true,
                             builder: (context) => CustomTosBottomModal(
                               path: '/auth/signup-email',
                             ), // TODO Modal창 문서화?

@@ -4,7 +4,7 @@ import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/auth/widget/custom_next_button.dart';
 import 'package:archivey/ui/auth/widget/custom_underline_text_field.dart';
 import 'package:archivey/ui/auth/widget/custom_appbar.dart';
-import 'package:archivey/utils/show_snackbar.dart';
+import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -81,8 +81,7 @@ class FindEmailPasswordPage extends StatelessWidget {
               .then(
                 (_) {
                   if(!context.mounted) return;
-                  showSnackBar(
-                    context,
+                  context.showAppMessageSnackBar(
                     '$_email로 비밀번호 재설정 메일을 보냈습니다.',
                   );
                 },

@@ -53,6 +53,7 @@ class _AuthPageState extends State<AuthPage> {
                   fontSize: appText.headlineSmallKo.fontSize,
                   onPressed: () async => await showModalBottomSheet(
                     context: context,
+                    isScrollControlled: true,
                     builder: (context) => CustomTosBottomModal(path: '/auth/signup-email',),
                     backgroundColor: appColor.primary,
                     useSafeArea: true,

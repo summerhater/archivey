@@ -73,7 +73,12 @@ class _SignInCustomTextFieldState extends State<SignInCustomTextField> {
                 : Icons.remove_red_eye_outlined,
             color: appColor.textLight,
           ),
-        ) : null,
+        ) : IconButton(onPressed: () {
+          controller.clear();
+        }, icon: Icon(
+          Icons.close,
+          color: appColor.textLight,
+        )),
       ),
       cursorColor: appColor.textLight,
       style: appText.bodySmall.copyWith(

@@ -1,6 +1,6 @@
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
-import 'package:archivey/utils/show_snackbar.dart';
+import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,8 +34,7 @@ class CustomNextButton extends StatelessWidget {
             context.go(path);
           } catch (error) {
             print(error);
-            showSnackBar(
-              context,
+            context.showAppMessageSnackBar(
               error.toString(),
             );
           }
