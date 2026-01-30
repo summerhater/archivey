@@ -71,18 +71,22 @@ class SignupEmailPage extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              CustomUnderlineTextField(getText: _getEmail, hintText: '이메일 주소 입력'),
-            ],
+                SizedBox(
+                  height: 40,
+                ),
+                CustomUnderlineTextField(
+                  getText: _getEmail,
+                  hintText: '이메일 주소 입력',
+                ),
+              ],
+            ),
           ),
-        ),
-        bottomSheet: CustomNextButton(
-          path: '/auth/signup-email/signup-password',
-          guide: '다음',
-          onPressed: () => context.read<AuthViewModel>().isAlreadyExistEmail(_email),
+          bottomSheet: CustomNextButton(
+            path: '/auth/signup-email/signup-password',
+            guide: '다음',
+            onPressed: () =>
+                context.read<AuthViewModel>().isAlreadyExistEmail(_email),
+          ),
         ),
       ),
     );

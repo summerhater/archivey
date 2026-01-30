@@ -61,186 +61,188 @@ class _BottomSheetCategoryAddEditWidgetState
     final bool isError = _hasSubmitted && _inputValue.isEmpty;
     final maxLength = 15;
 
-    return Padding(
-      padding: MediaQuery.of(context).viewInsets,
-
-      child: Consumer<CategoryViewModel>(
-        builder: (context, vm, _) {
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: appColorScheme.primaryStrong,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-              border: Border(
-                top: BorderSide(
-                  color: appColorScheme.primary,
-                  width: .5,
+    return SafeArea(
+      child: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+      
+        child: Consumer<CategoryViewModel>(
+          builder: (context, vm, _) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: appColorScheme.primaryStrong,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
                 ),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 16),
-
-                ///바텀시트 핸들
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Text(
-                      widget.categorySettingMode == CategorySettingMode.add
-                          ? '새 카테고리 추가'
-                          : widget.categorySettingMode == CategorySettingMode.subAdd
-                          ? '새 서브 카테고리 추가'
-                          : widget.categorySettingMode == CategorySettingMode.edit
-                          ? '카테고리 수정'
-                          : '서브 카테고리 수정',
-                      style: appTextTheme.headlineSmallKo.copyWith(
-                        color: appColorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _inputValue = value;
-                      if (_hasSubmitted && value.isNotEmpty) {
-                        _hasSubmitted = false;
-                      }
-                    });
-                  },
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  autofocus: true,
-                  maxLength: 15,
-                  cursorColor: appColorScheme.primary,
-                  cursorWidth: 1.0,
-                  cursorHeight: 18,
-                  style: appTextTheme.headlineSmallKo.copyWith(
-                    fontWeight: FontWeight.w400,
+                border: Border(
+                  top: BorderSide(
                     color: appColorScheme.primary,
-                  ),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    hintText:
-                    widget.categorySettingMode == CategorySettingMode.add
-                        ? '카테고리 이름을 입력해 주세요'
-                        : widget.categorySettingMode == CategorySettingMode.subAdd
-                        ? '서브 카테고리 이름을 입력해 주세요'
-                        : widget.categorySettingMode == CategorySettingMode.edit
-                        ? '변경할 카테고리 이름을 입력해 주세요'
-                        : '변경할 서브 카테고리 이름을 입력해 주세요',
-                    hintStyle: appTextTheme.headlineSmallKo.copyWith(
-                      color: appColorScheme.textLight,
-                      fontWeight: FontWeight.w300,
-                    ),
-                    suffix: Text(
-                      '${_inputValue.length} / $maxLength',
-                      style: appTextTheme.labelLarge.copyWith(
-                        color: appColorScheme.textLight,
-                      ),
-                    ),
-                    border: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: isError
-                            ? appColorScheme.error
-                            : appColorScheme.primary,
-                        width: .5,
-                      ),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: isError
-                            ? appColorScheme.error
-                            : appColorScheme.primary,
-                        width: 1,
-                      ),
-                    ),
+                    width: .5,
                   ),
                 ),
-
-                const SizedBox(height: 40),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 16),
+      
+                  ///바텀시트 핸들
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Text(
+                        widget.categorySettingMode == CategorySettingMode.add
+                            ? '새 카테고리 추가'
+                            : widget.categorySettingMode == CategorySettingMode.subAdd
+                            ? '새 서브 카테고리 추가'
+                            : widget.categorySettingMode == CategorySettingMode.edit
+                            ? '카테고리 수정'
+                            : '서브 카테고리 수정',
+                        style: appTextTheme.headlineSmallKo.copyWith(
+                          color: appColorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    onChanged: (value) {
                       setState(() {
-                        _hasSubmitted = true;
-                      });
-                      if (_inputValue.isEmpty) {
-                        HapticFeedback.lightImpact();
-                        return ;
-                        ///입력창 비어있을때 저장 누르면 진동
-                      }
-                      try {
-                        if (widget.categorySettingMode ==
-                            CategorySettingMode.add) {
-                          await vm.createCategory(_inputValue);
-                        } else if (widget.categorySettingMode ==
-                            CategorySettingMode.subAdd && widget.parentCategoryId != null){
-                          await vm.createCategory(_inputValue, parentId: widget.parentCategoryId);
-                        } else {
-                          /// 수정 모드: 기존 모델 객체가 반드시 전달되어야 함 (widget.categoryModel)
-                          if (widget.originalCategoryModel != null) {
-                            await vm.updateCategory(
-                              widget.originalCategoryModel!,
-                              _inputValue,
-                            );
-                          } else {
-                            print('categoryModel이 null입니다');
-                          }
+                        _inputValue = value;
+                        if (_hasSubmitted && value.isNotEmpty) {
+                          _hasSubmitted = false;
                         }
-                        if (!mounted) return;
-                        context.pop(_inputValue);
-                      } catch (e) {
-                        if (!mounted) return;
-                        context.showAppMessageSnackBar('카테고리 작업 실패: $e');
-                      }
+                      });
                     },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      backgroundColor: appColorScheme.primary,
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      overlayColor: Colors.transparent,
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    autofocus: true,
+                    maxLength: 15,
+                    cursorColor: appColorScheme.primary,
+                    cursorWidth: 1.0,
+                    cursorHeight: 18,
+                    style: appTextTheme.headlineSmallKo.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: appColorScheme.primary,
                     ),
-                    child: Text(
-                      '저장',
-                      style: appTextTheme.bodyMedium.copyWith(
-                        color: appColorScheme.primaryStrong,
-                        fontWeight: FontWeight.w400,
+                    decoration: InputDecoration(
+                      counterText: '',
+                      hintText:
+                      widget.categorySettingMode == CategorySettingMode.add
+                          ? '카테고리 이름을 입력해 주세요'
+                          : widget.categorySettingMode == CategorySettingMode.subAdd
+                          ? '서브 카테고리 이름을 입력해 주세요'
+                          : widget.categorySettingMode == CategorySettingMode.edit
+                          ? '변경할 카테고리 이름을 입력해 주세요'
+                          : '변경할 서브 카테고리 이름을 입력해 주세요',
+                      hintStyle: appTextTheme.headlineSmallKo.copyWith(
+                        color: appColorScheme.textLight,
+                        fontWeight: FontWeight.w300,
+                      ),
+                      suffix: Text(
+                        '${_inputValue.length} / $maxLength',
+                        style: appTextTheme.labelLarge.copyWith(
+                          color: appColorScheme.textLight,
+                        ),
+                      ),
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isError
+                              ? appColorScheme.error
+                              : appColorScheme.primary,
+                          width: .5,
+                        ),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isError
+                              ? appColorScheme.error
+                              : appColorScheme.primary,
+                          width: 1,
+                        ),
                       ),
                     ),
                   ),
-                ),
-
-                _focusNode.hasFocus
-                    ? SizedBox(
-                        height: 20,
-                      )
-                    : SizedBox(
-                        height: 40,
+      
+                  const SizedBox(height: 40),
+      
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        setState(() {
+                          _hasSubmitted = true;
+                        });
+                        if (_inputValue.isEmpty) {
+                          HapticFeedback.lightImpact();
+                          return ;
+                          ///입력창 비어있을때 저장 누르면 진동
+                        }
+                        try {
+                          if (widget.categorySettingMode ==
+                              CategorySettingMode.add) {
+                            await vm.createCategory(_inputValue);
+                          } else if (widget.categorySettingMode ==
+                              CategorySettingMode.subAdd && widget.parentCategoryId != null){
+                            await vm.createCategory(_inputValue, parentId: widget.parentCategoryId);
+                          } else {
+                            /// 수정 모드: 기존 모델 객체가 반드시 전달되어야 함 (widget.categoryModel)
+                            if (widget.originalCategoryModel != null) {
+                              await vm.updateCategory(
+                                widget.originalCategoryModel!,
+                                _inputValue,
+                              );
+                            } else {
+                              print('categoryModel이 null입니다');
+                            }
+                          }
+                          if (!mounted) return;
+                          context.pop(_inputValue);
+                        } catch (e) {
+                          if (!mounted) return;
+                          context.showAppMessageSnackBar('카테고리 작업 실패: $e');
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor: appColorScheme.primary,
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        overlayColor: Colors.transparent,
                       ),
-              ],
-            ),
-          );
-        },
+                      child: Text(
+                        '저장',
+                        style: appTextTheme.bodyMedium.copyWith(
+                          color: appColorScheme.primaryStrong,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+      
+                  _focusNode.hasFocus
+                      ? SizedBox(
+                          height: 20,
+                        )
+                      : SizedBox(
+                          height: 40,
+                        ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

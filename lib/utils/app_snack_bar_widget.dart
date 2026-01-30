@@ -78,7 +78,7 @@ class _CustomAppSnackBarState extends State<CustomAppSnackBar>
     return Positioned(
       left: 16,
       right: 16,
-      bottom: 30,
+      bottom: MediaQuery.paddingOf(context).bottom + 30,
       child: FadeTransition(
         opacity: _fade,
         child: SlideTransition(

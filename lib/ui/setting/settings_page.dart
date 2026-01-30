@@ -97,29 +97,37 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 SizedBox(width: 16),
                                 isLoggedIn
-                                ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '이메일',
-                                      style: appTextTheme.bodyMedium.copyWith(
-                                        color: appColorScheme.textLight,
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '이메일',
+                                            style: appTextTheme.bodyMedium
+                                                .copyWith(
+                                                  color:
+                                                      appColorScheme.textLight,
+                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 6,
+                                          ),
+                                          Text(
+                                            vm.email,
+                                            style: appTextTheme.bodySmall
+                                                .copyWith(
+                                                  color:
+                                                      appColorScheme.textDark,
+                                                ),
+                                          ),
+                                        ],
+                                      )
+                                    : Text(
+                                        '로그인을 해주세요',
+                                        style: appTextTheme.bodyMedium.copyWith(
+                                          color: appColorScheme.textDark,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 6,
-                                    ),
-                                    Text(
-                                      vm.email,
-                                      style: appTextTheme.bodySmall.copyWith(
-                                        color: appColorScheme.textDark,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                                    : Text('로그인을 해주세요', style: appTextTheme.bodyMedium.copyWith(
-                                  color: appColorScheme.textDark,
-                                ),)
                               ],
                             ),
                             SizedBox(height: 24),
@@ -218,12 +226,16 @@ class _SettingsPageState extends State<SettingsPage> {
 
                         Row(
                           children: [
-                            Icon(Icons.info, size: 20, color: appColorScheme.primaryStrong),
+                            Icon(
+                              Icons.info,
+                              size: 20,
+                              color: appColorScheme.primaryStrong,
+                            ),
                             SizedBox(width: 12),
                             Text(
                               '약관 및 정책',
                               style: appTextTheme.bodyMedium.copyWith(
-                                color:appColorScheme.primaryStrong,
+                                color: appColorScheme.primaryStrong,
                               ),
                             ),
                           ],
@@ -235,7 +247,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               SettingMenuItemWidget(
                                 label: '서비스 이용약관',
                                 onTap: () async {
-                                  final url = 'https://gigantic-sycamore-e89.notion.site/2f860523334d80169aeef60c7554c56f?pvs=74';
+                                  final url =
+                                      'https://gigantic-sycamore-e89.notion.site/2f860523334d80169aeef60c7554c56f?pvs=74';
                                   final uri = Uri.parse(url);
                                   if (await canLaunchUrl(uri)) {
                                     launchUrl(
@@ -251,7 +264,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               SettingMenuItemWidget(
                                 label: '개인정보 처리방침',
                                 onTap: () async {
-                                  final url = 'https://gigantic-sycamore-e89.notion.site/2f860523334d80c69cd9e72ba72603c0?pvs=74';
+                                  final url =
+                                      'https://gigantic-sycamore-e89.notion.site/2f860523334d80c69cd9e72ba72603c0?pvs=74';
                                   final uri = Uri.parse(url);
                                   if (await canLaunchUrl(uri)) {
                                     launchUrl(
@@ -265,47 +279,54 @@ class _SettingsPageState extends State<SettingsPage> {
                                 isSubWidget: true,
                               ),
                               SettingMenuItemWidget(
-                          icon: Icons.info,
-                          label: '라이선스',
-                          onTap: () {
-                            // showLicensePage(
-                            //   context: context,
-                            //   applicationName: 'Archivey',
-                            //   applicationVersion: appVersion,
-                            //   applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
-                            //   useRootNavigator: true,
-                            // );
-                            Navigator.of(context, rootNavigator: true).push(
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) => Theme(
-                                  data: Theme.of(context).copyWith(
-                                    scaffoldBackgroundColor: appColorScheme.primary,
-                                    appBarTheme: AppBarTheme(
-                                      backgroundColor: appColorScheme.primary,
-                                      scrolledUnderElevation: 0,
-                                      elevation: 0,
+                                label: '라이선스',
+                                onTap: () {
+                                  // showLicensePage(
+                                  //   context: context,
+                                  //   applicationName: 'Archivey',
+                                  //   applicationVersion: appVersion,
+                                  //   applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
+                                  //   useRootNavigator: true,
+                                  // );
+                                  Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (BuildContext context) => Theme(
+                                        data: Theme.of(context).copyWith(
+                                          scaffoldBackgroundColor:
+                                              appColorScheme.primary,
+                                          appBarTheme: AppBarTheme(
+                                            backgroundColor:
+                                                appColorScheme.primary,
+                                            scrolledUnderElevation: 0,
+                                            elevation: 0,
+                                          ),
+                                          cardColor:
+                                              appColorScheme.documentDetailBg,
+                                        ),
+                                        child: LicensePage(
+                                          applicationName: 'Archivey',
+                                          applicationVersion: appVersion,
+                                          applicationLegalese:
+                                              'ⓒ 2026 archivey All rights reserved.',
+                                        ),
+                                      ),
                                     ),
-                                    cardColor: appColorScheme.documentDetailBg,
-                                  ),
-                                  child: LicensePage(
-                                    applicationName: 'Archivey',
-                                    applicationVersion: appVersion,
-                                    applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
-                                  ),
-                                ),
+                                  );
+                                },
+                                isSubWidget: true,
+                                appTextTheme: appTextTheme,
+                                appColorScheme: appColorScheme,
                               ),
-                            );
-                          },
-                          appTextTheme: appTextTheme,
-                          appColorScheme: appColorScheme,
-                        ),
                             ],
                           ),
-                        
+                        ),
 
                         Divider(height: 48, color: appColorScheme.strokeLight),
 
-                        if(isLoggedIn)...[
+                        if (isLoggedIn) ...[
                           SettingMenuItemWidget(
                             label: '탈퇴하기',
                             onTap: () async {
@@ -326,7 +347,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       await vm.deleteAccount(),
                                 ),
                               );
-                              if (deleteAccount == null || !deleteAccount) return;
+                              if (deleteAccount == null || !deleteAccount)
+                                return;
                               print('###### 탈퇴 성공 후, auth로 이동');
                               // TODO auth로 안감 해결 해야 함
                               // GoRouter.of(context).go('/auth');
@@ -334,7 +356,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             appTextTheme: appTextTheme,
                             appColorScheme: appColorScheme,
                           ),
-                          Divider(height: 48, color: appColorScheme.strokeLight),
+                          Divider(
+                            height: 48,
+                            color: appColorScheme.strokeLight,
+                          ),
                         ],
                         Text(
                           'ⓒ 2026 archivey All rights reserved.',

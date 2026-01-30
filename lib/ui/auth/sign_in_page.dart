@@ -97,7 +97,7 @@ class _SignInPageState extends State<SignInPage> {
                           })
                           .catchError((e) {
                             if (!context.mounted) return;
-                            showSnackBar(context, e.toString());
+                            context.showAppMessageSnackBar(e.toString());
                           }),
                     ),
                     Row(

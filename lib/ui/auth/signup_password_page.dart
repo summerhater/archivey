@@ -29,6 +29,7 @@ class _SignupPasswordPageState extends State<SignupPasswordPage> {
   void _getPasswordVerify(String text) {
     _passwordVerify = text;
   }
+
   bool pwVisibility = false;
   bool rePwVisibility = false;
 
@@ -77,22 +78,32 @@ class _SignupPasswordPageState extends State<SignupPasswordPage> {
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              CustomUnderlineTextField(getText: _getPassword, hintText: '비밀번호 입력', isPassword: true,),
-              SizedBox(
-                height: 20,
-              ),
-              CustomUnderlineTextField(getText: _getPasswordVerify, hintText: '비밀번호를 다시 한번 입력해 주세요', isPassword: true,),
-            ],
+                SizedBox(
+                  height: 40,
+                ),
+                CustomUnderlineTextField(
+                  getText: _getPassword,
+                  hintText: '비밀번호 입력',
+                  isPassword: true,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CustomUnderlineTextField(
+                  getText: _getPasswordVerify,
+                  hintText: '비밀번호를 다시 한번 입력해 주세요',
+                  isPassword: true,
+                ),
+              ],
+            ),
           ),
-        ),
-        bottomSheet: CustomNextButton(
-          path: '/auth/signup-email/signup-password/signup-email-verify',
-          guide: '다음',
-          onPressed: () async => await context.read<AuthViewModel>().signUpWithEmailAndPassword(_password, _passwordVerify),
+          bottomSheet: CustomNextButton(
+            path: '/auth/signup-email/signup-password/signup-email-verify',
+            guide: '다음',
+            onPressed: () async => await context
+                .read<AuthViewModel>()
+                .signUpWithEmailAndPassword(_password, _passwordVerify),
+          ),
         ),
       ),
     );

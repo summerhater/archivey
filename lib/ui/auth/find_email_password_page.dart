@@ -7,6 +7,7 @@ import 'package:archivey/ui/auth/widget/custom_next_button.dart';
 import 'package:archivey/ui/auth/widget/custom_underline_text_field.dart';
 import 'package:archivey/ui/auth/widget/custom_appbar.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
@@ -70,31 +71,32 @@ class FindEmailPasswordPage extends StatelessWidget {
                       ),
                     ],
                   ),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              CustomUnderlineTextField(
-                getText: _getEmail,
-                hintText: '이메일 주소 입력',
-              ),
-            ],
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                CustomUnderlineTextField(
+                  getText: _getEmail,
+                  hintText: '이메일 주소 입력',
+                ),
+              ],
+            ),
           ),
-        ),
-        bottomSheet: CustomNextButton(
-          path: '/auth/sign-in',
-          guide: '비밀번호 재설정 메일 보내기',
-          onPressed: () => context
-              .read<AuthViewModel>()
-              .resetPasswordWithEmail(_email)
-              .then(
-                (_) {
-                  if(!context.mounted) return;
-                  context.showAppMessageSnackBar(
-                    '$_email로 비밀번호 재설정 메일을 보냈습니다.',
-                  );
-                },
-              ),
+          bottomSheet: CustomNextButton(
+            path: '/auth/sign-in',
+            guide: '비밀번호 재설정 메일 보내기',
+            onPressed: () => context
+                .read<AuthViewModel>()
+                .resetPasswordWithEmail(_email)
+                .then(
+                  (_) {
+                    if (!context.mounted) return;
+                    context.showAppMessageSnackBar(
+                      '$_email로 비밀번호 재설정 메일을 보냈습니다.',
+                    );
+                  },
+                ),
+          ),
         ),
       ),
     );
