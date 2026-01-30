@@ -1,7 +1,7 @@
 import 'package:archivey/config/share_category_link_config.dart';
+import 'package:archivey/data/service/kakao_sdk_share_service.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
-import 'package:archivey/utils/kakao_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -124,7 +124,7 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
                           onShareKakaoConfirmed: () {
                             String originalUrl = displayDocuments[index].url;
                             String url = "${ShareCategoryLinkConfig.baseUrl}/share/go.html?target=$originalUrl";
-                            kakaoShareDocumentURL(url, displayDocuments[index]);
+                            vm.kakaoShareDocumentURL(url, displayDocuments[index]);
                           },
                         );
                       },

@@ -15,12 +15,6 @@ class DocumentAllIndexDocumentCountWidget extends StatefulWidget {
 }
 
 class _DocumentAllIndexDocumentCountWidgetState extends State<DocumentAllIndexDocumentCountWidget> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;

@@ -303,6 +303,10 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                       // _searchValue = value;
                       Provider.of<DocViewModel>(context, listen: false).search(keyword: value,);
                     },
+                    style: appTextTheme.bodySmall.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: appColorScheme.textDark,
+                    ),
                     cursorColor: appColorScheme.categoryTagBg,
                     cursorWidth: 1.0,
                     cursorHeight: 18,
@@ -363,7 +367,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                       ),
                       Row(
                         children: [
-                          ///북마크순 버튼
+                          ///북마크 버튼
                           TextButton(
                             onPressed: () {
                                   widget.onBookmarkSortPressed();
@@ -376,7 +380,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: Text(
-                              '북마크순',
+                              '북마크',
                               style: appTextTheme.labelLarge.copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: widget.isBookmarkSelected

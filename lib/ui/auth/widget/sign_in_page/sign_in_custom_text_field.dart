@@ -47,6 +47,7 @@ class _SignInCustomTextFieldState extends State<SignInCustomTextField> {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
             color: appColor.strokeLight,
+            width: .5,
           ),
         ),
         focusedBorder: OutlineInputBorder(

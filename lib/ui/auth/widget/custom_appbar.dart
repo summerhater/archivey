@@ -17,6 +17,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     var appText = Theme.of(context).extension<AppTextTheme>()!;
     
     return AppBar(
+      backgroundColor: appColor.primary,
       leading: context.canPop() ? IconButton(
         onPressed: () {
           context.pop(context);
