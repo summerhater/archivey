@@ -25,7 +25,7 @@ class _AuthPageState extends State<AuthPage> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: SafeArea(
-        top: !isIosMobile,
+        top: false,
         bottom: !isIosMobile,
         child: Container(
           decoration: BoxDecoration(

@@ -6,6 +6,7 @@ import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/auth/widget/custom_underline_text_field.dart';
 import 'package:archivey/ui/auth/widget/custom_appbar.dart';
 import 'package:archivey/ui/auth/widget/custom_next_button.dart';
+import 'package:archivey/utils/dismiss_keyboard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,60 +33,64 @@ class SignupEmailPage extends StatelessWidget {
       child: SafeArea(
         top: false,
         bottom: !isIosMobile,
-        child: Scaffold(
-          backgroundColor: appColor.primary,
-          appBar: CustomAppbar(progressText: '1/3'),
-          body: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '가입하실 ',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
+        child: DismissKeyboard(
+          child: Scaffold(
+            backgroundColor: appColor.primary,
+            appBar: CustomAppbar(progressText: '1/3', isSignUp: true,),
+            body: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '가입하실 ',
+                          style: appText.bodyLarge.copyWith(
+                            color: appColor.primaryStrong,
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: '이메일',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                          fontWeight: FontWeight.bold,
+                        TextSpan(
+                          text: '이메일',
+                          style: appText.bodyLarge.copyWith(
+                            color: appColor.primaryStrong,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: '을\n',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
+                        TextSpan(
+                          text: '을\n',
+                          style: appText.bodyLarge.copyWith(
+                            color: appColor.primaryStrong,
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: '입력해 주세요.',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
+                        TextSpan(
+                          text: '입력해 주세요.',
+                          style: appText.bodyLarge.copyWith(
+                            color: appColor.primaryStrong,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                CustomUnderlineTextField(
-                  getText: _getEmail,
-                  hintText: '이메일 주소 입력',
-                ),
-              ],
+                  SizedBox(
+                    height: 40,
+                  ),
+                  CustomUnderlineTextField(
+                    getText: _getEmail,
+                    hintText: '이메일 주소 입력',
+                  ),
+                ],
+              ),
             ),
-          ),
-          bottomSheet: CustomNextButton(
-            path: '/auth/signup-email/signup-password',
-            guide: '다음',
-            onPressed: () =>
-                context.read<AuthViewModel>().isAlreadyExistEmail(_email),
+            bottomSheet: CustomNextButton(
+              path: '/auth/signup-email/signup-password',
+              guide: '다음',
+              onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                return context.read<AuthViewModel>().isAlreadyExistEmail(_email);
+              }
+            ),
           ),
         ),
       ),

@@ -26,7 +26,7 @@ class SignupSuccessPage extends StatelessWidget {
         bottom: !isIosMobile,
         child: Scaffold(
           backgroundColor: appColor.primary,
-          appBar: CustomAppbar(progressText: ''),
+          appBar: CustomAppbar(progressText: '',isSignUp: true,),
           body: Padding(
             padding: const EdgeInsets.all(25.0),
             child: Row(

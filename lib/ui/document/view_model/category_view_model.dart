@@ -21,6 +21,7 @@ class CategoryViewModel extends ChangeNotifier {
   final FirebaseSharedCategoryWebService _sharedCategoryLinkService;
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+  String _lastUid = '';
   CategoryViewModel(
     this._categoryService,
     this._kakaoSdkShareService,
@@ -28,7 +29,9 @@ class CategoryViewModel extends ChangeNotifier {
     this._firebaseDocumentService,
     this._driftDocumentService,
       this._sharedCategoryLinkService,
-  );
+  ){
+    _appState.addListener(_onStateChanged);
+  }
   // List<CategoryModel> _categories = [];
   // List<CategoryModel> get categories => _categories;
   List<CategoryModel> get categories => _appState.categories;
@@ -51,6 +54,24 @@ class CategoryViewModel extends ChangeNotifier {
   //   User? get user => _authService.user;
   //   final Map<String, int> _docCountMap = {};
   //   Map<String, int> get docCountMap => _docCountMap;
+
+  @override
+  void dispose() {
+    _appState.removeListener(_onStateChanged);
+    super.dispose();
+  }
+
+  /// 리스너
+  void _onStateChanged() {
+    bool isUserChanged = _lastUid != _appState.uid;
+
+    // 로그인 할 때마다 싱크 맞춰주기
+    if(isUserChanged) {
+      print('############# category view model 에서 유저가 바뀜, $_lastUid -> ${_appState.uid}');
+      _lastUid = _appState.uid;
+      readCategory();
+    }
+  }
 
   ///에러 메세지 문자열 비우는 util
   void clearErrorMessage() {
@@ -235,7 +256,7 @@ class CategoryViewModel extends ChangeNotifier {
     try {
       clearErrorMessage();
       // _categories = await _categoryService.readCategory();
-      final _categories = await _categoryService.readCategory();
+      final _categories = await _categoryService.readCategory(_appState.uid);
       _appState.setCategories(_categories);
       print('########### read Category 실행함!! ${_appState.categories.length} #########');
 

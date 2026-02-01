@@ -25,7 +25,7 @@ class SignupEmailVerifyPage extends StatelessWidget {
         bottom: !Platform.isIOS,
         child: Scaffold(
           backgroundColor: appColor.primary,
-          appBar: CustomAppbar(progressText: '3/3'),
+          appBar: CustomAppbar(progressText: '3/3',isSignUp: true),
           body: Padding(
             padding: const EdgeInsets.all(25.0),
             child: Column(
