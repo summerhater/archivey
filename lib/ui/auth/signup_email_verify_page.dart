@@ -5,6 +5,7 @@ import 'package:archivey/config/text_theme_extension.dart';
 import 'package:archivey/ui/auth/view_model/auth_view_model.dart';
 import 'package:archivey/ui/auth/widget/custom_appbar.dart';
 import 'package:archivey/ui/auth/widget/custom_next_button.dart';
+import 'package:archivey/ui/auth/widget/sign_up_back_button_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
@@ -18,14 +19,13 @@ class SignupEmailVerifyPage extends StatelessWidget {
     var appText = Theme.of(context).extension<AppTextTheme>()!;
     final vm = context.read<AuthViewModel>();
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
+    return SignUpBackButtonHandler(
       child: SafeArea(
         top: !Platform.isIOS,
         bottom: !Platform.isIOS,
         child: Scaffold(
           backgroundColor: appColor.primary,
-          appBar: CustomAppbar(progressText: '3/3'),
+          appBar: CustomAppbar(progressText: '3/3',isSignUp: true),
           body: Padding(
             padding: const EdgeInsets.all(25.0),
             child: Column(

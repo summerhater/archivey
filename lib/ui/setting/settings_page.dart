@@ -281,13 +281,6 @@ class _SettingsPageState extends State<SettingsPage> {
                               SettingMenuItemWidget(
                                 label: '라이선스',
                                 onTap: () {
-                                  // showLicensePage(
-                                  //   context: context,
-                                  //   applicationName: 'Archivey',
-                                  //   applicationVersion: appVersion,
-                                  //   applicationLegalese: 'ⓒ 2026 archivey All rights reserved.',
-                                  //   useRootNavigator: true,
-                                  // );
                                   Navigator.of(
                                     context,
                                     rootNavigator: true,
@@ -350,8 +343,10 @@ class _SettingsPageState extends State<SettingsPage> {
                               if (deleteAccount == null || !deleteAccount)
                                 return;
                               print('###### 탈퇴 성공 후, auth로 이동');
-                              // TODO auth로 안감 해결 해야 함
-                              // GoRouter.of(context).go('/auth');
+                              context.go('/auth');
+                              // setState(() {
+                              //   isLoggedIn = false;
+                              // });
                             },
                             appTextTheme: appTextTheme,
                             appColorScheme: appColorScheme,

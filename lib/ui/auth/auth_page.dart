@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:archivey/utils/back_button_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
@@ -22,10 +23,9 @@ class _AuthPageState extends State<AuthPage> {
     var appColor = Theme.of(context).extension<AppColorScheme>()!;
     var appText = Theme.of(context).extension<AppTextTheme>()!;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
+    return BackButtonHandler(
       child: SafeArea(
-        top: !isIosMobile,
+        top: false,
         bottom: !isIosMobile,
         child: Container(
           decoration: BoxDecoration(

@@ -6,16 +6,13 @@ class FirebaseCategoryService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final String _collectionPath = 'categories';
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  String get _currentUid => _auth.currentUser?.uid ?? '';
-
   Future<void> createCategory(CategoryModel category) async {
     await _db.collection(_collectionPath).doc(category.categoryId).set(category.toMap());
   }
 
-  Future<List<CategoryModel>> readCategory() async {
+  Future<List<CategoryModel>> readCategory(String uid) async {
     final snapshot = await _db.collection(_collectionPath)
-        .where('uid', isEqualTo: _currentUid)
+        .where('uid', isEqualTo: uid)
         // .orderBy('order') todo: 루트카테고리만 골라서 order 순서로 sort해야함.
         .get();
 
