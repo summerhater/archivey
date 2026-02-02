@@ -19,69 +19,66 @@ class SignupSuccessPage extends StatelessWidget {
     var appText = Theme.of(context).extension<AppTextTheme>()!;
     bool isIosMobile = !kIsWeb && Platform.isIOS;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
-      child: SafeArea(
-        top: !isIosMobile,
-        bottom: !isIosMobile,
-        child: Scaffold(
-          backgroundColor: appColor.primary,
-          appBar: CustomAppbar(progressText: '',isSignUp: true,),
-          body: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '환영해요! ',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                          fontWeight: FontWeight.bold,
-                        ),
+    return SafeArea(
+      top: !isIosMobile,
+      bottom: !isIosMobile,
+      child: Scaffold(
+        backgroundColor: appColor.primary,
+        appBar: CustomAppbar(progressText: '',isSignUp: true,),
+        body: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '환영해요! ',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
+                        fontWeight: FontWeight.bold,
                       ),
-                      TextSpan(
-                        text: '가입을 ',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                        ),
+                    ),
+                    TextSpan(
+                      text: '가입을 ',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
                       ),
-                      TextSpan(
-                        text: '완료',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    TextSpan(
+                      text: '완료',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
+                        fontWeight: FontWeight.bold,
                       ),
-                      TextSpan(
-                        text: '했어요.\n로그인 후 발견을 저장하고,\n취향을 쌓아보세요. ',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                        ),
+                    ),
+                    TextSpan(
+                      text: '했어요.\n로그인 후 발견을 저장하고,\n취향을 쌓아보세요. ',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
                       ),
-                      WidgetSpan( // TODO TextSpan 안에 svg 이미지를 넣고 싶을 때, 어떻게 해야 하는지 문서
-                        child: SvgPicture.asset(
-                          'assets/icons/archivey_white.svg',
-                          colorFilter: ColorFilter.mode(
-                            appColor.primaryStrong,
-                            BlendMode.srcIn,
-                          ),
-                          height: appText.labelSmall.fontSize,
+                    ),
+                    WidgetSpan( // TODO TextSpan 안에 svg 이미지를 넣고 싶을 때, 어떻게 해야 하는지 문서
+                      child: SvgPicture.asset(
+                        'assets/icons/archivey_white.svg',
+                        colorFilter: ColorFilter.mode(
+                          appColor.primaryStrong,
+                          BlendMode.srcIn,
                         ),
-                        alignment: PlaceholderAlignment.top,
+                        height: appText.labelSmall.fontSize,
                       ),
-                    ],
-                  ),
+                      alignment: PlaceholderAlignment.top,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          bottomSheet: CustomNextButton(
-            path: '/auth/sign-in',
-            guide: '로그인',
-          ),
+        ),
+        bottomSheet: CustomNextButton(
+          path: '/auth/sign-in',
+          guide: '로그인',
         ),
       ),
     );

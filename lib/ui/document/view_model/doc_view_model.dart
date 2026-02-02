@@ -363,23 +363,11 @@ class DocViewModel extends ChangeNotifier {
   void _onStateChanged() {
     bool isCategoryChanged =
         _lastWatchedCategories != _appState.categories.length;
-    bool isUserChanged = _lastUid != _appState.uid;
 
     // 로그인 할 때마다 싱크 맞춰주기
-    if (isUserChanged) {
-      print(
-        '############# doc view model 에서 유저가 바뀜, $_lastUid -> ${_appState.uid}',
-      );
-      _lastUid = _appState.uid;
-
-      if (_lastUid == '') {
-        _subscription?.cancel();
-        _appState.setDocuments([]);
-        return;
-      }
-
-      pullAndPush();
-      readDocuments(_appState.categories, _appState.uid);
+    if (_appState.uid.isEmpty) {
+      _subscription?.cancel();
+      return;
     }
     if (isCategoryChanged || !_hasInitDocs) {
       _hasInitDocs = true;

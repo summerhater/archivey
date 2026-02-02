@@ -36,7 +36,7 @@ class AuthViewModel extends ChangeNotifier {
       _loadingProvider.stopLoading();
     }
   }
-  
+
   /// 앱 시작 시, user 정보 불러오기
   void fetchUser() {
     _authService.authStateChanges().listen((user) async{
@@ -47,6 +47,9 @@ class AuthViewModel extends ChangeNotifier {
         print('############### 2222새로고침됨 #################');
         _appState.setUid(null);
         _appState.setEmail(null);
+        _appState.setCategories([]);
+        _appState.setDocuments([]);
+
       } else {
         print('################## user 있음 ##################');
         _appState.setUid(_authService.user?.uid);
