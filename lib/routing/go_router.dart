@@ -95,11 +95,10 @@ final GoRouter goRouter = GoRouter(
           path: '/document_all_total',
           redirect: (context, state) async{
             await Future.delayed(Duration(microseconds: 1));
+            print('########### router에서의 uid: ${context.read<AppState>().uid}');
             if(context.read<AppState>().uid.isEmpty) {
-              print('########### router에서의 uid: ${context.read<AppState>().uid}');
               return '/auth';
             }
-            print('########### router에서 uid 있음!!');
             return null;
           },
           pageBuilder: (context, state) {

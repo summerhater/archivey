@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
@@ -18,7 +17,6 @@ enum DataQuality {
 
 class FirebaseDocumentService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final user = FirebaseAuth.instance.currentUser;
   final String _collectionPath = 'documents';
 
   final _model = FirebaseAI.googleAI().generativeModel(
@@ -197,7 +195,9 @@ class FirebaseDocumentService {
     String sharedURLCaptionText,
     CategoryModel category,
     String? memo,
+    String uid,
   ) async {
+    print('############### document service 에서 스크래핑할 때의 uid $uid ####################');
     try {
       final response = await http
           .get(
@@ -238,12 +238,12 @@ class FirebaseDocumentService {
         sharedURLCaptionText,
       );
 
-      if (user == null) {
+      if (uid == '') {
         throw Exception('User not authenticated');
       }
 
       final newDoc = DocumentModel(
-        uid: user!.uid,
+        uid: uid,
         id: const Uuid().v4(),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),

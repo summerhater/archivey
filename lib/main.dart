@@ -93,11 +93,11 @@ void main() async {
           //   lazy: false,
           // ),
 
-          ChangeNotifierProvider<DocumentViewModel>(
-            create: (context) => DocumentViewModel(
-              context.read<FirebaseDocumentService>(),
-            ),
-          ),
+          // ChangeNotifierProvider<DocumentViewModel>(
+          //   create: (context) => DocumentViewModel(
+          //     context.read<FirebaseDocumentService>(),
+          //   ),
+          // ),
           ChangeNotifierProvider<CategoryViewModel>(
             create: (context) => CategoryViewModel(
               context.read<FirebaseCategoryService>(),

@@ -48,6 +48,7 @@ class FirebaseAuthService {
   Stream<User?> authStateChanges() {
     return _auth.authStateChanges().map((User? user) {
       if(user != null && user.emailVerified) {
+        print('########### auth service 에서 uid: ${user.uid} #############');
         return user;
       } else {
         return null;
@@ -56,21 +57,28 @@ class FirebaseAuthService {
   }
 
   /// 이메일 패스워드 받아서 가입
-  Future<void> signUpWithEmailAndPassword({
+  Future<String?> signUpWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await _auth.currentUser?.sendEmailVerification();
+
+      final user = credential.user;
+      if(user != null) {
+        await user.sendEmailVerification();
+
+        return credential.user?.uid;
+      }
     } on FirebaseAuthException catch (e) {
       _rethrowFirebaseAuthException(e);
     } catch (e) {
       throw Exception('알 수 없는 에러, $e');
     }
+    return null;
   }
 
   /// 이메일 인증 여부

@@ -149,8 +149,10 @@ class DocViewModel extends ChangeNotifier {
             sharedURLCaptionText,
             category,
             trimmedMemo,
+            _appState.uid,
           );
 
+      print('########### doc view model에서 스크래핑 후 생성된 doc의 uid ${newDoc.uid} ##################');
       /// 1차 저장(분석중)
       await _driftDocumentService.createDocument(newDoc);
 
@@ -213,6 +215,7 @@ class DocViewModel extends ChangeNotifier {
             '',
             document.category,
             document.userMemo,
+            _appState.uid,
           );
 
       /// 최신 문서 기준으로 AI 실행
@@ -368,6 +371,13 @@ class DocViewModel extends ChangeNotifier {
         '############# doc view model 에서 유저가 바뀜, $_lastUid -> ${_appState.uid}',
       );
       _lastUid = _appState.uid;
+
+      if (_lastUid == '') {
+        _subscription?.cancel();
+        _appState.setDocuments([]);
+        return;
+      }
+
       pullAndPush();
       readDocuments(_appState.categories, _appState.uid);
     }
@@ -391,7 +401,7 @@ class DocViewModel extends ChangeNotifier {
       await _driftDocumentService.updateDocument(
         doc.copyWith(isBookmark: !doc.isBookmark),
       );
-    } catch(e) {
+    } catch (e) {
       rethrow;
     }
   }
@@ -493,7 +503,7 @@ class DocViewModel extends ChangeNotifier {
 
   /// Document Update 함수
   Future<void> updateDocument(DocumentModel docToUpdate) async {
-    if(_isLoading) return;
+    if (_isLoading) return;
     _setLoading(true);
 
     try {

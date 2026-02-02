@@ -51,8 +51,8 @@ class AuthViewModel extends ChangeNotifier {
         print('################## user 있음 ##################');
         _appState.setUid(_authService.user?.uid);
         _appState.setEmail(_authService.user?.email);
-        await _driftDocumentService.ensureUserSettings(_appState.uid);
         print('############### auth view model 에서 app state의 uid: ${_appState.uid}');
+        await _driftDocumentService.ensureUserSettings(_appState.uid);
       }
     });
   }
@@ -95,12 +95,13 @@ class AuthViewModel extends ChangeNotifier {
     _setLoading(true);
 
     try {
-      await _authService.signUpWithEmailAndPassword(
+      final uid = await _authService.signUpWithEmailAndPassword(
         email: inputEmail,
         password: pw,
       );
+      if(uid == null) throw '알 수 없는 에러입니다.';
       await _userService.userRegistration(
-        uid: _appState.uid,
+        uid: uid,
         appUser: AppUser(email: inputEmail, createAt: DateTime.now()),
       );
     } catch (e) {
