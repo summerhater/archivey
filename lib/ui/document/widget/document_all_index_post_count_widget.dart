@@ -30,7 +30,6 @@ class _DocumentAllIndexDocumentCountWidgetState extends State<DocumentAllIndexDo
       child: Row(
         children: [
           Text(
-            ///todo: 해당 카테고리에 저장된 수집물 갯수 가져오기
             widget.documentCount.toString(),
             style: appTextTheme.bodyLarge.copyWith(
               color: appColorScheme.primary,

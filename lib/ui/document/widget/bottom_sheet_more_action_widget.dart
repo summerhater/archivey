@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/model/more_icon_action_result_enum.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../config/color_scheme_extension.dart';
@@ -36,6 +39,7 @@ class _BottomSheetMoreActionWidgetState
     extends State<BottomSheetMoreActionWidget> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  bool isIosMobile = !kIsWeb && Platform.isIOS;
 
   /// 삭제 다이얼로그를 띄우고, 사용자의 선택 결과를 반환한다.
   Future<MoreIconActionResultEnum?> deleteByTypeSettingModeFromBottomSheet() async {
@@ -69,121 +73,158 @@ class _BottomSheetMoreActionWidgetState
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
 
-    return Padding(
-      padding: MediaQuery.of(context).viewInsets,
+    return SafeArea(
+      top: false,
+      bottom: !isIosMobile,
+      child: Padding(
+        padding: MediaQuery.of(context).viewInsets,
 
-      child: Container(
-        decoration: BoxDecoration(
-          color: appColorScheme.primaryStrong,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-          border: Border(
-            top: BorderSide(
-              color: appColorScheme.primary,
-              width: .5,
+        child: Container(
+          decoration: BoxDecoration(
+            color: appColorScheme.primaryStrong,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(20),
             ),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 16),
-            Container( ///바텀시트 핸들
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(2),
+            border: Border(
+              top: BorderSide(
+                color: appColorScheme.primary,
+                width: .5,
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            if (!widget.isSubCategory)
-              SizedBox(
-              width: double.infinity,
-              child: DecoratedBox(
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              Container( ///바텀시트 핸들
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: appColorScheme.textDark),
-                  ),
-                ),
-                child: TextButton(
-                  onPressed: () async {
-                    final MoreIconActionResultEnum result = await showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      useRootNavigator: true,
-                      builder: (_) => BottomSheetShareWidget(
-                        shareSettingMode:
-                            widget.typeSettingMode == TypeSettingMode.category
-                            ? ShareSettingMode.category
-                            : ShareSettingMode.document,
-                      ),
-                    );
-                    context.pop(result);
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                    splashFactory: NoSplash.splashFactory,/// 탭할 시 애니메이션 제거
-                    overlayColor: Colors.transparent,///탭할 시 하이라이트 제거
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        '공유하기',
-                        style: appTextTheme.bodyMedium.copyWith(
-                          color: appColorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: appColorScheme.textDark),
-                  ),
-                ),
-                child: TextButton(
-                  onPressed: () {
-                    context.pop();
-                    if (widget.typeSettingMode == TypeSettingMode.category) {
-                      final categorySettingMode = widget.isSubCategory
-                          ? CategorySettingMode.subEdit
-                          : CategorySettingMode.edit;
 
-                      showModalBottomSheet<String>(
+              const SizedBox(height: 20),
+
+              if (!widget.isSubCategory)
+                SizedBox(
+                width: double.infinity,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: appColorScheme.textDark),
+                    ),
+                  ),
+                  child: TextButton(
+                    onPressed: () async {
+                      final MoreIconActionResultEnum result = await showModalBottomSheet(
                         isScrollControlled: true,
                         context: context,
                         useRootNavigator: true,
-                        builder: (_) => BottomSheetCategoryAddEditWidget(
-                          categorySettingMode: categorySettingMode,
-                          originalCategoryModel: widget.originalCategoryModel,
+                        builder: (_) => BottomSheetShareWidget(
+                          shareSettingMode:
+                              widget.typeSettingMode == TypeSettingMode.category
+                              ? ShareSettingMode.category
+                              : ShareSettingMode.document,
                         ),
                       );
-                    }
-                    else if (widget.typeSettingMode ==
-                        TypeSettingMode.document) {
-                      context.go(
-                        '/document_all_total/detail',
-                        extra: widget.document,
-                      );
-                    } else {
-                      ///todo: 도큐먼트 상세보기 페이지 수정하기 로직
-                      if (widget.onEditPressed != null) {
-                        widget.onEditPressed!();
+                      context.pop(result);
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                      splashFactory: NoSplash.splashFactory,/// 탭할 시 애니메이션 제거
+                      overlayColor: Colors.transparent,///탭할 시 하이라이트 제거
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '공유하기',
+                          style: appTextTheme.bodyMedium.copyWith(
+                            color: appColorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: appColorScheme.textDark),
+                    ),
+                  ),
+                  child: TextButton(
+                    onPressed: () {
+                      context.pop();
+                      if (widget.typeSettingMode == TypeSettingMode.category) {
+                        final categorySettingMode = widget.isSubCategory
+                            ? CategorySettingMode.subEdit
+                            : CategorySettingMode.edit;
+
+                        showModalBottomSheet<String>(
+                          isScrollControlled: true,
+                          context: context,
+                          useRootNavigator: true,
+                          builder: (_) => BottomSheetCategoryAddEditWidget(
+                            categorySettingMode: categorySettingMode,
+                            originalCategoryModel: widget.originalCategoryModel,
+                          ),
+                        );
                       }
+                      else if (widget.typeSettingMode ==
+                          TypeSettingMode.document) {
+                        context.go(
+                          '/document_all_total/detail',
+                          extra: widget.document,
+                        );
+                      } else {
+                        ///todo: 도큐먼트 상세보기 페이지 수정하기 로직
+                        if (widget.onEditPressed != null) {
+                          widget.onEditPressed!();
+                        }
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                      splashFactory: NoSplash.splashFactory,
+                      overlayColor: Colors.transparent,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.typeSettingMode == TypeSettingMode.category
+                              ? '카테고리 수정하기'
+                              : widget.typeSettingMode == TypeSettingMode.document
+                              ? '수집물 보기'
+                              : '수정하기',
+                          style: appTextTheme.bodyMedium.copyWith(
+                            color: appColorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () async {
+                    final MoreIconActionResultEnum? result =
+                        await deleteByTypeSettingModeFromBottomSheet();
+                    if (!context.mounted) return;
+                    if (result != null) {
+                      context.pop(result);
                     }
                   },
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                     splashFactory: NoSplash.splashFactory,
                     overlayColor: Colors.transparent,
                   ),
@@ -191,54 +232,21 @@ class _BottomSheetMoreActionWidgetState
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        widget.typeSettingMode == TypeSettingMode.category
-                            ? '카테고리 수정하기'
-                            : widget.typeSettingMode == TypeSettingMode.document
-                            ? '수집물 보기'
-                            : '수정하기',
+                        '삭제하기',
                         style: appTextTheme.bodyMedium.copyWith(
-                          color: appColorScheme.primary,
+                          color: appColorScheme.error,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () async {
-                  final MoreIconActionResultEnum? result =
-                      await deleteByTypeSettingModeFromBottomSheet();
-                  if (!context.mounted) return;
-                  if (result != null) {
-                    context.pop(result);
-                  }
-                },
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                  splashFactory: NoSplash.splashFactory,
-                  overlayColor: Colors.transparent,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      '삭제하기',
-                      style: appTextTheme.bodyMedium.copyWith(
-                        color: appColorScheme.error,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
-            SizedBox(
-              height: 40,
-            ),
-          ],
+              SizedBox(
+                height: 30,
+              ),
+            ],
+          ),
         ),
       ),
     );

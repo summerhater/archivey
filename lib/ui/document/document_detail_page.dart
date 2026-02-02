@@ -37,22 +37,6 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
   late TextEditingController _tagController;
   final FocusNode _tagFocusNode = FocusNode();
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //
-  //   if (_editingTags != null) return;
-  //
-  //   final vm = context.read<DocumentViewModel>();
-  //
-  //   final currentDoc = vm.documents.firstWhere(
-  //         (doc) => doc.id == widget.document.id,
-  //     orElse: () => widget.document,
-  //   );
-  //
-  //   _editingTags = List.from(currentDoc.tags);
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -102,10 +86,10 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
       documentVM.updateDocument(docToUpdate);
 
       if (isMemoChanged) {
-        context.showAppMessageSnackBar('메모가 수정 완료되었습니다. ☻');
+        context.showAppMessageSnackBar('메모 수정이 완료되었습니다. ☻');
       }
       if (isTagsChanged) {
-        context.showAppMessageSnackBar('태그가 수정 완료되었습니다. ☻');
+        context.showAppMessageSnackBar('태그 수정이 완료되었습니다. ☻');
       }
       setState(() {
         _editingTags = List.from(docToUpdate.tags);
@@ -294,7 +278,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
         focusNode: _tagFocusNode,
         onTagDeleted: (tag) {
           setState(() {
-            _editingTags?.remove(tag); // 복사본에서 삭제
+            _editingTags?.remove(tag);
           });
         },
         onTagAdded: (value) {
@@ -303,7 +287,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
           } else {
             setState(() {
               _editingTags ??= [];
-              _editingTags!.add(value); // 복사본에 추가
+              _editingTags!.add(value);
               _tagController.clear();
             });
           }

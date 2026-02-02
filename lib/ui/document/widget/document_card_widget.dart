@@ -47,9 +47,10 @@ class DocumentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
-    final bool showMoreIcon = onShareKakaoConfirmed == null &&
-            onCopyLinkConfirmed == null &&
-            onDeleteConfirmed == null;
+    final bool showMoreIcon =
+        onShareKakaoConfirmed == null &&
+        onCopyLinkConfirmed == null &&
+        onDeleteConfirmed == null;
     final AiTaskStatus aiStatus = document.aiStatus;
     final bool isProcessing =
         aiStatus == AiTaskStatus.pending || aiStatus == AiTaskStatus.analyzing;
@@ -137,67 +138,15 @@ class DocumentCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 썸네일 이미지
-                // if(kIsWeb)
-                //   ImageNetwork(
-                //     image: document.imageUrl,
-                //     height: 80.0,
-                //     width: 80.0,
-                //     duration: 500,
-                //     curve: Curves.easeIn,
-                //     onPointer: true,
-                //     fitAndroidIos: BoxFit.cover,
-                //     fitWeb: BoxFitWeb.fill,
-                //     borderRadius: BorderRadius.circular(8),
-                //     backgroundColor: Colors.grey.shade300,
-                //     onLoading: Center(
-                //       child: CircularProgressIndicator(
-                //         strokeWidth: 2,
-                //         color: Colors.grey.shade500,
-                //       ),
-                //     ),
-                //     onError: Container(
-                //       color: Colors.grey.shade300,
-                //       child: Center(
-                //         child: Icon(
-                //           Icons.image,
-                //           color: Colors.grey.shade500,
-                //           size: 40,
-                //         ),
-                //       ),
-                //     ),
-                //   )
-                // else
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      color: Colors.grey.shade300,
-                      child: _buildThumbnailImage(document.imageUrl),
-                    ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    color: Colors.grey.shade300,
+                    child: _buildThumbnailImage(document.imageUrl),
                   ),
-                // ClipRRect(
-                //   borderRadius: BorderRadius.circular(8),
-                //   child: CachedNetworkImage(
-                //     imageUrl: document.imageUrl,
-                //     width: 80,
-                //     height: 80,
-                //     fit: BoxFit.cover,
-                //     // 로딩 중 표시
-                //     placeholder: (context, url) => Container(
-                //       color: Colors.grey.shade300,
-                //       child: const Center(
-                //         child: CircularProgressIndicator(strokeWidth: 2),
-                //       ),
-                //     ),
-                //     // 에러 발생 시 표시
-                //     errorWidget: (context, url, error) => Container(
-                //       color: Colors.grey.shade300,
-                //       child: Icon(Icons.image, color: Colors.grey.shade500, size: 40),
-                //     ),
-                //   ),
-                // ),
+                ),
                 SizedBox(width: 16),
                 Expanded(
                   child: SizedBox(
@@ -304,12 +253,8 @@ class DocumentCard extends StatelessWidget {
 }
 
 Widget _buildThumbnailImage(String imageUrl) {
-  // 인스타그램 등 403을 자주 내는 도메인이나 빈 URL은 바로 플레이스홀더 표시
   final uri = Uri.tryParse(imageUrl);
-  final isBlockedHost = uri == null ||
-      imageUrl.isEmpty ||
-      uri.host.contains('instagram.com') ||
-      uri.host.contains('cdninstagram.com');
+  final isBlockedHost = uri == null || imageUrl.isEmpty;
 
   if (isBlockedHost) {
     return _thumbnailPlaceholder();
@@ -320,10 +265,25 @@ Widget _buildThumbnailImage(String imageUrl) {
         ? 'https://proxy-gqfi74i22a-uc.a.run.app/proxy?url=$imageUrl'
         : imageUrl,
     fit: BoxFit.cover,
-    webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
-    errorBuilder: (context, error, stackTrace) {
-      return _thumbnailPlaceholder();
+
+    /// frameBuilder: 이미지가 처음 화면에 그려질 때의 상태를 제어
+    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+      if (wasSynchronouslyLoaded) return child;
+      return frame != null ? child : _buildShimmerLoader();
     },
+    errorBuilder: (context, error, stackTrace) => _thumbnailPlaceholder(),
+  );
+}
+
+Widget _buildShimmerLoader() {
+  return Shimmer.fromColors(
+    baseColor: Colors.grey.shade300,
+    highlightColor: Colors.grey.shade100,
+    child: Container(
+      width: 80,
+      height: 80,
+      color: Colors.white,
+    ),
   );
 }
 
@@ -411,7 +371,11 @@ Widget _buildAiRetryTag(BuildContext context, DocumentModel document) {
   );
 }
 
-Widget _buildNormalBottomTags(BuildContext context, DocumentModel document, bool? isWeb) {
+Widget _buildNormalBottomTags(
+  BuildContext context,
+  DocumentModel document,
+  bool? isWeb,
+) {
   final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
   final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
 
@@ -456,43 +420,48 @@ Widget _buildNormalBottomTags(BuildContext context, DocumentModel document, bool
               spacing: tagSpacing,
               runSpacing: 8,
               children: [
-                ...visibleTags.map((tag) => _buildTagItem(tag, appColorScheme, appTextTheme)),
+                ...visibleTags.map(
+                  (tag) => _buildTagItem(tag, appColorScheme, appTextTheme),
+                ),
                 if (hiddenCount > 0)
                   _buildTagItem('+$hiddenCount', appColorScheme, appTextTheme),
               ],
             ),
           ),
-          /// 북마크
-          // if (isWeb == null)
-          //   IconButton(
-          //     onPressed: () async{
-          //       // TODO 함수 콜백으로 받기
-          //       await Provider.of<DocViewModel>(context, listen: false).updateDocument(document.copyWith(isBookmark: !document.isBookmark));
-          //     },
-          //     icon: document.isBookmark ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
-          //     color: Colors.grey.shade400,
-          //     iconSize: 24,
-          //     visualDensity: VisualDensity(horizontal: -4.0),
-          //   ),
-            () {
+          () {
             final String currentPath = GoRouterState.of(context).uri.path;
-            final bool isReadOnlyPath = currentPath.startsWith('/share/category/');
+            final bool isReadOnlyPath = currentPath.startsWith(
+              '/share/category/',
+            );
 
             if (isReadOnlyPath) {
-              ///공유 경로(Read-only)일 때
+              ///공유카테고리 일때
               return document.isBookmark
                   ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                child: Icon(Icons.bookmark, color: appColorScheme.textLight, size: 24),
-              )
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 8.0,
+                      ),
+                      child: Icon(
+                        Icons.bookmark,
+                        color: appColorScheme.textLight,
+                        size: 24,
+                      ),
+                    )
                   : const SizedBox.shrink();
             } else {
               return IconButton(
                 onPressed: () async {
-                  await Provider.of<DocViewModel>(context, listen: false)
-                      .updateDocument(document.copyWith(isBookmark: !document.isBookmark));
+                  await Provider.of<DocViewModel>(
+                    context,
+                    listen: false,
+                  ).updateDocument(
+                    document.copyWith(isBookmark: !document.isBookmark),
+                  );
                 },
-                icon: Icon(document.isBookmark ? Icons.bookmark : Icons.bookmark_border),
+                icon: Icon(
+                  document.isBookmark ? Icons.bookmark : Icons.bookmark_border,
+                ),
                 color: appColorScheme.textLight,
                 iconSize: 24,
                 visualDensity: const VisualDensity(horizontal: -4.0),
@@ -506,7 +475,11 @@ Widget _buildNormalBottomTags(BuildContext context, DocumentModel document, bool
 }
 
 // 공통 태그 아이템 빌더
-Widget _buildTagItem(String text, AppColorScheme colorScheme, AppTextTheme textTheme) {
+Widget _buildTagItem(
+  String text,
+  AppColorScheme colorScheme,
+  AppTextTheme textTheme,
+) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
     decoration: BoxDecoration(

@@ -1,8 +1,10 @@
 flutter_native_splash:
   android: true
   ios: true
-  web: false
-
+  web: true
+  fullscreen: true
+  android_gravity: center
+  ios_content_mode: center
   # 실행 dart run flutter_native_splash:create --path=flutter_native_splash.yaml
   # 삭제 dart run flutter_native_splash:remove --path=flutter_native_splash.yaml
 
@@ -19,7 +21,7 @@ flutter_native_splash:
   #                   Format: PNG
   #                   Padding: 100px top & bottom in image
   background_image: "assets/images/archivey_background_image.png"
-  image: "assets/icons/archivey_logo.png"
+  image: "assets/images/archivey_splash_logo_default.png"
   #  branding:
 
   # Android 12 이상 이미지 가이드 라인
@@ -33,5 +35,5 @@ flutter_native_splash:
   #                   Scaled Resolution: 200*80px @3x
   #                   Format: PNG
   android_12:
-    color: "#000000"
-    image: "assets/icons/archivey_logo_android.png"
+    color: "#111111"
+    image: "assets/images/archivey_splash_logo_android12.png"

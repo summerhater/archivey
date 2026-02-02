@@ -28,7 +28,6 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initPathUrlStrategy();
   KakaoSdk.init(
     nativeAppKey: 'cb606197f0f386e941b49506653d6e87',
   );
@@ -36,8 +35,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final db = AppDatabase.instance;
-  final keyHash = await KakaoSdk.origin;
-  print("실제 등록할 키 해시: $keyHash");
+  if (initPathUrlStrategyAndWebPathAccess()){
     runApp(
       MultiProvider(
         providers: [
@@ -168,6 +166,7 @@ void main() async {
         child: const Archivey(),
       ),
     );
+  }
 }
 
 class Archivey extends StatefulWidget {

@@ -28,9 +28,6 @@ class _SignInPageState extends State<SignInPage> {
   bool isIosMobile = !kIsWeb && Platform.isIOS;
   initState(){
     super.initState();
-    //jh delete
-    _emailController.text='thisisrchoi@gmail.com';
-    _pwController.text='123123';
   }
   bool pwVisibility = false;
 

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -33,9 +36,15 @@ class _BottomSheetCategoryAddEditWidgetState
   bool _hasSubmitted = false;
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  bool _isAlreadyInUseCategory = false;
+  bool _isInputEmpty = false;
+  bool isIosMobile = !kIsWeb && Platform.isIOS;
+  String get _trimmedValue => _inputValue.trim();
 
   @override
   void initState() {
+    super.initState();
+
     Provider.of<CategoryViewModel>(context, listen: false).readCategory();
 
     if (widget.categorySettingMode == CategorySettingMode.edit &&
@@ -43,8 +52,6 @@ class _BottomSheetCategoryAddEditWidgetState
       _controller.text = widget.originalCategoryModel!.categoryName;
       _inputValue = widget.originalCategoryModel!.categoryName;
     }
-
-    super.initState();
   }
 
   @override
@@ -62,6 +69,8 @@ class _BottomSheetCategoryAddEditWidgetState
     final maxLength = 15;
 
     return SafeArea(
+      top: false,
+      bottom: !isIosMobile,
       child: Padding(
         padding: MediaQuery.of(context).viewInsets,
       
@@ -118,12 +127,16 @@ class _BottomSheetCategoryAddEditWidgetState
                   TextField(
                     onChanged: (value) {
                       setState(() {
-                        _inputValue = value;
+                        _inputValue = value; // 텍스트가 바뀌면 에러 상태 초기화
+                        if (_isAlreadyInUseCategory) _isAlreadyInUseCategory = false;
                         if (_hasSubmitted && value.isNotEmpty) {
                           _hasSubmitted = false;
                         }
                       });
                     },
+                    // inputFormatters: [
+                    //   FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                    // ],
                     controller: _controller,
                     focusNode: _focusNode,
                     autofocus: true,
@@ -149,6 +162,14 @@ class _BottomSheetCategoryAddEditWidgetState
                         color: appColorScheme.textLight,
                         fontWeight: FontWeight.w300,
                       ),
+                      helperText: _isAlreadyInUseCategory ? null : ' ',
+                      helperStyle: appTextTheme.labelLarge.copyWith(color: appColorScheme.error),
+                      errorText: _hasSubmitted && _trimmedValue.isEmpty
+                          ? '카테고리 이름을 입력해 주세요'
+                          : _isAlreadyInUseCategory
+                          ? '이미 존재하는 카테고리 이름입니다. 다른 이름을 입력해 주세요.'
+                          : null,
+                      errorStyle: appTextTheme.labelLarge.copyWith(color: appColorScheme.error),
                       suffix: Text(
                         '${_inputValue.length} / $maxLength',
                         style: appTextTheme.labelLarge.copyWith(
@@ -165,7 +186,7 @@ class _BottomSheetCategoryAddEditWidgetState
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: isError
+                          color: (isError || _isAlreadyInUseCategory)
                               ? appColorScheme.error
                               : appColorScheme.primary,
                           width: 1,
@@ -180,34 +201,54 @@ class _BottomSheetCategoryAddEditWidgetState
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
+                        final trimmedValue = _inputValue.trim();
+
                         setState(() {
                           _hasSubmitted = true;
+                          _isAlreadyInUseCategory = false;
                         });
-                        if (_inputValue.isEmpty) {
+
+                        if (trimmedValue.isEmpty) {
                           HapticFeedback.lightImpact();
-                          return ;
-                          ///입력창 비어있을때 저장 누르면 진동
+                          setState(() {
+                            _isInputEmpty = true;
+                          });
+                          return;
                         }
+
+                        ///중복체크로직 시작
+                        final String? currentParentId = (widget.categorySettingMode == CategorySettingMode.subAdd)
+                            ? widget.parentCategoryId
+                            : null;
+
+                        ///제외할 ID결정 (수정 모드일 때만 현재 카테고리모델 ID 전달)
+                        final String? excludeId = (widget.categorySettingMode == CategorySettingMode.edit)
+                            ? widget.originalCategoryModel?.categoryId
+                            : null;
+
+                        bool isDuplicate = vm.isAlreadyInUseCategory(trimmedValue, currentParentId, excludeId: excludeId);
+
+                        if (isDuplicate) {
+                          setState(() {
+                            _isAlreadyInUseCategory = true;
+                          });
+                          HapticFeedback.heavyImpact();
+                          return;
+                        }
+
                         try {
-                          if (widget.categorySettingMode ==
-                              CategorySettingMode.add) {
-                            await vm.createCategory(_inputValue);
-                          } else if (widget.categorySettingMode ==
-                              CategorySettingMode.subAdd && widget.parentCategoryId != null){
-                            await vm.createCategory(_inputValue, parentId: widget.parentCategoryId);
+                          if (widget.categorySettingMode == CategorySettingMode.add) {
+                            await vm.createCategory(trimmedValue);
+                          } else if (widget.categorySettingMode == CategorySettingMode.subAdd) {
+                            await vm.createCategory(trimmedValue, parentId: widget.parentCategoryId);
                           } else {
-                            /// 수정 모드: 기존 모델 객체가 반드시 전달되어야 함 (widget.categoryModel)
                             if (widget.originalCategoryModel != null) {
-                              await vm.updateCategory(
-                                widget.originalCategoryModel!,
-                                _inputValue,
-                              );
-                            } else {
-                              print('categoryModel이 null입니다');
+                              await vm.updateCategory(widget.originalCategoryModel!, trimmedValue);
                             }
                           }
+
                           if (!mounted) return;
-                          context.pop(_inputValue);
+                          context.pop(trimmedValue);
                         } catch (e) {
                           if (!mounted) return;
                           context.showAppMessageSnackBar('카테고리 작업 실패: $e');
@@ -230,14 +271,7 @@ class _BottomSheetCategoryAddEditWidgetState
                       ),
                     ),
                   ),
-      
-                  _focusNode.hasFocus
-                      ? SizedBox(
-                          height: 20,
-                        )
-                      : SizedBox(
-                          height: 40,
-                        ),
+                  SizedBox(height: 30),
                 ],
               ),
             );

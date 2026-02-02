@@ -16,7 +16,6 @@ class SharedCategoryWebPage extends StatefulWidget {
 
 class _SharedCategoryWebPageState extends State<SharedCategoryWebPage> {
   String? _selectedSubId;
-  late String _selectedCategoryId;
   bool _isLatest = true;
   bool _isBookmarkMode = false;
 
@@ -58,7 +57,6 @@ class _SharedCategoryWebPageState extends State<SharedCategoryWebPage> {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-                    // 에러 메시지가 있으면 표시
                     if (vm.errorMessage != null) {
                       return Center(
                         child: Padding(

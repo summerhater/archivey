@@ -61,9 +61,6 @@ class MoreIconWidget extends StatelessWidget {
             print('null error in MoreIconWidget()');
             // throw UnimplementedError();
         }
-        // if (result == MoreIconActionResultEnum.delete) {
-        //   onDeleteConfirmed!();
-        // }
       },
       icon: Icon(Icons.more_vert),
       iconSize: 18,

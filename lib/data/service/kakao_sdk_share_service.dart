@@ -6,7 +6,7 @@ import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 //todo: jh , service layer로 보내도 될것 같음. vm의 중복은 KakaoShareMixin 으로 분리하는 방식 선택할 수 있다.
 class KakaoSdkShareService {
   Future<void> kakaoShareCategoryURL(String urlToShare, CategoryModel category) async {
-    print('hello');
+    // print('hello');
     final FeedTemplate defaultFeed = FeedTemplate(
       content: Content(
         title: '🗂️${category.categoryName} 카테고리',
