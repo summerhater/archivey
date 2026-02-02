@@ -344,9 +344,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                 return;
                               print('###### 탈퇴 성공 후, auth로 이동');
                               context.go('/auth');
-                              setState(() {
-                                isLoggedIn = false;
-                              });
+                              // setState(() {
+                              //   isLoggedIn = false;
+                              // });
                             },
                             appTextTheme: appTextTheme,
                             appColorScheme: appColorScheme,
