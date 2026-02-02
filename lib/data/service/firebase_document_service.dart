@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
@@ -18,7 +17,6 @@ enum DataQuality {
 
 class FirebaseDocumentService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final user = FirebaseAuth.instance.currentUser;
   final String _collectionPath = 'documents';
 
   final _model = FirebaseAI.googleAI().generativeModel(
@@ -149,12 +147,12 @@ class FirebaseDocumentService {
 
   Future<String> _scrapeBodyText(String url, dom.Document document) async {
     String mainContent = "";
-      document
-          .querySelectorAll(
-            'script, style, nav, footer, header, aside, form, iframe, button',
-          )
-          .forEach((e) => e.remove());
-      mainContent = document.body?.text.trim() ?? "";
+    document
+        .querySelectorAll(
+          'script, style, nav, footer, header, aside, form, iframe, button',
+        )
+        .forEach((e) => e.remove());
+    mainContent = document.body?.text.trim() ?? "";
     return mainContent;
   }
 
@@ -197,7 +195,9 @@ class FirebaseDocumentService {
     String sharedURLCaptionText,
     CategoryModel category,
     String? memo,
+    String uid,
   ) async {
+    print('############### document service 에서 스크래핑할 때의 uid $uid ####################');
     try {
       final response = await http
           .get(
@@ -238,21 +238,21 @@ class FirebaseDocumentService {
         sharedURLCaptionText,
       );
 
-      if (user == null) {
+      if (uid == '') {
         throw Exception('User not authenticated');
       }
 
       final newDoc = DocumentModel(
-        uid: user!.uid,
+        uid: uid,
         id: const Uuid().v4(),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         url: sharedURL,
         title: (metadata['title']?.toString().trim() ?? '').isNotEmpty
-            ? metadata['title']
-                  .toString()
-                  .trim()
-            : (sharedURLCaptionText.isNotEmpty ? sharedURLCaptionText : '제목 없는 링크'),
+            ? metadata['title'].toString().trim()
+            : (sharedURLCaptionText.isNotEmpty
+                  ? sharedURLCaptionText
+                  : '제목 없는 링크'),
         imageUrl: metadata['image'] ?? '',
         platform: platform,
         category: category,
@@ -420,7 +420,10 @@ $commonInstructions
       final responseText = response.text;
 
       if (responseText == null || responseText.isEmpty) {
-        return document.copyWith(aiStatus: AiTaskStatus.failed, aiSummary: "AI 요약 실패");
+        return document.copyWith(
+          aiStatus: AiTaskStatus.failed,
+          aiSummary: "AI 요약 실패",
+        );
       }
 
       String cleanJson = responseText;
@@ -443,10 +446,12 @@ $commonInstructions
       );
     } catch (e) {
       print("AI 요약 실패 원인: $e");
-      return document.copyWith(aiStatus: AiTaskStatus.failed, aiSummary: "에러: $e");
+      return document.copyWith(
+        aiStatus: AiTaskStatus.failed,
+        aiSummary: "에러: $e",
+      );
     }
   }
-
 
   Future<List<DocumentModel>> getDocumentsByCategory(String categoryId) async {
     try {
@@ -464,7 +469,6 @@ $commonInstructions
     }
   }
 
-
   Future<List<DocumentModel>> readDocuments() async {
     try {
       /// 'documents' 컬렉션에서 생성일(createdAt) 역순으로 정렬하여 가져옴
@@ -479,7 +483,9 @@ $commonInstructions
           .toList();
     } catch (e) {
       print("데이터 불러오기 에러: $e");
-      return []; /// 에러면 빈 리스트 반환
+      return [];
+
+      /// 에러면 빈 리스트 반환
     }
   }
 
@@ -514,7 +520,10 @@ $commonInstructions
 
   // DELETE: 삭제
   Future<void> deleteDocument(String id) async {
-    await _db.collection(_collectionPath).doc(id).delete();
+    // await _db.collection(_collectionPath).doc(id).delete();
+    await _db.collection(_collectionPath).doc(id).update({
+      'deletedAt': Timestamp.now(),
+    });
   }
 
   /**
@@ -522,7 +531,10 @@ $commonInstructions
    */
 
   /// localSyncTime과 비교하여 최신 데이터들을 가져옴
-  Future<List<DocumentModel>> getDocumentsByUpdatedAt(DateTime localSyncTime, String uid) async{
+  Future<List<DocumentModel>> getDocumentsByUpdatedAt(
+    DateTime localSyncTime,
+    String uid,
+  ) async {
     final querySnapshot = await _db
         .collection(_collectionPath)
         .where('uid', isEqualTo: uid)
@@ -543,9 +555,10 @@ $commonInstructions
 
     // pending 값들 remote에 업로드 하기
 
-
-    for(var item in documents) {
-      final DocumentReference docRef = _db.collection('documents').doc(item['id']);
+    for (var item in documents) {
+      final DocumentReference docRef = _db
+          .collection('documents')
+          .doc(item['id']);
 
       batch.set(docRef, item);
     }

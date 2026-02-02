@@ -52,7 +52,7 @@ class DocumentViewModel extends ChangeNotifier {
     print('sharedURL: $sharedURL');
     print('sharedURLCaptionText: $sharedURLCaptionText');
     /// 1. 스크래핑 (Step 1)
-    final (newDoc, contentText) = await _documentService.scrapeUrlAndPrepare(sharedURL, sharedURLCaptionText, category, memo);
+    final (newDoc, contentText) = await _documentService.scrapeUrlAndPrepare(sharedURL, sharedURLCaptionText, category, memo, 'tmp');
 
     /// 2. 서비스에 1차 저장 (분석 중 상태)
     await _documentService.createDocument(newDoc);
@@ -97,6 +97,7 @@ class DocumentViewModel extends ChangeNotifier {
         '',
         document.category,
         document.userMemo,
+        'tmp',
       );
 
       // 3. 최신 문서 기준으로 AI 실행

@@ -53,6 +53,8 @@ class AppDatabase extends _$AppDatabase {
 
   /// 마지막 Sync 실행한 시간 받아오기
   Future<DateTime> getSyncTime(String uid) async {
+    await ensureUserSettings(uid);
+
     final setting = await (select(appSettings)..where((tbl) => tbl.uid.equals(uid),)).getSingle();
 
     return setting.lastSyncTime ?? DateTime.fromMillisecondsSinceEpoch(0);

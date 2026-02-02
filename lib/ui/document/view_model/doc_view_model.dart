@@ -8,6 +8,7 @@ import 'package:archivey/data/service/kakao_sdk_share_service.dart';
 import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/domain/model/document_model.dart';
 import 'package:archivey/domain/state/app_state.dart';
+import 'package:archivey/utils/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -16,12 +17,14 @@ class DocViewModel extends ChangeNotifier {
   final DriftDocumentService _driftDocumentService;
   final KakaoSdkShareService _kakaoSdkShareService;
   final AppState _appState;
+  final LoadingProvider _loadingProvider;
 
   DocViewModel(
     this._firebaseDocumentService,
     this._driftDocumentService,
     this._kakaoSdkShareService,
     this._appState,
+    this._loadingProvider,
   ) {
     _lastUid = _appState.uid;
     pullAndPush();
@@ -35,14 +38,17 @@ class DocViewModel extends ChangeNotifier {
   List<DocumentModel> get documents => _appState.documents;
 
   final _searchQueryController = BehaviorSubject<String>.seeded('');
-  List<DocumentModel> filteredDisplayDocuments=[];
+  List<DocumentModel> filteredDisplayDocuments = [];
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   bool _isRetrying = false;
   bool isBookMark = false;
   bool isLatest = true;
-  String? _currentCategoryId; /// 현재 화면에서 선택된 카테고리/서브카테고리 ID (null이면 전체)
-  bool _hasInitDocs = false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
+  String? _currentCategoryId;
+
+  /// 현재 화면에서 선택된 카테고리/서브카테고리 ID (null이면 전체)
+  bool _hasInitDocs =
+      false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
   bool _isSearching = false;
   bool get isSearching => _isSearching;
   int _lastWatchedCategories = 0;
@@ -63,26 +69,40 @@ class DocViewModel extends ChangeNotifier {
   //   }
   // }
 
+  void _setLoading(bool isLoading) {
+    _isLoading = isLoading;
+    if (isLoading) {
+      _loadingProvider.startLoading();
+    } else {
+      _loadingProvider.stopLoading();
+    }
+  }
+
   /// 초기 데이터 로드
   ///
   /// Stream으로 데이터를 받아옴
-  void readDocuments(List<CategoryModel> categories) {
+  void readDocuments(List<CategoryModel> categories, String uid) {
     print('################## 데이터들 불러오기!!!!');
+    print('################## 불러 올 uid는 $uid ###############');
     _subscription?.cancel();
 
     _subscription = _searchQueryController.stream
         .switchMap((keyword) {
-      if (_isSearching != keyword.isNotEmpty) {
-        _isSearching = keyword.isNotEmpty;
-        notifyListeners();
-      }
-      print('_isSearching : $_isSearching');
+          if (_isSearching != keyword.isNotEmpty) {
+            _isSearching = keyword.isNotEmpty;
+            notifyListeners();
+          }
+          print('_isSearching : $_isSearching');
           if (keyword.isEmpty) {
             // 검색 키워드가 없을 땐, 전체 가져오기
-            return _driftDocumentService.watchAllDocuments(categories, _appState.uid);
+            return _driftDocumentService.watchAllDocuments(categories, uid);
           } else {
             // 검색한 값만 가져오기
-            return _driftDocumentService.searchDocuments(keyword, categories, _appState.uid);
+            return _driftDocumentService.searchDocuments(
+              keyword,
+              categories,
+              uid,
+            );
           }
         })
         .listen(
@@ -102,7 +122,9 @@ class DocViewModel extends ChangeNotifier {
   }
 
   List<DocumentModel> getDocumentsByCategoryId(String categoryId) {
-    return _appState.documents.where((doc) => doc.category.categoryId == categoryId).toList();
+    return _appState.documents
+        .where((doc) => doc.category.categoryId == categoryId)
+        .toList();
   }
 
   /// 수집물 추가
@@ -113,21 +135,34 @@ class DocViewModel extends ChangeNotifier {
     String? memo,
   }) async {
     if (_isLoading) return;
-    _isLoading = true;
+    _setLoading(true);
 
-    final trimmedMemo = memo != null && memo.trim().isEmpty ? null : memo?.trim();
+    try {
+      final trimmedMemo = memo != null && memo.trim().isEmpty
+          ? null
+          : memo?.trim();
 
-    /// 스크래핑
-    final (newDoc, contentText) = await _firebaseDocumentService
-        .scrapeUrlAndPrepare(sharedURL.trim(), sharedURLCaptionText, category, trimmedMemo);
+      /// 스크래핑
+      final (newDoc, contentText) = await _firebaseDocumentService
+          .scrapeUrlAndPrepare(
+            sharedURL.trim(),
+            sharedURLCaptionText,
+            category,
+            trimmedMemo,
+            _appState.uid,
+          );
 
-    /// 1차 저장(분석중)
-    await _driftDocumentService.createDocument(newDoc);
+      print('########### doc view model에서 스크래핑 후 생성된 doc의 uid ${newDoc.uid} ##################');
+      /// 1차 저장(분석중)
+      await _driftDocumentService.createDocument(newDoc);
 
-    _isLoading = false;
-
-    /// AI 요약(백그라운드)
-    _runAiAnalysis(newDoc, contentText);
+      /// AI 요약(백그라운드)
+      _runAiAnalysis(newDoc, contentText);
+    } catch (e) {
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   /// AI 분석 후 document 업데이트
@@ -156,7 +191,6 @@ class DocViewModel extends ChangeNotifier {
           await _driftDocumentService.remoteUploadDone(updateDoc);
         },
       );
-      //appstate update
     } catch (e) {
       debugPrint('AI 분석 업데이트 실패: $e');
     }
@@ -164,9 +198,9 @@ class DocViewModel extends ChangeNotifier {
 
   /// AI 분석 재요청
   Future<void> retryAiAnalysis(DocumentModel document) async {
-    if (_isRetrying) return;
-
+    if (_isRetrying || _isLoading) return;
     _isRetrying = true;
+    _setLoading(true);
 
     try {
       /// 상태 변경
@@ -181,6 +215,7 @@ class DocViewModel extends ChangeNotifier {
             '',
             document.category,
             document.userMemo,
+            _appState.uid,
           );
 
       /// 최신 문서 기준으로 AI 실행
@@ -206,20 +241,32 @@ class DocViewModel extends ChangeNotifier {
         /// local의 SyncStatus 갱신
         await _driftDocumentService.remoteUploadDone(updateDoc);
       });
+
+      rethrow;
     } finally {
       _isRetrying = false;
+      _setLoading(false);
     }
   }
 
   /// 삭제
   Future<void> deleteDocument(String id) async {
-    /// 서버에서 먼저 삭제 후, 성공하면 local delete TODO 삭제 매커니즘 변경해야 함
-    await _firebaseDocumentService.deleteDocument(id).then(
-      (_) async {
-        /// local delete
-        await _driftDocumentService.deleteDocument(id);
-      },
-    );
+    if (_isLoading) return;
+    _setLoading(true);
+
+    try {
+      /// 서버에서 먼저 삭제 후, 성공하면 local delete TODO 삭제 매커니즘 변경해야 함
+      await _firebaseDocumentService.deleteDocument(id).then(
+        (_) async {
+          /// local delete
+          await _driftDocumentService.deleteDocument(id);
+        },
+      );
+    } catch (e) {
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   /// 검색 함수
@@ -236,7 +283,7 @@ class DocViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> pullAndPush() async{
+  Future<void> pullAndPush() async {
     await pullSync();
     await pushSync();
   }
@@ -244,9 +291,12 @@ class DocViewModel extends ChangeNotifier {
   /// remote의 데이터를 가져와 sync 맞추기
   Future<void> pullSync() async {
     print('############# pull Sync 시작 #################');
+    print('############# pull Sync uid: ${_appState.uid} #################');
 
     // local sync
-    final localSyncTime = await _driftDocumentService.getSyncTime(_appState.uid);
+    final localSyncTime = await _driftDocumentService.getSyncTime(
+      _appState.uid,
+    );
     print('################## local 시간: $localSyncTime ##############');
 
     // local sync보다 오래된 data들을 가져옴
@@ -281,7 +331,9 @@ class DocViewModel extends ChangeNotifier {
     print('############# push Sync 시작 #################');
 
     // pending인 값 가져오기
-    final pendingDocuments = await _driftDocumentService.getPendingDocuments(_appState.uid);
+    final pendingDocuments = await _driftDocumentService.getPendingDocuments(
+      _appState.uid,
+    );
 
     if (pendingDocuments.isEmpty) {
       print('############### pending data 없어서 push 종료함 ##################');
@@ -297,8 +349,8 @@ class DocViewModel extends ChangeNotifier {
 
     // 일괄 쓰기
     await _firebaseDocumentService.documentBatchWrite(documents).then((
-        _,
-        ) async {
+      _,
+    ) async {
       for (var d in pendingDocuments) {
         await _driftDocumentService.syncStatusUpdate(d);
       }
@@ -309,61 +361,80 @@ class DocViewModel extends ChangeNotifier {
 
   /// 리스너
   void _onStateChanged() {
-    bool isCategoryChanged = _lastWatchedCategories != _appState.categories.length;
-    bool isUserChanged = _lastUid != _appState.uid;
+    bool isCategoryChanged =
+        _lastWatchedCategories != _appState.categories.length;
 
     // 로그인 할 때마다 싱크 맞춰주기
-    if(isUserChanged) {
-      pullAndPush();
+    if (_appState.uid.isEmpty) {
+      _subscription?.cancel();
+      return;
     }
-    if(isCategoryChanged || !_hasInitDocs) {
+    if (isCategoryChanged || !_hasInitDocs) {
       _hasInitDocs = true;
       _lastWatchedCategories = _appState.categories.length;
 
-      readDocuments(_appState.categories);
+      readDocuments(_appState.categories, _appState.uid);
     } else {
-      getDisplayDocuments(categoryId: _currentCategoryId, isLatestMode: isLatest, isBookmarkMode: isBookMark);
+      getDisplayDocuments(
+        categoryId: _currentCategoryId,
+        isLatestMode: isLatest,
+        isBookmarkMode: isBookMark,
+      );
     }
-
   }
 
   /// 북마크 함수
-  Future<void> changeBookmark(DocumentModel doc) async{
-    await _driftDocumentService.updateDocument(doc.copyWith(isBookmark: !doc.isBookmark));
-    // notifyListeners();
+  Future<void> changeBookmark(DocumentModel doc) async {
+    try {
+      await _driftDocumentService.updateDocument(
+        doc.copyWith(isBookmark: !doc.isBookmark),
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
-// 란 추가 ------------------------------------------------------------------------------
+  // 란 추가 ------------------------------------------------------------------------------
   ///DocumentCategoryListPage, AllTotalPage에서 카테고리마다 보여줄 documents를 구하기 위한 메소드
   CategoryModel getCategory(String categoryId) {
     return _appState.categories.where((c) => c.categoryId == categoryId).first;
   }
 
   List<CategoryModel> get rootCategories {
-    final rootList = _appState.categories.where((c) => c.isRootCategory).toList();
+    final rootList = _appState.categories
+        .where((c) => c.isRootCategory)
+        .toList();
     rootList.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
     return rootList;
   }
 
   List<String> _getFamilyCategoryIds(String rootId) {
     final categories = _appState.categories;
-    final rootIds = categories.where((c) => c.categoryId == rootId).map((c) => c.categoryId);
-    final childrenIds = categories.where((c) => c.parentId == rootId).map((c) => c.categoryId);
+    final rootIds = categories
+        .where((c) => c.categoryId == rootId)
+        .map((c) => c.categoryId);
+    final childrenIds = categories
+        .where((c) => c.parentId == rootId)
+        .map((c) => c.categoryId);
 
     return [...rootIds, ...childrenIds];
   }
 
   List<DocumentModel> getDocumentsByCategory(String categoryId) {
-
     final category = getCategory(categoryId);
     final bool isRoot = category.parentId == null;
 
     if (isRoot) {
       final familyCategoryIds = _getFamilyCategoryIds(categoryId);
-      return _appState.documents.where((doc) => familyCategoryIds.contains(doc.category.categoryId),
-      ).toList();
+      return _appState.documents
+          .where(
+            (doc) => familyCategoryIds.contains(doc.category.categoryId),
+          )
+          .toList();
     }
-    return _appState.documents.where((c) => c.category.categoryId == categoryId).toList();
+    return _appState.documents
+        .where((c) => c.category.categoryId == categoryId)
+        .toList();
   }
 
   void getDisplayDocuments({
@@ -384,6 +455,7 @@ class DocViewModel extends ChangeNotifier {
     isLatest = isLatestMode;
     _currentCategoryId = categoryId;
     print('categoryId in getDisplayDocuments : $categoryId');
+
     ///문서 추출
     List<DocumentModel> docs = categoryId == null
         ? List.from(documents)
@@ -391,17 +463,20 @@ class DocViewModel extends ChangeNotifier {
     print('doc count in getDisplayDocuments: ${docs.length}');
 
     if (isBookMark) {
-      filteredDisplayDocuments= docs.where((doc) => doc.isBookmark == true).toList();
+      filteredDisplayDocuments = docs
+          .where((doc) => doc.isBookmark == true)
+          .toList();
       notifyListeners();
       return;
-    }else{//isLatest
+    } else {
+      //isLatest
       ///문서 정렬
       docs.sort(
-            (a, b) => isLatest
+        (a, b) => isLatest
             ? b.createdAt.compareTo(a.createdAt)
             : a.createdAt.compareTo(b.createdAt),
       );
-      filteredDisplayDocuments=docs;
+      filteredDisplayDocuments = docs;
       notifyListeners();
     }
   }
@@ -409,23 +484,30 @@ class DocViewModel extends ChangeNotifier {
   ///DocumentDetailPage에서 보여줄 document를 documentId로 찾아서 반환
   DocumentModel getDocumentById(String id, {DocumentModel? fallback}) {
     return documents.firstWhere(
-          (doc) => doc.id == id,
+      (doc) => doc.id == id,
       orElse: () => fallback ?? documents.first,
     );
   }
 
+  /// Document Update 함수
   Future<void> updateDocument(DocumentModel docToUpdate) async {
+    if (_isLoading) return;
+    _setLoading(true);
+
     try {
       await _driftDocumentService.updateDocument(docToUpdate);
 
       await _firebaseDocumentService.createDocument(docToUpdate).then(
-            (_) async {
+        (_) async {
           /// local의 SyncStatus 갱신
           await _driftDocumentService.remoteUploadDone(docToUpdate);
         },
       );
     } catch (e) {
       debugPrint('AI 분석 업데이트 실패: $e');
+      rethrow;
+    } finally {
+      _setLoading(false);
     }
   }
 
@@ -434,10 +516,8 @@ class DocViewModel extends ChangeNotifier {
       return doc.category.categoryName;
     }
 
-    final rootCategory = _appState.categories
-        .cast<CategoryModel?>()
-        .firstWhere(
-          (c) => c?.categoryId == doc.category.parentId,
+    final rootCategory = _appState.categories.cast<CategoryModel?>().firstWhere(
+      (c) => c?.categoryId == doc.category.parentId,
       orElse: () => null,
     );
 
@@ -454,12 +534,14 @@ class DocViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> kakaoShareDocumentURL(String urlToShare, DocumentModel doc) async {
+  Future<void> kakaoShareDocumentURL(
+    String urlToShare,
+    DocumentModel doc,
+  ) async {
     try {
       await _kakaoSdkShareService.kakaoShareDocumentURL(urlToShare, doc);
-    }catch(e){
+    } catch (e) {
       print('Error in kakaoShareDocumentURL: $e');
     }
   }
 }
-

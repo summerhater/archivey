@@ -86,6 +86,7 @@ class _SignInCustomTextFieldState extends State<SignInCustomTextField> {
         color: appColor.textLight,
       ),
       obscureText: isPassword && !visibility,
+      keyboardType: isPassword ? TextInputType.text : TextInputType.emailAddress,
     );
   }
 }

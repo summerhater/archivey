@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
 import 'package:archivey/data/drift/app_database.dart';
@@ -17,6 +18,7 @@ import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/view_model/document_view_model.dart';
 import 'package:archivey/ui/setting/view_model/setting_view_model.dart';
+import 'package:archivey/utils/loading_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,8 @@ void main() async {
         providers: [
           ChangeNotifierProvider<AppState>(create: (_) => AppState()),
 
+          ChangeNotifierProvider<LoadingProvider>(create: (_) => LoadingProvider()),
+
           Provider<AppDatabase>.value(
             value: db,
           ),
@@ -73,6 +77,7 @@ void main() async {
               context.read<FirebaseAppUserService>(),
               context.read<AppState>(),
               context.read<DriftDocumentService>(),
+              context.read<LoadingProvider>(),
             ),
             lazy: false,
           ),
@@ -94,11 +99,11 @@ void main() async {
           //   lazy: false,
           // ),
 
-          ChangeNotifierProvider<DocumentViewModel>(
-            create: (context) => DocumentViewModel(
-              context.read<FirebaseDocumentService>(),
-            ),
-          ),
+          // ChangeNotifierProvider<DocumentViewModel>(
+          //   create: (context) => DocumentViewModel(
+          //     context.read<FirebaseDocumentService>(),
+          //   ),
+          // ),
           ChangeNotifierProvider<CategoryViewModel>(
             create: (context) => CategoryViewModel(
               context.read<FirebaseCategoryService>(),
@@ -131,6 +136,7 @@ void main() async {
               context.read<FirebaseAuthService>(),
               context.read<FirebaseAppUserService>(),
               context.read<AppState>(),
+              context.read<LoadingProvider>(),
             ),
           ),
           // ChangeNotifierProxyProvider<AppState, SettingViewModel>(
@@ -154,6 +160,7 @@ void main() async {
               context.read<DriftDocumentService>(),
               context.read<KakaoSdkShareService>(),
               context.read<AppState>(),
+              context.read<LoadingProvider>(),
             ),
           ),
           // ChangeNotifierProxyProvider<AppState, DocViewModel>(
@@ -245,6 +252,16 @@ class _ArchiveyState extends State<Archivey> {
 
         extensions: [AppColorScheme(), AppTextTheme()],
       ),
+      builder: (context, child) {
+        return Consumer<LoadingProvider>(builder: (context, loading, _) {
+          return Stack(
+            children: [
+              if(child != null) child,
+              if(loading.isLoading) LoadingOverlay(),
+            ],
+          );
+        },);
+      },
     );
   }
 }

@@ -8,6 +8,8 @@ import 'package:archivey/ui/auth/widget/custom_elevated_button.dart';
 import 'package:archivey/ui/auth/widget/sign_in_custom_text_button.dart';
 import 'package:archivey/ui/auth/widget/sign_in_custom_text_field.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
+import 'package:archivey/utils/dismiss_keyboard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -26,9 +28,6 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
   bool isIosMobile = !kIsWeb && Platform.isIOS;
-  initState(){
-    super.initState();
-  }
   bool pwVisibility = false;
 
   @override
@@ -36,9 +35,7 @@ class _SignInPageState extends State<SignInPage> {
     var appColor = Theme.of(context).extension<AppColorScheme>()!;
     var appText = Theme.of(context).extension<AppTextTheme>()!;
 
-    return SafeArea(
-      top: !isIosMobile,
-      bottom: !isIosMobile,
+    return DismissKeyboard(
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -49,9 +46,8 @@ class _SignInPageState extends State<SignInPage> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: EdgeInsets.only(top: 25, right: 25, left: 25),
             child: SingleChildScrollView(
-              // padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -80,20 +76,31 @@ class _SignInPageState extends State<SignInPage> {
                     guide: '로그인',
                     backgroundColor: appColor.primaryStrong,
                     fontSize: appText.bodyMedium.fontSize,
-                    onPressed: () async => await context
-                        .read<AuthViewModel>()
-                        .signInWithEmailAndPassword(
-                          email: _emailController.text.trim(),
-                          pw: _pwController.text,
-                        )
-                        .then((value) {
-                          if (!context.mounted) return;
-                          context.go('/document_all_index');
-                        })
-                        .catchError((e) {
-                          if (!context.mounted) return;
-                          context.showAppMessageSnackBar(e.toString());
-                        }),
+                    onPressed: () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      try {
+                        await context
+                            .read<AuthViewModel>()
+                            .signInWithEmailAndPassword(
+                            email: _emailController.text,
+                            pw: _pwController.text);
+
+                        if (!context.mounted) return;
+                        context.go('/document_all_index');
+                      } on FirebaseAuthException catch (e) {
+                        if(!context.mounted) return;
+
+                        if(e.code == 'email-not-verified') {
+                          context.showAppMessageSnackBar(e.message!);
+                          context.go('/auth/signup-email/signup-password/signup-email-verify');
+                          return;
+                        }
+                        context.showAppMessageSnackBar(e.message ?? '로그인 오류');
+                      }catch(e) {
+                        if(!context.mounted) return;
+                        context.showAppMessageSnackBar(e.toString());
+                      }
+                    },
                   ),
                   Row(
                     children: [
