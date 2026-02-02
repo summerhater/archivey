@@ -191,7 +191,6 @@ class SharedCategoryWebViewModel extends ChangeNotifier {
   void search(String keyword) {
     _searchKeyword = keyword;
     _isSearching = keyword.isNotEmpty;
-    // _searchFilters(); /// 검색어랑 카테고리 필터 동시사용
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFilters();

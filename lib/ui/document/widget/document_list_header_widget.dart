@@ -155,13 +155,13 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                   ],
                 ),
               ),
-          
+
               /// subCategories 칩 버튼 선택
               if (!widget.isOnAllPage)
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: SizedBox(
-                    height: 40, // ChoiceChip 높이에 맞게
+                    height: 40,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: subCategories.length + 2,
@@ -212,6 +212,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                   builder: (_) => BottomSheetMoreActionWidget(
                                     isSubCategory: true,
                                     typeSettingMode: TypeSettingMode.category,
+                                    categorySettingMode : CategorySettingMode.edit,
                                     originalCategoryModel: sub,
                                   ),
                                 );
@@ -289,11 +290,11 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                     ),
                   ),
                 ),
-          
+
               SizedBox(
                 height: 4,
               ),
-          
+
               /// 검색창
               if (!isIndexSelected)
                 Padding(
@@ -334,7 +335,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                     ),
                   ),
                 ),
-          
+
               /// 수집물 개수 및 정렬 버튼 영역
               if (!isIndexSelected)
                 Padding(

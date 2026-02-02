@@ -222,21 +222,26 @@ class CategoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createCategory(String name, {String? parentId}) async {
+  bool isAlreadyInUseCategory(String name, String? parentId, {String? excludeId}) {
+    return _appState.categories.any((category) =>
+    category.parentId == parentId &&
+        category.categoryName == name &&
+        category.categoryId != excludeId // 현재 수정 중인 항목은 제외
+    );
+  }
+  Future<void> createCategory(String categoryName, {String? parentId}) async {
     int? order;
 
     if (parentId == null) {
       ///최상위 카테고리일때만 order 계산
       int currentMax = _calculateCategoryOrder();
       order = (currentMax == -1) ? 0 : currentMax + 1;
-
-      /// 찾은 결과가 없으면 0, 있으면 최댓값 + 1
     }
 
     final newCategory = CategoryModel(
       uid: _appState.uid,
       categoryId: const Uuid().v4(),
-      categoryName: name,
+      categoryName: categoryName,
       order: order,
       parentId: parentId,
     );
@@ -245,6 +250,9 @@ class CategoryViewModel extends ChangeNotifier {
       await _categoryService.createCategory(newCategory);
       _increaseDocCount(newCategory.categoryId);
       await readCategory();
+
+      _errorMessage = null;
+      notifyListeners();
     } catch (e) {
       print('error in createCategory: $e');
       _errorMessage = "카테고리 추가에 실패했습니다. 잠시 후 다시 시도해주세요.";

@@ -46,6 +46,13 @@ class MoreIconWidget extends StatelessWidget {
             document: document,
             onEditPressed: onEditPressed,
             originalCategoryModel: originalCategoryModel,
+              onCopyLinkPressed: (value) {
+                onCopyLinkConfirmed!();
+              },
+              onShareKakaoPressed:(value){
+              // print('kakao data:${value}');
+              onShareKakaoConfirmed!();
+            },
           ),
         );
 
@@ -61,9 +68,6 @@ class MoreIconWidget extends StatelessWidget {
             print('null error in MoreIconWidget()');
             // throw UnimplementedError();
         }
-        // if (result == MoreIconActionResultEnum.delete) {
-        //   onDeleteConfirmed!();
-        // }
       },
       icon: Icon(Icons.more_vert),
       iconSize: 18,

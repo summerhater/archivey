@@ -22,6 +22,7 @@ import 'package:archivey/utils/loading_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import './mobile_conditional_import.dart'
   if (dart.library.html) './web_conditional_import.dart';
 
@@ -30,16 +31,21 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initPathUrlStrategy();
   KakaoSdk.init(
     nativeAppKey: 'cb606197f0f386e941b49506653d6e87',
   );
+
+  void printKeyHash() async {
+    var keyHash = await KakaoSdk.origin;
+    print('Kakao KeyHash: $keyHash');
+  }
+  printKeyHash();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final db = AppDatabase.instance;
-  final keyHash = await KakaoSdk.origin;
-  print("실제 등록할 키 해시: $keyHash");
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  if (initPathUrlStrategyAndWebPathAccess()){
     runApp(
       MultiProvider(
         providers: [
@@ -175,6 +181,7 @@ void main() async {
         child: const Archivey(),
       ),
     );
+  }
 }
 
 class Archivey extends StatefulWidget {
@@ -233,10 +240,16 @@ class _ArchiveyState extends State<Archivey> {
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           surfaceTintColor: Colors.transparent,
-
           ///스크롤 시 material 기본 색 없애기
           scrolledUnderElevation: 0,
         ),
+
+        textSelectionTheme: TextSelectionThemeData(
+          selectionColor: const Color(0xFFDDDDDD).withValues(alpha: 0.3),
+          cursorColor: const Color(0xFFDDDDDD),
+          selectionHandleColor: const Color(0xFF444444),
+        ),
+
         extensions: [AppColorScheme(), AppTextTheme()],
       ),
       builder: (context, child) {

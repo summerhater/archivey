@@ -23,7 +23,6 @@ class _DocumentAllPageState extends State<DocumentAllPage> {
 
   @override
   void initState() {
-    // Provider.of<DocumentViewModel>(context, listen: false).readDocuments();
     super.initState();
   }
   @override

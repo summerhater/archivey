@@ -1,3 +1,4 @@
+import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:go_router/go_router.dart';
@@ -95,8 +96,10 @@ class VerticalTabNavigation extends StatelessWidget {
               child: Center(
                 child: IconButton(
                   onPressed: () {
-                    if (isCategoryExist == false)
+                    if (isCategoryExist == false) {
+                      context.showAppMessageSnackBar('카테고리를 먼저 추가해야 수집물을 추가할 수 있어요.');
                       return;
+                    }
                     context.push('/document_add');
                   },
                   padding: EdgeInsets.zero,

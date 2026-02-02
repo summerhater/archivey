@@ -39,6 +39,10 @@ class _SettingsPageState extends State<SettingsPage> {
         isLoggedIn = false;
       });
     });
+
+    if (mounted) {
+      context.go('/auth/sign-in');
+    }
   }
 
   Future<void> _getAppVersion() async {
@@ -131,8 +135,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ],
                             ),
                             SizedBox(height: 24),
-                            isLoggedIn
-                                ? OutlinedButton.icon(
+                            OutlinedButton.icon(
                                     onPressed: _handleLogout,
                                     icon: Icon(Icons.logout),
                                     label: Text(
@@ -149,18 +152,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                       ),
                                     ),
                                   )
-                                : ElevatedButton.icon(
-                                    onPressed: () {
-                                      context.go('/auth/sign-in');
-                                    },
-                                    icon: Icon(Icons.mail),
-                                    label: Text('이메일로 로그인'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          appColorScheme.primaryStrong,
-                                      foregroundColor: appColorScheme.primary,
-                                    ),
-                                  ),
                           ],
                         ),
                         Divider(height: 48, color: appColorScheme.strokeLight),

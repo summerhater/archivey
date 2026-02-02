@@ -62,7 +62,7 @@ class DeleteDialogWidget extends StatelessWidget {
             ),
             Text(
               deleteSettingMode == DeleteSettingMode.category
-                  ? '삭제 시 categoryname에 수집된 내용은 모두 삭제되며 복구할 수 없습니다.'
+                  ? '삭제 시 해당 카테고리에 수집된 내용은 모두 삭제되며 복구할 수 없습니다.'
                   : '삭제 시 해당 수집물은 삭제되며, 삭제 후 복구할 수 없습니다.',
               style: appTextTheme.bodyMedium.copyWith(
                 color: appColorScheme.primary,

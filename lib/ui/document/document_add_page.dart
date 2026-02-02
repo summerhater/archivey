@@ -25,6 +25,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
   final _memoController = TextEditingController();
   final int _maxMemoLength = 200;
   String _sharedURLCaptionText = '';
+  bool _showValidationErrors = false;
 
   void _handleSharingIntent(sharedText) {
     ///텍스트 받기 -> url만 추출해서 controller.text에 주입 -> 나머지 텍스트는 String으로 만들기 -> vm에게 url, urlCaptionText 따로 넘겨줌
@@ -55,8 +56,6 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
       );
 
       if (!mounted) return;
-      // 단순 pop 대신 명시적으로 리스트 페이지로 이동하여
-      // go_router의 ImperativeRouteMatch 중복 완료 이슈를 피한다.
       context.go('/document_all_total');
       context.showAppMessageSnackBar('수집물 아카이빙이 완료되었습니다 ☻');
     } catch (e) {
@@ -115,8 +114,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                           ),
                           IconButton(
                             onPressed: () {
-                              // Imperative pop 대신 선언적 go 사용으로
-                              // Future already completed 에러를 방지
+                              ///pop 대신 go 사용으로 Future already completed 에러해결
                               context.go('/document_all_total');
                             },
                             icon: const Icon(Icons.close),
@@ -132,11 +130,19 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '원문 링크',
-                              style: appTextTheme.bodyMedium.copyWith(
-                                color: appColorScheme.textDark,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  '원문 링크',
+                                  style: appTextTheme.bodyMedium.copyWith(color: appColorScheme.textDark),
+                                ),
+                                const SizedBox(width: 10),
+                                if (_showValidationErrors && _urlController.text.isEmpty)
+                                  Text(
+                                    '*원문 링크를 입력해주세요.',
+                                    style: appTextTheme.labelLarge.copyWith(color: appColorScheme.error, fontWeight: FontWeight.w700),
+                                  ),
+                              ],
                             ),
                             SizedBox(height: 12),
                             Container(
@@ -184,11 +190,19 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '카테고리',
-                            style: appTextTheme.bodyMedium.copyWith(
-                              color: appColorScheme.textDark,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                '카테고리',
+                                style: appTextTheme.bodyMedium.copyWith(color: appColorScheme.textDark),
+                              ),
+                              const SizedBox(width: 10),
+                              if (_showValidationErrors && _selectedCategory == null)
+                                Text(
+                                  '*카테고리를 선택해주세요.',
+                                  style: appTextTheme.labelLarge.copyWith(color: appColorScheme.error, fontWeight: FontWeight.w700),
+                                ),
+                            ],
                           ),
                           const SizedBox(height: 12),
 
@@ -245,7 +259,6 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                           Wrap(
                                             spacing: 8.0,
                                             children: subCategories.map((sub) {
-                                              // 2. 객체 비교를 통해 선택 여부 확인
                                               bool isSubSelected = _selectedSubCategory == sub;
 
                                               return Padding(
@@ -255,7 +268,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                                 child: ChoiceChip(
                                                   showCheckmark: false,
                                                   label: Text(
-                                                    sub.categoryName, // 모델의 이름 표시
+                                                    sub.categoryName,
                                                     style: appTextTheme.labelLarge,
                                                   ),
                                                   selected: isSubSelected,
@@ -327,12 +340,14 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                               onChanged: (value){
                                 setState(() {});
                               },
+
                               controller: _memoController,
                               maxLength: _maxMemoLength,
                               maxLines: 5,
                               style: appTextTheme.bodyMedium.copyWith(
                                 color: appColorScheme.primary,
                               ),
+                              magnifierConfiguration: TextMagnifierConfiguration.disabled,
                               cursorColor: appColorScheme.strokeLight,
                               cursorWidth: 1.0,
                               cursorHeight: 18,
@@ -361,24 +376,25 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: isFormValid
-                      ? () {
-                          _handleSave(context);
-                        }
-                      : null,
+                  onPressed: () {
+                    if (isFormValid) {
+                      _handleSave(context);
+                    } else {
+                      setState(() {
+                        _showValidationErrors = true;
+                      });
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: appColorScheme.primaryStrong,
-                    foregroundColor: appColorScheme.primary,
-                    disabledBackgroundColor: appColorScheme.strokeLight,
-                    disabledForegroundColor: appColorScheme.snackBarBg,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    backgroundColor: isFormValid
+                        ? appColorScheme.primaryStrong
+                        : appColorScheme.strokeLight,
+                    foregroundColor: isFormValid
+                        ? appColorScheme.primary
+                        : appColorScheme.snackBarBg,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: Text(
-                    '저장하기',
-                    style: appTextTheme.headlineSmallKo,
-                  ),
+                  child: Text('저장하기', style: appTextTheme.headlineSmallKo),
                 ),
               ),
             ),

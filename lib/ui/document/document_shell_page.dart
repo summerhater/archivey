@@ -6,7 +6,6 @@ import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import '../../config/color_scheme_extension.dart';
 import '../../domain/model/document_model.dart';
 
@@ -46,53 +45,47 @@ class DocumentShellPageState extends State<DocumentShellPage> {
     final currentLocation = GoRouterState.of(context).uri.toString();
     final bool isAllTotalDetailPage = currentLocation.contains('all_total/detail');
 
-    return Consumer<CategoryViewModel>(
-      builder: (context, vm, _) {
-        if (vm.errorMessage != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.showAppMessageSnackBar('에러 발생 : ${vm.errorMessage!}');
-            vm.clearErrorMessage();
-          });
-        }
-
-        final displayCategories = [
-          {'id': 'ALL', 'name': '전체'},
-          ...vm.rootCategories.map((c) => {'id': c.categoryId, 'name': c.categoryName}),
-        ];
-
-        return Scaffold(
-          backgroundColor: appColorScheme.primary,
-          body: Row(
-            children: [
-              Expanded(
-                child: widget.contentPage,
-              ),
-              if (!isAllTotalDetailPage)
-                VerticalTabNavigation(
-                  categories: displayCategories.map((e) => e['name']!).toList(),
-                  selectedIndex: _getSelectedIndex(currentLocation, displayCategories),
-                  onTapChanged: (index) {
-                    if (index == -1) {
-                      setState(() => selectedIndex = -1);
-                      return;
-                    }
-
-                    final selected = displayCategories[index];
-                    final String id = selected['id']!;
-                    final String name = selected['name']!;
-
-                    if (selected['id'] == 'ALL') {
-                      context.go('/document_all_total');
-                    } else {
-                      /// ID를 경로에, 이름을 쿼리에 넣고 이동
-                      context.go('/document_category/$id?name=$name');
-                    }
-                  },
-                    isCategoryExist: vm.categories.isEmpty ? false : true,
-                ),
-            ],
+    return Scaffold(
+      backgroundColor: appColorScheme.primary,
+      body: Row(
+        children: [
+          Expanded(
+            child: widget.contentPage,
           ),
-        );
-      });
+          if (!isAllTotalDetailPage)
+            Consumer<CategoryViewModel>(
+                builder: (context, vm, _) {
+                  final displayCategories = [
+                    {'id': 'ALL', 'name': '전체'},
+                    ...vm.rootCategories.map((c) => {'id': c.categoryId, 'name': c.categoryName}),
+                  ];
+
+                  return VerticalTabNavigation(
+                    categories: displayCategories.map((e) => e['name']!).toList(),
+                    selectedIndex: _getSelectedIndex(currentLocation, displayCategories),
+                    onTapChanged: (index) {
+                      if (index == -1) {
+                        setState(() => selectedIndex = -1);
+                        return;
+                      }
+
+                      final selected = displayCategories[index];
+                      final String id = selected['id']!;
+                      final String name = selected['name']!;
+
+                      if (selected['id'] == 'ALL') {
+                        context.go('/document_all_total');
+                      } else {
+                        /// ID를 경로에, 이름을 쿼리에 넣고 이동
+                        context.go('/document_category/$id?name=$name');
+                      }
+                    },
+                    isCategoryExist: vm.categories.isEmpty ? false : true,
+                  );
+                }
+            ),
+        ],
+      ),
+    );
   }
 }

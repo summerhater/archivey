@@ -29,6 +29,10 @@ class DocumentDetailMemoWidget extends StatelessWidget {
             focusNode: focusNode,
             maxLines: 10,
             maxLength: 200,
+            cursorColor: appColorScheme.categoryTagBg,
+            cursorWidth: 1.0,
+            cursorHeight: 18,
+            magnifierConfiguration: TextMagnifierConfiguration.disabled,
             style: appTextTheme.bodySmall.copyWith(
               fontWeight: FontWeight.w300,
               color: appColorScheme.textDark,
@@ -51,8 +55,31 @@ class DocumentDetailMemoWidget extends StatelessWidget {
       );
     }
 
-    return Text(
-      memo ?? '저장된 메모가 아직 없어요 📝',
+    // return Center(
+    //   child: Text(
+    //     (memo?.isEmpty ?? true) ? '저장된 메모가 아직 없어요 📝' : memo!,
+    //     style: appTextTheme.bodySmall.copyWith(
+    //       fontWeight: FontWeight.w500,
+    //       color: appColorScheme.textLight,
+    //       height: 1.6,
+    //     ),
+    //   ),
+    // );
+    final bool isEmpty = memo?.isEmpty ?? true;
+
+    return isEmpty
+        ? Center(
+      child: Text(
+        '저장된 메모가 아직 없어요 📝',
+        style: appTextTheme.bodySmall.copyWith(
+          fontWeight: FontWeight.w500,
+          color: appColorScheme.textLight,
+          height: 1.6,
+        ),
+      ),
+    )
+        : Text(
+      memo!,
       style: appTextTheme.bodySmall.copyWith(
         fontWeight: FontWeight.w300,
         color: appColorScheme.textDark,

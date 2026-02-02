@@ -4,7 +4,8 @@ import 'dart:ui';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 
-void initPathUrlStrategy(){
+bool initPathUrlStrategyAndWebPathAccess(){
+  return true;
 }
 
 class SharingIntent {
