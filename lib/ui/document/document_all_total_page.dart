@@ -50,53 +50,50 @@ class _DocumentAllTotalPageState extends State<DocumentAllTotalPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Consumer<DocViewModel>(
-        builder: (context, vm, _){
-          List<DocumentModel> displayDocuments=vm.filteredDisplayDocuments;
-          if (displayDocuments.isEmpty) {
-            return Center(
-              child: SizedBox(
-                child: SvgPicture.asset(
-                  vm.isSearching
-                      ? 'assets/images/empty_state_no_search_result.svg'
-                      : widget.isBookmarkMode
-                      ? 'assets/images/empty_state_no_bookmark.svg'
-                      : 'assets/images/empty_state_no_document.svg',
-                  width: MediaQuery.of(context).size.width * 0.7,
-                ),
+    return Consumer<DocViewModel>(
+      builder: (context, vm, _){
+        List<DocumentModel> displayDocuments=vm.filteredDisplayDocuments;
+        if (displayDocuments.isEmpty) {
+          return Center(
+            child: SizedBox(
+              child: SvgPicture.asset(
+                vm.isSearching
+                    ? 'assets/images/empty_state_no_search_result.svg'
+                    : widget.isBookmarkMode
+                    ? 'assets/images/empty_state_no_bookmark.svg'
+                    : 'assets/images/empty_state_no_document.svg',
+                width: MediaQuery.of(context).size.width * 0.7,
               ),
-            );
-          }
-          return ListView.builder(
-            itemCount: displayDocuments.length,
-            itemBuilder: (context, index) {
-              return DocumentCard(
-                document: displayDocuments[index],
-                isFirstItem: index == 0,
-                outlineBorder: false,
-                isOnAllPage: true,
-                categoryName: vm.getRootCategoryNameByDocument(displayDocuments[index]),
-                onDeleteConfirmed: () {
-                  vm.deleteDocument(displayDocuments[index].id);
-                },
-                onCopyLinkConfirmed: () async {
-
-                  await Clipboard.setData(ClipboardData(text: displayDocuments[index].url));
-                  if(!context.mounted) return;
-                  context.showAppMessageSnackBar('수집물 원문 링크가 복사되었습니다. ☻');
-                },
-                onShareKakaoConfirmed: () {
-                  String originalUrl = displayDocuments[index].url;
-                  String url = "${ShareCategoryLinkConfig.baseUrl}/share/go.html?target=$originalUrl";
-                  vm.kakaoShareDocumentURL(url, displayDocuments[index]);
-                },
-              );
-            },
+            ),
           );
         }
-      ),
+        return ListView.builder(
+          itemCount: displayDocuments.length,
+          itemBuilder: (context, index) {
+            return DocumentCard(
+              document: displayDocuments[index],
+              isFirstItem: index == 0,
+              outlineBorder: false,
+              isOnAllPage: true,
+              categoryName: vm.getRootCategoryNameByDocument(displayDocuments[index]),
+              onDeleteConfirmed: () {
+                vm.deleteDocument(displayDocuments[index].id);
+              },
+              onCopyLinkConfirmed: () async {
+
+                await Clipboard.setData(ClipboardData(text: displayDocuments[index].url));
+                if(!context.mounted) return;
+                context.showAppMessageSnackBar('수집물 원문 링크가 복사되었습니다. ☻');
+              },
+              onShareKakaoConfirmed: () {
+                String originalUrl = displayDocuments[index].url;
+                String url = "${ShareCategoryLinkConfig.baseUrl}/share/go.html?target=$originalUrl";
+                vm.kakaoShareDocumentURL(url, displayDocuments[index]);
+              },
+            );
+          },
+        );
+      }
     );
   }
 }

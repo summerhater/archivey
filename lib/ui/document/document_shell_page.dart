@@ -6,7 +6,6 @@ import 'package:archivey/utils/app_snack_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import '../../config/color_scheme_extension.dart';
 import '../../domain/model/document_model.dart';
 

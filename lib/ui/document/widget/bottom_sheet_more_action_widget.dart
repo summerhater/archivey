@@ -20,6 +20,9 @@ class BottomSheetMoreActionWidget extends StatefulWidget {
   final DocumentModel? document;
   final VoidCallback? onEditPressed;
   final CategoryModel? originalCategoryModel;
+  final ValueChanged<MoreIconActionResultEnum>? onCopyLinkPressed;
+  final ValueChanged<MoreIconActionResultEnum>? onShareKakaoPressed;
+  final CategorySettingMode? categorySettingMode;
 
   const BottomSheetMoreActionWidget({
     super.key,
@@ -28,6 +31,9 @@ class BottomSheetMoreActionWidget extends StatefulWidget {
     this.document,
     this.onEditPressed,
     this.originalCategoryModel,
+    this.onCopyLinkPressed,
+    this.onShareKakaoPressed,
+    this.categorySettingMode,
   });
 
   @override
@@ -118,7 +124,8 @@ class _BottomSheetMoreActionWidgetState
                   ),
                   child: TextButton(
                     onPressed: () async {
-                      final MoreIconActionResultEnum result = await showModalBottomSheet(
+                      context.pop();
+                      await showModalBottomSheet(
                         isScrollControlled: true,
                         context: context,
                         useRootNavigator: true,
@@ -127,9 +134,11 @@ class _BottomSheetMoreActionWidgetState
                               widget.typeSettingMode == TypeSettingMode.category
                               ? ShareSettingMode.category
                               : ShareSettingMode.document,
+                            onCopyLinkPressed:widget.onCopyLinkPressed,
+                            onShareKakaoPressed:widget.onShareKakaoPressed,
                         ),
                       );
-                      context.pop(result);
+
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
@@ -165,7 +174,6 @@ class _BottomSheetMoreActionWidgetState
                         final categorySettingMode = widget.isSubCategory
                             ? CategorySettingMode.subEdit
                             : CategorySettingMode.edit;
-
                         showModalBottomSheet<String>(
                           isScrollControlled: true,
                           context: context,

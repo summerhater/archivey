@@ -13,10 +13,14 @@ enum ShareSettingMode { document, category }
 
 class BottomSheetShareWidget extends StatefulWidget {
   final ShareSettingMode shareSettingMode;
+  final ValueChanged<MoreIconActionResultEnum>? onShareKakaoPressed;
+  final ValueChanged<MoreIconActionResultEnum>? onCopyLinkPressed;
 
   const BottomSheetShareWidget({
     super.key,
     required this.shareSettingMode,
+    this.onShareKakaoPressed,
+    this.onCopyLinkPressed,
   });
 
   @override
@@ -99,7 +103,11 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                   ),
                   child: TextButton(
                     onPressed: () {
-                        context.pop(MoreIconActionResultEnum.copyLink);
+                        if(widget.onCopyLinkPressed != null) {
+                          widget.onCopyLinkPressed!(
+                              MoreIconActionResultEnum.shareKakao);
+                        }
+                        context.pop();
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
@@ -124,7 +132,11 @@ class _BottomSheetShareWidgetState extends State<BottomSheetShareWidget> {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: () {
-                    context.pop(MoreIconActionResultEnum.shareKakao);
+                    if(widget.onShareKakaoPressed != null) {
+                      widget.onShareKakaoPressed!(
+                          MoreIconActionResultEnum.shareKakao);
+                    }
+                    context.pop();
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),

@@ -139,11 +139,26 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
               },
             ),
             actions: [
-              MoreIconWidget(
+              _isEditing
+                  ? TextButton(
+                onPressed: () async {
+                  await _saveData(context);
+                  setState(() {
+                    _isEditing = false;
+                  });
+                },
+                child: Text(
+                  "수정완료",
+                  style: appTextTheme.bodyMedium.copyWith(
+                    color: appColorScheme.textDark, // 테마에 맞는 색상
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              )
+                  : MoreIconWidget(
                 moreIconSettingMode: MoreIconSettingMode.documentDetail,
                 onEditPressed: () {
                   setState(() {
-                    _editingTags = List.from(currentDoc.tags);
                     _isEditing = true;
                     if (_selectedTabIndex == 0) {
                       _selectedTabIndex = 1;
@@ -151,8 +166,23 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                   });
                 },
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
             ],
+            // actions: [
+            //   MoreIconWidget(
+            //     moreIconSettingMode: MoreIconSettingMode.documentDetail,
+            //     onEditPressed: () {
+            //       setState(() {
+            //         _editingTags = List.from(currentDoc.tags);
+            //         _isEditing = true;
+            //         if (_selectedTabIndex == 0) {
+            //           _selectedTabIndex = 1;
+            //         }
+            //       });
+            //     },
+            //   ),
+            //   SizedBox(width: 10),
+            // ],
           ),
           body: GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),

@@ -2,7 +2,6 @@ flutter_native_splash:
   android: true
   ios: true
   web: true
-  fullscreen: true
   android_gravity: center
   ios_content_mode: center
   # 실행 dart run flutter_native_splash:create --path=flutter_native_splash.yaml

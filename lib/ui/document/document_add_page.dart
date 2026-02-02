@@ -340,12 +340,14 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                               onChanged: (value){
                                 setState(() {});
                               },
+
                               controller: _memoController,
                               maxLength: _maxMemoLength,
                               maxLines: 5,
                               style: appTextTheme.bodyMedium.copyWith(
                                 color: appColorScheme.primary,
                               ),
+                              magnifierConfiguration: TextMagnifierConfiguration.disabled,
                               cursorColor: appColorScheme.strokeLight,
                               cursorWidth: 1.0,
                               cursorHeight: 18,

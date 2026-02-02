@@ -75,6 +75,7 @@ class DocumentDetailTagWidget extends StatelessWidget {
             cursorColor: appColorScheme.categoryTagBg,
             cursorWidth: 1.0,
             cursorHeight: 18,
+            magnifierConfiguration: TextMagnifierConfiguration.disabled,
             onSubmitted: (value) {
               if (value.isNotEmpty) {
                 onTagAdded(value);

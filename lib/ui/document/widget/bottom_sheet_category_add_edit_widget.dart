@@ -32,6 +32,7 @@ class BottomSheetCategoryAddEditWidget extends StatefulWidget {
 
 class _BottomSheetCategoryAddEditWidgetState
     extends State<BottomSheetCategoryAddEditWidget> {
+  bool _isSaving = false;
   String _inputValue = '';
   bool _hasSubmitted = false;
   final TextEditingController _controller = TextEditingController();
@@ -47,8 +48,9 @@ class _BottomSheetCategoryAddEditWidgetState
 
     Provider.of<CategoryViewModel>(context, listen: false).readCategory();
 
-    if (widget.categorySettingMode == CategorySettingMode.edit &&
-        widget.originalCategoryModel != null) {
+    if (widget.categorySettingMode == CategorySettingMode.edit ||
+        widget.categorySettingMode == CategorySettingMode.subEdit &&
+            widget.originalCategoryModel != null) {
       _controller.text = widget.originalCategoryModel!.categoryName;
       _inputValue = widget.originalCategoryModel!.categoryName;
     }
@@ -73,7 +75,7 @@ class _BottomSheetCategoryAddEditWidgetState
       bottom: !isIosMobile,
       child: Padding(
         padding: MediaQuery.of(context).viewInsets,
-      
+
         child: Consumer<CategoryViewModel>(
           builder: (context, vm, _) {
             return Container(
@@ -94,7 +96,7 @@ class _BottomSheetCategoryAddEditWidgetState
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 16),
-      
+
                   ///바텀시트 핸들
                   Container(
                     width: 40,
@@ -110,9 +112,11 @@ class _BottomSheetCategoryAddEditWidgetState
                       Text(
                         widget.categorySettingMode == CategorySettingMode.add
                             ? '새 카테고리 추가'
-                            : widget.categorySettingMode == CategorySettingMode.subAdd
+                            : widget.categorySettingMode ==
+                                  CategorySettingMode.subAdd
                             ? '새 서브 카테고리 추가'
-                            : widget.categorySettingMode == CategorySettingMode.edit
+                            : widget.categorySettingMode ==
+                                  CategorySettingMode.edit
                             ? '카테고리 수정'
                             : '서브 카테고리 수정',
                         style: appTextTheme.headlineSmallKo.copyWith(
@@ -128,15 +132,13 @@ class _BottomSheetCategoryAddEditWidgetState
                     onChanged: (value) {
                       setState(() {
                         _inputValue = value; // 텍스트가 바뀌면 에러 상태 초기화
-                        if (_isAlreadyInUseCategory) _isAlreadyInUseCategory = false;
+                        if (_isAlreadyInUseCategory)
+                          _isAlreadyInUseCategory = false;
                         if (_hasSubmitted && value.isNotEmpty) {
                           _hasSubmitted = false;
                         }
                       });
                     },
-                    // inputFormatters: [
-                    //   FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                    // ],
                     controller: _controller,
                     focusNode: _focusNode,
                     autofocus: true,
@@ -151,11 +153,13 @@ class _BottomSheetCategoryAddEditWidgetState
                     decoration: InputDecoration(
                       counterText: '',
                       hintText:
-                      widget.categorySettingMode == CategorySettingMode.add
+                          widget.categorySettingMode == CategorySettingMode.add
                           ? '카테고리 이름을 입력해 주세요'
-                          : widget.categorySettingMode == CategorySettingMode.subAdd
+                          : widget.categorySettingMode ==
+                                CategorySettingMode.subAdd
                           ? '서브 카테고리 이름을 입력해 주세요'
-                          : widget.categorySettingMode == CategorySettingMode.edit
+                          : widget.categorySettingMode ==
+                                CategorySettingMode.edit
                           ? '변경할 카테고리 이름을 입력해 주세요'
                           : '변경할 서브 카테고리 이름을 입력해 주세요',
                       hintStyle: appTextTheme.headlineSmallKo.copyWith(
@@ -163,13 +167,17 @@ class _BottomSheetCategoryAddEditWidgetState
                         fontWeight: FontWeight.w300,
                       ),
                       helperText: _isAlreadyInUseCategory ? null : ' ',
-                      helperStyle: appTextTheme.labelLarge.copyWith(color: appColorScheme.error),
+                      helperStyle: appTextTheme.labelLarge.copyWith(
+                        color: appColorScheme.error,
+                      ),
                       errorText: _hasSubmitted && _trimmedValue.isEmpty
                           ? '카테고리 이름을 입력해 주세요'
                           : _isAlreadyInUseCategory
                           ? '이미 존재하는 카테고리 이름입니다. 다른 이름을 입력해 주세요.'
                           : null,
-                      errorStyle: appTextTheme.labelLarge.copyWith(color: appColorScheme.error),
+                      errorStyle: appTextTheme.labelLarge.copyWith(
+                        color: appColorScheme.error,
+                      ),
                       suffix: Text(
                         '${_inputValue.length} / $maxLength',
                         style: appTextTheme.labelLarge.copyWith(
@@ -194,81 +202,132 @@ class _BottomSheetCategoryAddEditWidgetState
                       ),
                     ),
                   ),
-      
+
                   const SizedBox(height: 40),
-      
+
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () async {
-                        final trimmedValue = _inputValue.trim();
+                      onPressed: _isSaving
+                          ? null
+                          : () async {
+                              final trimmedValue = _inputValue.trim();
 
-                        setState(() {
-                          _hasSubmitted = true;
-                          _isAlreadyInUseCategory = false;
-                        });
+                              setState(() {
+                                _isSaving = true;
+                                _hasSubmitted = true;
+                                _isAlreadyInUseCategory = false;
+                              });
 
-                        if (trimmedValue.isEmpty) {
-                          HapticFeedback.lightImpact();
-                          setState(() {
-                            _isInputEmpty = true;
-                          });
-                          return;
-                        }
+                              if (trimmedValue.isEmpty) {
+                                HapticFeedback.lightImpact();
+                                setState(() {
+                                  _isInputEmpty = true;
+                                });
+                                return;
+                              }
 
-                        ///중복체크로직 시작
-                        final String? currentParentId = (widget.categorySettingMode == CategorySettingMode.subAdd)
-                            ? widget.parentCategoryId
-                            : null;
+                              ///중복체크로직 시작
+                              final String? currentParentId =
+                                  (widget.categorySettingMode ==
+                                      CategorySettingMode.subAdd)
+                                  ? widget.parentCategoryId
+                                  : null;
 
-                        ///제외할 ID결정 (수정 모드일 때만 현재 카테고리모델 ID 전달)
-                        final String? excludeId = (widget.categorySettingMode == CategorySettingMode.edit)
-                            ? widget.originalCategoryModel?.categoryId
-                            : null;
+                              ///제외할 ID결정 (수정 모드일 때만 현재 카테고리모델 ID 전달)
+                              final String? excludeId =
+                                  (widget.categorySettingMode ==
+                                      CategorySettingMode.edit)
+                                  ? widget.originalCategoryModel?.categoryId
+                                  : null;
 
-                        bool isDuplicate = vm.isAlreadyInUseCategory(trimmedValue, currentParentId, excludeId: excludeId);
+                              bool isDuplicate = vm.isAlreadyInUseCategory(
+                                trimmedValue,
+                                currentParentId,
+                                excludeId: excludeId,
+                              );
 
-                        if (isDuplicate) {
-                          setState(() {
-                            _isAlreadyInUseCategory = true;
-                          });
-                          HapticFeedback.heavyImpact();
-                          return;
-                        }
+                              if (isDuplicate) {
+                                setState(() {
+                                  _isSaving = false;
+                                  _isAlreadyInUseCategory = true;
+                                });
+                                HapticFeedback.heavyImpact();
+                                return;
+                              }
 
-                        try {
-                          if (widget.categorySettingMode == CategorySettingMode.add) {
-                            await vm.createCategory(trimmedValue);
-                          } else if (widget.categorySettingMode == CategorySettingMode.subAdd) {
-                            await vm.createCategory(trimmedValue, parentId: widget.parentCategoryId);
-                          } else {
-                            if (widget.originalCategoryModel != null) {
-                              await vm.updateCategory(widget.originalCategoryModel!, trimmedValue);
-                            }
-                          }
+                              try {
+                                if (widget.categorySettingMode ==
+                                    CategorySettingMode.add) {
+                                  await vm.createCategory(trimmedValue);
+                                } else if (widget.categorySettingMode ==
+                                    CategorySettingMode.subAdd) {
+                                  await vm.createCategory(
+                                    trimmedValue,
+                                    parentId: widget.parentCategoryId,
+                                  );
+                                } else {
+                                  if (widget.originalCategoryModel != null) {
+                                    await vm.updateCategory(
+                                      widget.originalCategoryModel!,
+                                      trimmedValue,
+                                    );
+                                  }
+                                }
 
-                          if (!mounted) return;
-                          context.pop(trimmedValue);
-                        } catch (e) {
-                          if (!mounted) return;
-                          context.showAppMessageSnackBar('카테고리 작업 실패: $e');
-                        }
-                      },
+                                if (!mounted) return;
+                                context.pop(trimmedValue);
+                              } catch (e) {
+                                setState(() {
+                                  _isSaving = false;
+                                });
+                                if (!mounted) return;
+                                context.showAppMessageSnackBar(
+                                  '카테고리 작업 실패: $e',
+                                );
+                              }
+                            },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         backgroundColor: appColorScheme.primary,
+                        disabledBackgroundColor: appColorScheme.primary
+                            .withValues(alpha: 0.6),
                         padding: EdgeInsets.symmetric(vertical: 14),
                         overlayColor: Colors.transparent,
                       ),
-                      child: Text(
-                        '저장',
-                        style: appTextTheme.bodyMedium.copyWith(
-                          color: appColorScheme.primaryStrong,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
+                      child: _isSaving
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      appColorScheme.textLight,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  '저장 중...',
+                                  style: appTextTheme.bodyMedium.copyWith(
+                                    color: appColorScheme.textLight,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Text(
+                              '저장',
+                              style: appTextTheme.bodyMedium.copyWith(
+                                color: appColorScheme.primaryStrong,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                     ),
                   ),
                   SizedBox(height: 30),

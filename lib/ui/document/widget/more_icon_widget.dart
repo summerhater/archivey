@@ -46,6 +46,13 @@ class MoreIconWidget extends StatelessWidget {
             document: document,
             onEditPressed: onEditPressed,
             originalCategoryModel: originalCategoryModel,
+              onCopyLinkPressed: (value) {
+                onCopyLinkConfirmed!();
+              },
+              onShareKakaoPressed:(value){
+              // print('kakao data:${value}');
+              onShareKakaoConfirmed!();
+            },
           ),
         );
 

@@ -28,75 +28,72 @@ class FindEmailPasswordPage extends StatelessWidget {
     bool isIosMobile = !kIsWeb && Platform.isIOS;
     final TextEditingController _controller = TextEditingController();
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
-      child: SafeArea(
-        top: !isIosMobile,
-        bottom: !isIosMobile,
-        child: Scaffold(
-          backgroundColor: appColor.primary,
-          appBar: CustomAppbar(progressText: ''),
-          body: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '가입하신 ',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                        ),
+    return SafeArea(
+      top: !isIosMobile,
+      bottom: !isIosMobile,
+      child: Scaffold(
+        backgroundColor: appColor.primary,
+        appBar: CustomAppbar(progressText: ''),
+        body: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '가입하신 ',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
                       ),
-                      TextSpan(
-                        text: '이메일',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    TextSpan(
+                      text: '이메일',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
+                        fontWeight: FontWeight.bold,
                       ),
-                      TextSpan(
-                        text: '을\n',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                        ),
+                    ),
+                    TextSpan(
+                      text: '을\n',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
                       ),
-                      TextSpan(
-                        text: '입력해 주세요.',
-                        style: appText.bodyLarge.copyWith(
-                          color: appColor.primaryStrong,
-                        ),
+                    ),
+                    TextSpan(
+                      text: '입력해 주세요.',
+                      style: appText.bodyLarge.copyWith(
+                        color: appColor.primaryStrong,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 40,
-                ),
-                CustomUnderlineTextField(
-                  getText: _getEmail,
-                  hintText: '이메일 주소 입력',
-                ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              CustomUnderlineTextField(
+                getText: _getEmail,
+                hintText: '이메일 주소 입력',
+              ),
+            ],
           ),
-          bottomSheet: CustomNextButton(
-            path: '/auth/sign-in',
-            guide: '비밀번호 재설정 메일 보내기',
-            onPressed: () => context
-                .read<AuthViewModel>()
-                .resetPasswordWithEmail(_email)
-                .then(
-                  (_) {
-                    if (!context.mounted) return;
-                    context.showAppMessageSnackBar(
-                      '$_email로 비밀번호 재설정 메일을 보냈습니다.',
-                    );
-                  },
-                ),
-          ),
+        ),
+        bottomSheet: CustomNextButton(
+          path: '/auth/sign-in',
+          guide: '비밀번호 재설정 메일 보내기',
+          onPressed: () => context
+              .read<AuthViewModel>()
+              .resetPasswordWithEmail(_email)
+              .then(
+                (_) {
+                  if (!context.mounted) return;
+                  context.showAppMessageSnackBar(
+                    '$_email로 비밀번호 재설정 메일을 보냈습니다.',
+                  );
+                },
+              ),
         ),
       ),
     );
