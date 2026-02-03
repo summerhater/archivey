@@ -174,7 +174,7 @@ class AppDatabase extends _$AppDatabase {
 
     final tag =
         await (select(tags)..where(
-              (tbl) => tbl.name.equals(name),
+              (tbl) => tbl.uid.equals(uid) & tbl.name.equals(name),
             ))
             .getSingle();
 

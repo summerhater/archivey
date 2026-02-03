@@ -9,10 +9,7 @@ class AppState extends ChangeNotifier{
   List<DocumentModel> _documents = [];
 
 
-  String get uid {
-    print('############# get uid $_uid ################');
-    return _uid;
-  }
+  String get uid => _uid;
 
   String get email => _email;
   List<CategoryModel> get categories => _categories;
@@ -20,7 +17,6 @@ class AppState extends ChangeNotifier{
 
   void setUid(String? newUid) {
     _uid = newUid ?? '';
-    print('############ set uid $newUid, 저장한 후 $_uid ################');
     notifyListeners();
   }
 
