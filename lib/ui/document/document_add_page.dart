@@ -2,6 +2,7 @@ import 'package:archivey/domain/model/category_model.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
 import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
+import 'package:archivey/utils/dismiss_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -101,64 +102,247 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
         _selectedCategory != null &&
         memoLength <= _maxMemoLength;
 
-    return Scaffold(
-      backgroundColor: appColorScheme.primary,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 32),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '수집물 추가하기',
-                            style: appTextTheme.headlineLargeKo.copyWith(
-                              color: appColorScheme.textDark,
+    return DismissKeyboard(
+      child: Scaffold(
+        backgroundColor: appColorScheme.primary,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 32),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '수집물 추가하기',
+                              style: appTextTheme.headlineLargeKo.copyWith(
+                                color: appColorScheme.textDark,
+                              ),
                             ),
-                          ),
-                          Transform.translate(
-                            offset: const Offset(12, 0),
-                            child: IconButton(
-                              onPressed: () {
-                                ///pop 대신 go 사용으로 Future already completed 에러해결
-                                context.go('/document_all_total');
-                              },
-                              icon: const Icon(Icons.close),
-                              color: appColorScheme.textLight,
-                              iconSize: 24,
+                            Transform.translate(
+                              offset: const Offset(12, 0),
+                              child: IconButton(
+                                onPressed: () {
+                                  ///pop 대신 go 사용으로 Future already completed 에러해결
+                                  context.go('/document_all_total');
+                                },
+                                icon: const Icon(Icons.close),
+                                color: appColorScheme.textLight,
+                                iconSize: 24,
+                              ),
                             ),
+                          ],
+                        ),
+      
+                        /// URL 링크
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 30),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    '원문 링크',
+                                    style: appTextTheme.bodyMedium.copyWith(color: appColorScheme.textDark),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  if (_showValidationErrors && _urlController.text.isEmpty)
+                                    Text(
+                                      '*원문 링크를 입력해주세요.',
+                                      style: appTextTheme.labelLarge.copyWith(color: appColorScheme.error, fontWeight: FontWeight.w700),
+                                    ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: appColorScheme.categoryTagBg,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: appColorScheme.strokeLight),
+                                ),
+                                child: TextFormField(
+                                  controller: _urlController,
+                                  onChanged: (val) {
+                                    setState(() {});
+                                  },
+                                  style: appTextTheme.bodyMedium.copyWith(
+                                    color: appColorScheme.primary,
+                                  ),
+                                  cursorColor: appColorScheme.strokeLight,
+                                  cursorWidth: 1.0,
+                                  cursorHeight: 18,
+                                  decoration: InputDecoration(
+                                    hintText: 'https://example.com',
+                                    hintStyle: appTextTheme.bodyMedium.copyWith(
+                                      color: appColorScheme.textLight,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.link,
+                                      color: appColorScheme.textLight,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-
-                      /// URL 링크
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        child: Column(
+                        ),
+      
+                        ///카테고리 선택 칩
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
                                 Text(
-                                  '원문 링크',
+                                  '카테고리',
                                   style: appTextTheme.bodyMedium.copyWith(color: appColorScheme.textDark),
                                 ),
                                 const SizedBox(width: 10),
-                                if (_showValidationErrors && _urlController.text.isEmpty)
+                                if (_showValidationErrors && _selectedCategory == null)
                                   Text(
-                                    '*원문 링크를 입력해주세요.',
+                                    '*카테고리를 선택해주세요.',
                                     style: appTextTheme.labelLarge.copyWith(color: appColorScheme.error, fontWeight: FontWeight.w700),
                                   ),
                               ],
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
+      
+                            /// 대분류 카테고리
+                            Wrap(
+                              spacing: 8.0,
+                              children: categories.map((category) {
+                                bool isSelected = _selectedCategory == category;
+                                return ChoiceChip(
+                                  showCheckmark: false,
+                                  label: Text(category.categoryName),
+                                  selected: isSelected,
+                                  onSelected: (selected) {
+                                    setState(() {
+                                      _selectedCategory = selected ? category : null;
+                                      /// 대분류가 바뀌거나 취소되면 소분류 선택도 초기화
+                                      _selectedSubCategory = null;
+                                    });
+                                  },
+                                  backgroundColor: appColorScheme.primary,
+                                  selectedColor: appColorScheme.primaryStrong,
+                                  labelStyle: appTextTheme.labelLarge.copyWith(
+                                    color: isSelected
+                                        ? appColorScheme.primary
+                                        : appColorScheme.primaryStrong,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+      
+                            ///소분류 카테고리
+                            AnimatedSize(
+                              duration: const Duration(milliseconds: 300),
+                              alignment: Alignment.topCenter,
+                              curve: Curves.easeInOut,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 20,
+                                ),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: _selectedCategory == null || subCategories.isEmpty
+                                      ? const SizedBox.shrink()
+                                      : Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '소분류 카테고리',
+                                              style: appTextTheme.bodyMedium.copyWith(
+                                                color: appColorScheme.textDark,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Wrap(
+                                              spacing: 8.0,
+                                              children: subCategories.map((sub) {
+                                                bool isSubSelected = _selectedSubCategory == sub;
+      
+                                                return Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom: 20,
+                                                  ),
+                                                  child: ChoiceChip(
+                                                    showCheckmark: false,
+                                                    label: Text(
+                                                      sub.categoryName,
+                                                      style: appTextTheme.labelLarge,
+                                                    ),
+                                                    selected: isSubSelected,
+                                                    onSelected: (selected) {
+                                                      setState(() {
+                                                        _selectedSubCategory = selected ? sub : null;
+                                                      });
+                                                    },
+                                                    backgroundColor: appColorScheme.primary,
+                                                    selectedColor: appColorScheme.primaryStrong,
+                                                    shape: StadiumBorder(
+                                                      side: BorderSide(
+                                                        color: appColorScheme.strokeLight,
+                                                      ),
+                                                    ),
+                                                    labelStyle: appTextTheme.bodyLarge.copyWith(
+                                                      color: isSubSelected
+                                                          ? appColorScheme.primary
+                                                          : appColorScheme.primaryStrong,
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+      
+                        ///메모 입력 필드
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '메모',
+                                  style: appTextTheme.bodyMedium.copyWith(
+                                    color: appColorScheme.textDark,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '$memoLength/$_maxMemoLength',
+                                      style: appTextTheme.bodySmall.copyWith(
+                                        color: appColorScheme.textLight,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
                             Container(
                               decoration: BoxDecoration(
                                 color: appColorScheme.categoryTagBg,
@@ -166,250 +350,69 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                 border: Border.all(color: appColorScheme.strokeLight),
                               ),
                               child: TextFormField(
-                                controller: _urlController,
-                                onChanged: (val) {
+                                onChanged: (value){
                                   setState(() {});
                                 },
+      
+                                controller: _memoController,
+                                maxLength: _maxMemoLength,
+                                maxLines: 5,
                                 style: appTextTheme.bodyMedium.copyWith(
                                   color: appColorScheme.primary,
                                 ),
+                                magnifierConfiguration: TextMagnifierConfiguration.disabled,
                                 cursorColor: appColorScheme.strokeLight,
                                 cursorWidth: 1.0,
                                 cursorHeight: 18,
                                 decoration: InputDecoration(
-                                  hintText: 'https://example.com',
-                                  hintStyle: appTextTheme.bodyMedium.copyWith(
-                                    color: appColorScheme.textLight,
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.link,
-                                    color: appColorScheme.textLight,
-                                  ),
+                                  hintText: '이 수집물에 대한 메모를 작성해보세요..',
+                                  hintStyle: appTextTheme.bodySmall.copyWith(color: appColorScheme.textLight),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 18,
-                                  ),
+                                  contentPadding: EdgeInsets.all(16),
+                                  counterText: '',
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 20),
                           ],
                         ),
-                      ),
-
-                      ///카테고리 선택 칩
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                '카테고리',
-                                style: appTextTheme.bodyMedium.copyWith(color: appColorScheme.textDark),
-                              ),
-                              const SizedBox(width: 10),
-                              if (_showValidationErrors && _selectedCategory == null)
-                                Text(
-                                  '*카테고리를 선택해주세요.',
-                                  style: appTextTheme.labelLarge.copyWith(color: appColorScheme.error, fontWeight: FontWeight.w700),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          /// 대분류 카테고리
-                          Wrap(
-                            spacing: 8.0,
-                            children: categories.map((category) {
-                              bool isSelected = _selectedCategory == category;
-                              return ChoiceChip(
-                                showCheckmark: false,
-                                label: Text(category.categoryName),
-                                selected: isSelected,
-                                onSelected: (selected) {
-                                  setState(() {
-                                    _selectedCategory = selected ? category : null;
-                                    /// 대분류가 바뀌거나 취소되면 소분류 선택도 초기화
-                                    _selectedSubCategory = null;
-                                  });
-                                },
-                                backgroundColor: appColorScheme.primary,
-                                selectedColor: appColorScheme.primaryStrong,
-                                labelStyle: appTextTheme.labelLarge.copyWith(
-                                  color: isSelected
-                                      ? appColorScheme.primary
-                                      : appColorScheme.primaryStrong,
-                                ),
-                              );
-                            }).toList(),
-                          ),
-
-                          ///소분류 카테고리
-                          AnimatedSize(
-                            duration: const Duration(milliseconds: 300),
-                            alignment: Alignment.topCenter,
-                            curve: Curves.easeInOut,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 20,
-                              ),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: _selectedCategory == null || subCategories.isEmpty
-                                    ? const SizedBox.shrink()
-                                    : Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '소분류 카테고리',
-                                            style: appTextTheme.bodyMedium.copyWith(
-                                              color: appColorScheme.textDark,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 12),
-                                          Wrap(
-                                            spacing: 8.0,
-                                            children: subCategories.map((sub) {
-                                              bool isSubSelected = _selectedSubCategory == sub;
-
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
-                                                  bottom: 20,
-                                                ),
-                                                child: ChoiceChip(
-                                                  showCheckmark: false,
-                                                  label: Text(
-                                                    sub.categoryName,
-                                                    style: appTextTheme.labelLarge,
-                                                  ),
-                                                  selected: isSubSelected,
-                                                  onSelected: (selected) {
-                                                    setState(() {
-                                                      _selectedSubCategory = selected ? sub : null;
-                                                    });
-                                                  },
-                                                  backgroundColor: appColorScheme.primary,
-                                                  selectedColor: appColorScheme.primaryStrong,
-                                                  shape: StadiumBorder(
-                                                    side: BorderSide(
-                                                      color: appColorScheme.strokeLight,
-                                                    ),
-                                                  ),
-                                                  labelStyle: appTextTheme.bodyLarge.copyWith(
-                                                    color: isSubSelected
-                                                        ? appColorScheme.primary
-                                                        : appColorScheme.primaryStrong,
-                                                  ),
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ],
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      ///메모 입력 필드
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '메모',
-                                style: appTextTheme.bodyMedium.copyWith(
-                                  color: appColorScheme.textDark,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    '$memoLength/$_maxMemoLength',
-                                    style: appTextTheme.bodySmall.copyWith(
-                                      color: appColorScheme.textLight,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: appColorScheme.categoryTagBg,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: appColorScheme.strokeLight),
-                            ),
-                            child: TextFormField(
-                              onChanged: (value){
-                                setState(() {});
-                              },
-
-                              controller: _memoController,
-                              maxLength: _maxMemoLength,
-                              maxLines: 5,
-                              style: appTextTheme.bodyMedium.copyWith(
-                                color: appColorScheme.primary,
-                              ),
-                              magnifierConfiguration: TextMagnifierConfiguration.disabled,
-                              cursorColor: appColorScheme.strokeLight,
-                              cursorWidth: 1.0,
-                              cursorHeight: 18,
-                              decoration: InputDecoration(
-                                hintText: '이 수집물에 대한 메모를 작성해보세요..',
-                                hintStyle: appTextTheme.bodySmall.copyWith(color: appColorScheme.textLight),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.all(16),
-                                counterText: '',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-
-            Container(
-              padding: const EdgeInsets.fromLTRB(32, 12, 32, 10),
-              color: appColorScheme.primary,
-              child: SizedBox(
-                width: double.infinity,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (isFormValid) {
-                      _handleSave(context);
-                    } else {
-                      setState(() {
-                        _showValidationErrors = true;
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isFormValid
-                        ? appColorScheme.primaryStrong
-                        : appColorScheme.strokeLight,
-                    foregroundColor: isFormValid
-                        ? appColorScheme.primary
-                        : appColorScheme.snackBarBg,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      
+              Container(
+                padding: const EdgeInsets.fromLTRB(32, 12, 32, 10),
+                color: appColorScheme.primary,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (isFormValid) {
+                        _handleSave(context);
+                      } else {
+                        setState(() {
+                          _showValidationErrors = true;
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isFormValid
+                          ? appColorScheme.primaryStrong
+                          : appColorScheme.strokeLight,
+                      foregroundColor: isFormValid
+                          ? appColorScheme.primary
+                          : appColorScheme.snackBarBg,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: Text('저장하기', style: appTextTheme.headlineSmallKo),
                   ),
-                  child: Text('저장하기', style: appTextTheme.headlineSmallKo),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
