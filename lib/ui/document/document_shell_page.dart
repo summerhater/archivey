@@ -66,9 +66,14 @@ class DocumentShellPageState extends State<DocumentShellPage> {
                     selectedIndex: _getSelectedIndex(currentLocation, displayCategories),
                     onTapChanged: (index) {
                       final currentIdx = _getSelectedIndex(currentLocation, displayCategories);
+                      final isAllPage = currentLocation.contains('all_total') || currentLocation.contains('all_index');
 
                       if (currentIdx == index) {
                         context.read<DocViewModel>().scrollToTop();
+                        if (index == 0 && !isAllPage) {
+                          context.go('/document_all_total');
+                          return;
+                        }
                         return;
                       }
 
