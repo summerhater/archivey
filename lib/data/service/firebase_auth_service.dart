@@ -1,5 +1,5 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class FirebaseAuthService {
   final FirebaseAuth _auth;
@@ -139,9 +139,11 @@ class FirebaseAuthService {
     required String pw,
   }) async {
     try {
+      if(user != null) logOut();
+
       await _auth.signInWithEmailAndPassword(email: email, password: pw);
 
-      user!.reload();
+      await user!.reload();
 
       if (!user!.emailVerified) {
         await reSendVerificationEmail();

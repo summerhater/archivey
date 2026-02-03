@@ -26,10 +26,7 @@ class DocViewModel extends ChangeNotifier {
     this._appState,
     this._loadingProvider,
   ) {
-    _lastUid = _appState.uid;
-    pullAndPush();
     _appState.addListener(_onStateChanged);
-    // readDocuments(_appState.categories);
   }
 
   StreamSubscription<List<DocumentModel>>? _subscription;
@@ -52,7 +49,6 @@ class DocViewModel extends ChangeNotifier {
   bool _isSearching = false;
   bool get isSearching => _isSearching;
   int _lastWatchedCategories = 0;
-  String _lastUid = '';
 
   // void updateState(AppState newState) {
   //   print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
@@ -85,6 +81,8 @@ class DocViewModel extends ChangeNotifier {
     print('################## 데이터들 불러오기!!!!');
     print('################## 불러 올 uid는 $uid ###############');
     _subscription?.cancel();
+
+    pullAndPush();
 
     _subscription = _searchQueryController.stream
         .switchMap((keyword) {
