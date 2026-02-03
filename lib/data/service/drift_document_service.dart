@@ -230,7 +230,8 @@ class DriftDocumentService {
       print('local id: $localId');
 
       if (localId == null) {
-        throw Exception("업데이트 문서 찾을 수 없음. ID: $docId");
+        print("업데이트 문서 찾을 수 없음. ID: $docId");
+        return;
       }
 
       await _db.deleteDocument(localId);

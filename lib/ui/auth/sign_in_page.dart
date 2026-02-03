@@ -31,6 +31,13 @@ class _SignInPageState extends State<SignInPage> {
   bool pwVisibility = false;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _pwController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var appColor = Theme.of(context).extension<AppColorScheme>()!;
     var appText = Theme.of(context).extension<AppTextTheme>()!;

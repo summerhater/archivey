@@ -258,6 +258,7 @@ class DocViewModel extends ChangeNotifier {
       /// 서버에서 먼저 삭제 후, 성공하면 local delete TODO 삭제 매커니즘 변경해야 함
       await _firebaseDocumentService.deleteDocument(id).then(
         (_) async {
+          await _driftDocumentService.setSyncTime(_appState.uid);
           /// local delete
           await _driftDocumentService.deleteDocument(id);
         },
@@ -344,8 +345,7 @@ class DocViewModel extends ChangeNotifier {
     final documents = pendingDocuments.map((doc) {
       return doc
           .toDomain(categories: _appState.categories)
-          .copyWith(updatedAt: DateTime.now())
-          .toMap();
+          .copyWith(updatedAt: DateTime.now());
     }).toList();
 
     // 일괄 쓰기

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:archivey/config/color_scheme_extension.dart';
 import 'package:archivey/config/text_theme_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -79,14 +82,18 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
     'https://gigantic-sycamore-e89.notion.site/2f860523334d80c69cd9e72ba72603c0?pvs=74',
   ];
 
+  bool isIosMobile = !kIsWeb && Platform.isIOS;
+
   @override
   Widget build(BuildContext context) {
     var appColor = Theme.of(context).extension<AppColorScheme>()!;
     var appText = Theme.of(context).extension<AppTextTheme>()!;
 
+
     final height = MediaQuery.of(context).size.height;
 
     return SafeArea(
+      bottom: isIosMobile,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: height * 0.85,
