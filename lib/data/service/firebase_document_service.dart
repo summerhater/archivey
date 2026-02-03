@@ -549,22 +549,25 @@ $commonInstructions
   }
 
   /// Sync를 위한 일괄 쓰기
-  Future<void> documentBatchWrite(List<Map<String, dynamic>> documents) async {
-    // 한번에 값을 저장하기 위한 WriteBatch
-    final WriteBatch batch = _db.batch();
+  Future<void> documentBatchWrite(List<DocumentModel> documents) async {
+    const int batchSize = 500;
 
-    // pending 값들 remote에 업로드 하기
+    // batch는 1회 최대 500개 제한
+    for(var i = 0; i < documents.length; i += batchSize){
+      final WriteBatch batch = _db.batch();
 
-    for (var item in documents) {
-      final DocumentReference docRef = _db
-          .collection('documents')
-          .doc(item['id']);
+      // 현재 batchSize 보다 commit 해야 할 문서의 양이 많다면 현재 배치만큼 끊기
+      final end = (i + batchSize < documents.length) ? i + batchSize : documents.length;
+      // 시작부분과 끝부분
+      final chunk = documents.sublist(i, end);
 
-      batch.set(docRef, item);
+      for(var doc in chunk) {
+        final DocumentReference docRef = _db.collection('documents').doc(doc.id);
+        batch.set(docRef, doc.toMap());
+      }
+
+      await batch.commit();
     }
-
-    // 한번에 업로드 후 커밋
-    await batch.commit();
   }
 
   Future<List<DocumentModel>> readDocumentsByUid(String uid) async {

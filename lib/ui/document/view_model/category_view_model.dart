@@ -28,8 +28,8 @@ class CategoryViewModel extends ChangeNotifier {
     this._appState,
     this._firebaseDocumentService,
     this._driftDocumentService,
-      this._sharedCategoryLinkService,
-  ){
+    this._sharedCategoryLinkService,
+  ) {
     _appState.addListener(_onStateChanged);
   }
   // List<CategoryModel> _categories = [];
@@ -67,8 +67,10 @@ class CategoryViewModel extends ChangeNotifier {
     bool isUserChanged = _lastUid != _appState.uid;
 
     // 로그인 할 때마다 싱크 맞춰주기
-    if(isUserChanged) {
-      print('############# category view model 에서 유저가 바뀜, $_lastUid -> ${_appState.uid}');
+    if (isUserChanged) {
+      print(
+        '############# category view model 에서 유저가 바뀜, $_lastUid -> ${_appState.uid}',
+      );
       _lastUid = _appState.uid;
       readCategory();
     }
@@ -223,13 +225,19 @@ class CategoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isAlreadyInUseCategory(String name, String? parentId, {String? excludeId}) {
-    return _appState.categories.any((category) =>
-    category.parentId == parentId &&
-        category.categoryName == name &&
-        category.categoryId != excludeId // 현재 수정 중인 항목은 제외
+  bool isAlreadyInUseCategory(
+    String name,
+    String? parentId, {
+    String? excludeId,
+  }) {
+    return _appState.categories.any(
+      (category) =>
+          category.parentId == parentId &&
+          category.categoryName == name &&
+          category.categoryId != excludeId, // 현재 수정 중인 항목은 제외
     );
   }
+
   Future<void> createCategory(String categoryName, {String? parentId}) async {
     int? order;
 
@@ -267,7 +275,9 @@ class CategoryViewModel extends ChangeNotifier {
       // _categories = await _categoryService.readCategory();
       final _categories = await _categoryService.readCategory(_appState.uid);
       _appState.setCategories(_categories);
-      print('########### read Category 실행함!! ${_appState.categories.length} #########');
+      print(
+        '########### read Category 실행함!! ${_appState.categories.length} #########',
+      );
 
       // await initRootCategoryDocumentCount();
     } catch (e) {
@@ -367,9 +377,10 @@ class CategoryViewModel extends ChangeNotifier {
 
     try {
       clearErrorMessage();
-      for (final doc in docsToDelete) {
-        await deleteDocument(doc.id);
-      }
+      // for (final doc in docsToDelete) {
+      //   await deleteDocument(doc.id);
+      // }
+      await deleteDocument(docsToDelete);
 
       if (isRoot) {
         final subCategoryIds = familyCategoryIds
@@ -387,27 +398,37 @@ class CategoryViewModel extends ChangeNotifier {
       }
 
       await readCategory();
-    } catch (e) {
-      print('error in deleteCategory: $e');
+    } catch (e, stackTrace) {
+      print('error in deleteCategory: $e, $stackTrace');
       _errorMessage = '카테고리 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.';
       notifyListeners();
     }
   }
 
-  Future<void> deleteDocument(String id) async {
-    /// 서버에서 먼저 삭제 후, 성공하면 local delete TODO 삭제 매커니즘 변경해야 함
-    await _firebaseDocumentService.deleteDocument(id).then(
-      (_) async {
-        /// local delete
-        await _driftDocumentService.deleteDocument(id);
-      },
-    );
+  Future<void> deleteDocument(List<DocumentModel> docsToDelete) async {
+    /// 서버에서 먼저 삭제 후, 성공하면 local delete
+    final documents = docsToDelete.map(
+      (doc) => doc.copyWith(
+        updatedAt: DateTime.now(),
+        deletedAt: DateTime.now(),
+      ),
+    ).toList();
+
+    await _firebaseDocumentService.documentBatchWrite(documents).then((_) async{
+      await _driftDocumentService.setSyncTime(_appState.uid);
+      for(var doc in documents) {
+        await _driftDocumentService.deleteDocument(doc.id);
+      }
+    });
   }
 
   ///카테고리 공유하기(웹) 구현을 위한 메소드 추가
   Future<String?> createSharedCategoryLink(String categoryId) async {
     try {
-      final shareId = await _sharedCategoryLinkService.createSharedCategoryLink(_appState.uid, categoryId);
+      final shareId = await _sharedCategoryLinkService.createSharedCategoryLink(
+        _appState.uid,
+        categoryId,
+      );
       return "${ShareCategoryLinkConfig.baseUrl}/share/category/$shareId";
     } catch (e) {
       print('error in createSharedCategoryLink: $e');
@@ -415,10 +436,13 @@ class CategoryViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> kakaoShareCategoryURL(String urlToShare, CategoryModel category) async {
+  Future<void> kakaoShareCategoryURL(
+    String urlToShare,
+    CategoryModel category,
+  ) async {
     try {
       await _kakaoSdkShareService.kakaoShareCategoryURL(urlToShare, category);
-    }catch(e){
+    } catch (e) {
       print('Error in kakaoShareDocumentURL: $e');
     }
   }
