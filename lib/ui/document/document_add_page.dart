@@ -59,7 +59,18 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
       context.go('/document_all_total');
       context.showAppMessageSnackBar('수집물 아카이빙이 완료되었습니다 ☻');
     } catch (e) {
-      context.showAppMessageSnackBar('수집물 아카이빙에 실패했습니다 : $e');
+      context.showAppMessageSnackBar('수집물 아카이빙에 실패했습니다.');
+      final errorStr = e.toString();
+      if (errorStr.contains('No host specified')) { /// Case 1: 호스트 정보 누락 (Invalid argument)
+        context.showAppMessageSnackBar('⚠️ 유효한 웹 주소 형식이 아닙니다.\n원문 링크를 다시 확인해 주세요.');
+      } else if (errorStr.contains('Failed host lookup')) { /// Case 2: 서버를 찾을 수 없음 (SocketException)
+        context.showAppMessageSnackBar('⚠️ 서버에 연결할 수 없습니다.\n링크 오타 혹은 네트워크 상태를 확인해 주세요.');
+      } else if (errorStr.contains('페이지를 불러올 수 없습니다')) {
+        /// Case 3: 앱 내에서 던진 사용자 정의 예외 (Exception) 200 OK임에도 데이터가 없거나 페이지가 없는 경우
+        context.showAppMessageSnackBar('⚠️ 요청하신 페이지를 찾을 수 없습니다.\n주소가 정확한지 확인해 주세요.');
+      } else {
+        context.showAppMessageSnackBar('⚠️ 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      }
     }
   }
 
@@ -153,6 +164,9 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                               ),
                               child: TextFormField(
                                 controller: _urlController,
+                                onChanged: (val) {
+                                  setState(() {});
+                                },
                                 style: appTextTheme.bodyMedium.copyWith(
                                   color: appColorScheme.primary,
                                 ),
@@ -174,12 +188,6 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                                     vertical: 18,
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return '링크를 입력해주세요';
-                                  }
-                                  return null;
-                                },
                               ),
                             ),
                           ],

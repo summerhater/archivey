@@ -97,7 +97,7 @@ class VerticalTabNavigation extends StatelessWidget {
                 child: IconButton(
                   onPressed: () {
                     if (isCategoryExist == false) {
-                      context.showAppMessageSnackBar('카테고리를 먼저 추가해야 수집물을 추가할 수 있어요.');
+                      context.showAppMessageSnackBar('카테고리를 먼저 추가해야 수집물을 추가할 수 있어요 🥹');
                       return;
                     }
                     context.push('/document_add');

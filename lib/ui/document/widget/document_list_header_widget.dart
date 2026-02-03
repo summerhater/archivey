@@ -49,6 +49,18 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant DocumentListHeaderWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    /// 상위(Root) 카테고리 ID가 변경되었다면 서브를 '전체(0)'로 리셋
+    if (widget.rootCategory?.categoryId != oldWidget.rootCategory?.categoryId) {
+      setState(() {
+        _selectedIndex = 0;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final appColorScheme = Theme.of(context).extension<AppColorScheme>()!;
     final appTextTheme = Theme.of(context).extension<AppTextTheme>()!;
@@ -56,16 +68,9 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
     final isIndexSelected = currentLocation.contains('_index');
     final isTotalSelected = currentLocation.contains('_total');
 
-    String? _searchValue;
-    final isSelected;
-
     return Consumer<CategoryViewModel>(
       builder: (context, vm, _) {
         final roots = vm.rootCategories;
-
-        // if (roots.isEmpty) {
-        //   return const SizedBox.shrink();
-        // }
 
         final CategoryModel? currentRoot = roots.isEmpty
             ? null
@@ -75,14 +80,6 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
               (c) => c.categoryName == widget.rootCategory?.categoryName,
           orElse: () => roots.first,
         ));
-
-        // final CategoryModel currentRoot =
-        // widget.isOnAllPage
-        //     ? roots.first
-        //     : roots.firstWhere(
-        //       (c) => c.categoryName == widget.rootCategory!.categoryName,
-        //   orElse: () => roots.first,
-        // );
 
         final List<CategoryModel> subCategories = widget.isOnAllPage || currentRoot == null
             ? const []
