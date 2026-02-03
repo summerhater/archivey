@@ -93,7 +93,7 @@ class _CustomTosBottomModalState extends State<CustomTosBottomModal> {
     final height = MediaQuery.of(context).size.height;
 
     return SafeArea(
-      bottom: isIosMobile,
+      bottom: !isIosMobile,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: height * 0.85,
