@@ -86,10 +86,10 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
       documentVM.updateDocument(docToUpdate);
 
       if (isMemoChanged) {
-        context.showAppMessageSnackBar('메모 수정이 완료되었습니다. ☻');
+        context.showAppMessageSnackBar('☑️ 메모 수정이 완료되었습니다.');
       }
       if (isTagsChanged) {
-        context.showAppMessageSnackBar('태그 수정이 완료되었습니다. ☻');
+        context.showAppMessageSnackBar('☑️ 태그 수정이 완료되었습니다.');
       }
       setState(() {
         _editingTags = List.from(docToUpdate.tags);

@@ -48,7 +48,7 @@ class SharedCategoryWebViewModel extends ChangeNotifier {
 
       if (sharedCategoryLink == null) {
         print('공유 링크가 유효하지 않습니다.');
-        throw Exception('공유 링크가 유효하지 않거나 만료되었습니다.');
+        throw Exception('⚠️ 공유 링크가 유효하지 않거나 만료되었습니다.');
       }
 
       _sharedWebState.shareId = shareId;
@@ -117,7 +117,7 @@ class SharedCategoryWebViewModel extends ChangeNotifier {
       /// 카테고리 정보 조회
       final category = await getCategoryByCategoryId(categoryId);
       if (category == null) {
-        throw Exception('해당 카테고리 데이터를 찾을 수 없습니다.');
+        throw Exception('⚠️ 해당 카테고리 데이터를 찾을 수 없습니다.');
       }
       _category = category;
       final bool isRoot = _category?.parentId == null;
@@ -139,7 +139,7 @@ class SharedCategoryWebViewModel extends ChangeNotifier {
       print('Error in getDocumentsByCategory: $e');
       print('StackTrace: $stackTrace');
 
-      throw Exception('문서를 불러오는 중 문제가 발생했습니다.');
+      throw Exception('⚠️ 문서를 불러오는 중 문제가 발생했습니다.');
     }
   }
 

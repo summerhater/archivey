@@ -264,7 +264,7 @@ class CategoryViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('error in createCategory: $e');
-      _errorMessage = "카테고리 추가에 실패했습니다. 잠시 후 다시 시도해주세요.";
+      _errorMessage = "⚠️ 카테고리 추가에 실패했습니다. 잠시 후 다시 시도해주세요.";
       notifyListeners();
     }
   }
@@ -282,7 +282,7 @@ class CategoryViewModel extends ChangeNotifier {
       // await initRootCategoryDocumentCount();
     } catch (e) {
       print('error in readCategory: $e');
-      _errorMessage = '카테고리 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+      _errorMessage = '⚠️ 카테고리 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
     } finally {
       notifyListeners();
     }
@@ -302,7 +302,7 @@ class CategoryViewModel extends ChangeNotifier {
       await readCategory();
     } catch (e) {
       print('error in updateCategory: $e');
-      _errorMessage = '카테고리 이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      _errorMessage = '⚠️ 카테고리 이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.';
       notifyListeners();
     }
   }
@@ -327,7 +327,7 @@ class CategoryViewModel extends ChangeNotifier {
       await readCategory();
     } catch (e) {
       print('error in reorderCategories: $e');
-      _errorMessage = '카테고리 순서를 변경할 수 없습니다. 잠시 후 다시 시도해주세요.';
+      _errorMessage = '⚠️ 카테고리 순서를 변경할 수 없습니다. 잠시 후 다시 시도해주세요.';
       notifyListeners();
     }
   }
@@ -361,7 +361,7 @@ class CategoryViewModel extends ChangeNotifier {
     if (isRoot) {
       print('isRoot : $isRoot');
       familyCategoryIds = _getFamilyCategoryIds(categoryId);
-      print('familyCategoryIds : $familyCategoryIds');
+      // print('familyCategoryIds : $familyCategoryIds');
       docsToDelete = _appState.documents
           .where(
             (doc) => familyCategoryIds.contains(doc.category.categoryId),

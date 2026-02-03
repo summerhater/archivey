@@ -57,7 +57,7 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
 
       if (!mounted) return;
       context.go('/document_all_total');
-      context.showAppMessageSnackBar('수집물 아카이빙이 완료되었습니다 ☻');
+      context.showAppMessageSnackBar('☑️ 수집물 아카이빙이 완료되었습니다.');
     } catch (e) {
       context.showAppMessageSnackBar('수집물 아카이빙에 실패했습니다.');
       final errorStr = e.toString();

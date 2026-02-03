@@ -219,7 +219,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                   final categoryNameToDelete = sub.categoryName;
                                   vm.deleteCategory(sub.categoryId);
                                   if (context.mounted){
-                                    context.showAppMessageSnackBar('$categoryNameToDelete 소분류 카테고리가 삭제 완료되었습니다 ☻');
+                                    context.showAppMessageSnackBar('☑️ $categoryNameToDelete 소분류 카테고리가 삭제 완료되었습니다.');
                                   }
                                 }
                               },
@@ -275,7 +275,7 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
                                   ),
                                 );
                                 if (newCategoryName != null) {
-                                  context.showAppMessageSnackBar('$newCategoryName 소분류 카테고리가 추가 되었습니다. ☻');
+                                  context.showAppMessageSnackBar('☑️ $newCategoryName 소분류 카테고리가 추가 되었습니다.');
                                 }
                               },
                               label: Icon(Icons.add, size: 18),

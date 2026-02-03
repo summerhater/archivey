@@ -34,7 +34,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
     if (!mounted) return;
 
     if (newCategoryName != null && newCategoryName.isNotEmpty) {
-      context.showAppMessageSnackBar('$newCategoryName 카테고리가 추가되었습니다 ☻');
+      context.showAppMessageSnackBar('☑️ $newCategoryName 카테고리가 추가되었습니다.');
     }
   }
 
@@ -159,12 +159,12 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                       ),
                                     );
                                     context.showAppMessageSnackBar(
-                                      '카테고리 링크가 복사되었습니다. ☻',
+                                      '☑️ 카테고리 링크가 복사되었습니다.',
                                     );
                                   } else {
                                     if (context.mounted) {
                                       context.showAppMessageSnackBar(
-                                        '카테고리 공유 링크 생성 중 오류가 발생했습니다.',
+                                        '⚠️ 카테고리 공유 링크 생성 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.',
                                       );
                                     }
                                   }
@@ -182,7 +182,7 @@ class _DocumentAllIndexPageState extends State<DocumentAllIndexPage> {
                                   } else {
                                     if (context.mounted) {
                                       context.showAppMessageSnackBar(
-                                        '카테고리 카카오톡 공유 중 오류가 발생했습니다.',
+                                        '⚠️ 카테고리 카카오톡 공유 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.',
                                       );
                                     }
                                   }

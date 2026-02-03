@@ -114,11 +114,11 @@ class _BottomSheetCategoryAddEditWidgetState
                             ? '새 카테고리 추가'
                             : widget.categorySettingMode ==
                                   CategorySettingMode.subAdd
-                            ? '새 서브 카테고리 추가'
+                            ? '새 소분류 카테고리 추가'
                             : widget.categorySettingMode ==
                                   CategorySettingMode.edit
                             ? '카테고리 수정'
-                            : '서브 카테고리 수정',
+                            : '소분류 카테고리 수정',
                         style: appTextTheme.headlineSmallKo.copyWith(
                           color: appColorScheme.primary,
                         ),
@@ -157,11 +157,11 @@ class _BottomSheetCategoryAddEditWidgetState
                           ? '카테고리 이름을 입력해 주세요'
                           : widget.categorySettingMode ==
                                 CategorySettingMode.subAdd
-                          ? '서브 카테고리 이름을 입력해 주세요'
+                          ? '소분류 카테고리 이름을 입력해 주세요'
                           : widget.categorySettingMode ==
                                 CategorySettingMode.edit
                           ? '변경할 카테고리 이름을 입력해 주세요'
-                          : '변경할 서브 카테고리 이름을 입력해 주세요',
+                          : '변경할 소분류 카테고리 이름을 입력해 주세요',
                       hintStyle: appTextTheme.headlineSmallKo.copyWith(
                         color: appColorScheme.textLight,
                         fontWeight: FontWeight.w300,
