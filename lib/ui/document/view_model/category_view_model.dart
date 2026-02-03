@@ -39,6 +39,7 @@ class CategoryViewModel extends ChangeNotifier {
   // User? get user => _authService.user;
   final Map<String, int> _docCountMap = {};
   Map<String, int> get docCountMap => _docCountMap;
+  final ScrollController scrollController = ScrollController();
 
   // void updateState(AppState newState) {
   //   _appState = newState;
@@ -366,13 +367,10 @@ class CategoryViewModel extends ChangeNotifier {
 
     try {
       clearErrorMessage();
-      //도큐먼트부터 삭제
-      print('here1');
       for (final doc in docsToDelete) {
         await deleteDocument(doc.id);
       }
 
-      print('here2');
       if (isRoot) {
         final subCategoryIds = familyCategoryIds
             .where((id) => id != categoryId)
@@ -385,10 +383,8 @@ class CategoryViewModel extends ChangeNotifier {
         // 모든 하위 삭제 후 root 삭제
         await _categoryService.deleteCategory(categoryId);
       } else {
-        print('here4');
         await _categoryService.deleteCategory(categoryId);
       }
-      print('here5');
 
       await readCategory();
     } catch (e) {

@@ -48,6 +48,7 @@ class _SharedCategoryWebPageState extends State<SharedCategoryWebPage> {
       body: Center(
         child: LayoutBuilder(
           builder: (context, constraints) {
+            double imageWidth = constraints.maxWidth * 0.3;
             /// 웹 가로 너비가 800px 넘지 않게 제한
             return ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 800),
@@ -119,7 +120,7 @@ class _SharedCategoryWebPageState extends State<SharedCategoryWebPage> {
                                       : _isBookmarkMode
                                       ? 'assets/images/empty_state_no_bookmark.svg'
                                       : 'assets/images/empty_state_no_document.svg',
-                                  width: MediaQuery.of(context).size.width * 0.3,
+                                  width: imageWidth,
                                 ),
                               ),
                             )

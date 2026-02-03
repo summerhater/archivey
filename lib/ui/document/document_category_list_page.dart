@@ -55,9 +55,20 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
   @override
   void didUpdateWidget(covariant DocumentCategoryListPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    /// 카테고리 이동 로직 : 이전-현재 카테고리 ID를 비교
+    if (widget.categoryId != oldWidget.categoryId) {
+      ///루트 카테고리가 바뀌면 서브카테고리 선택초기화.
+      _selectedSubId = null;
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        displayDoc();
+        if (mounted) {
+          setState(() {
+            displayDoc();
+          });
+        }
       });
+    }
   }
 
   @override
@@ -105,6 +116,7 @@ class _DocumentCategoryListPageState extends State<DocumentCategoryListPage> {
                 else
                   Expanded(
                     child: ListView.builder(
+                      controller: vm.scrollController,
                       itemCount: displayDocuments.length,
                       itemBuilder: (context, index) {
                         return DocumentCard(

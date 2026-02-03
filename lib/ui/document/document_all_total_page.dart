@@ -68,6 +68,7 @@ class _DocumentAllTotalPageState extends State<DocumentAllTotalPage> {
           );
         }
         return ListView.builder(
+          controller: vm.scrollController,
           itemCount: displayDocuments.length,
           itemBuilder: (context, index) {
             return DocumentCard(

@@ -1,5 +1,6 @@
 import 'package:archivey/config/text_theme_extension.dart';
 import 'package:archivey/ui/document/view_model/category_view_model.dart';
+import 'package:archivey/ui/document/view_model/doc_view_model.dart';
 import 'package:archivey/ui/document/widget/bottom_sheet_category_add_edit_widget.dart';
 import 'package:archivey/ui/document/widget/vertical_tab_navigation.dart';
 import 'package:archivey/utils/app_snack_bar_widget.dart';
@@ -64,6 +65,13 @@ class DocumentShellPageState extends State<DocumentShellPage> {
                     categories: displayCategories.map((e) => e['name']!).toList(),
                     selectedIndex: _getSelectedIndex(currentLocation, displayCategories),
                     onTapChanged: (index) {
+                      final currentIdx = _getSelectedIndex(currentLocation, displayCategories);
+
+                      if (currentIdx == index) {
+                        context.read<DocViewModel>().scrollToTop();
+                        return;
+                      }
+
                       if (index == -1) {
                         setState(() => selectedIndex = -1);
                         return;

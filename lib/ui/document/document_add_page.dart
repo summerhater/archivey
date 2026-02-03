@@ -123,14 +123,17 @@ class _DocumentAddPageState extends State<DocumentAddPage> {
                               color: appColorScheme.textDark,
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              ///pop 대신 go 사용으로 Future already completed 에러해결
-                              context.go('/document_all_total');
-                            },
-                            icon: const Icon(Icons.close),
-                            color: appColorScheme.textLight,
-                            iconSize: 24,
+                          Transform.translate(
+                            offset: const Offset(12, 0),
+                            child: IconButton(
+                              onPressed: () {
+                                ///pop 대신 go 사용으로 Future already completed 에러해결
+                                context.go('/document_all_total');
+                              },
+                              icon: const Icon(Icons.close),
+                              color: appColorScheme.textLight,
+                              iconSize: 24,
+                            ),
                           ),
                         ],
                       ),

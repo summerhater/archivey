@@ -228,7 +228,7 @@ class _DocumentListHeaderWidgetForWebState extends State<DocumentListHeaderWidge
                             onPressed: widget.onDateSortPressed,
                             appTextTheme: appTextTheme,
                             appColorScheme: appColorScheme,
-                            iconPath: '../../../../../assets/icons/sort.svg',
+                            iconPath: '../../../../../../assets/icons/sort.svg',
                           ),
                         ],
                       ),

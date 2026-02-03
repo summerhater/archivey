@@ -49,6 +49,8 @@ class DocViewModel extends ChangeNotifier {
   bool _isSearching = false;
   bool get isSearching => _isSearching;
   int _lastWatchedCategories = 0;
+  final ScrollController _scrollController = ScrollController();
+  ScrollController get scrollController => _scrollController;
 
   // void updateState(AppState newState) {
   //   print('############# docVM의 State가 새로운 것으로 교체 됨 ############');
@@ -278,6 +280,7 @@ class DocViewModel extends ChangeNotifier {
   void dispose() {
     _appState.removeListener(_onStateChanged);
     _subscription?.cancel();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -542,4 +545,15 @@ class DocViewModel extends ChangeNotifier {
       print('Error in kakaoShareDocumentURL: $e');
     }
   }
+
+  void scrollToTop() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
 }

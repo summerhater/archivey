@@ -52,7 +52,6 @@ class _DocumentListHeaderWidgetState extends State<DocumentListHeaderWidget> {
   void didUpdateWidget(covariant DocumentListHeaderWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    /// 상위(Root) 카테고리 ID가 변경되었다면 서브를 '전체(0)'로 리셋
     if (widget.rootCategory?.categoryId != oldWidget.rootCategory?.categoryId) {
       setState(() {
         _selectedIndex = 0;
