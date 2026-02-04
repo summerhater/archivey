@@ -44,19 +44,29 @@ class _DocumentAllPageState extends State<DocumentAllPage> {
                 DocumentListHeaderWidget(
                   isOnAllPage: isOnAllPage || showIndexPage,
                   rootCategory: null,
-                  documentCount: vm.documents.length,
+                  documentCount: vm.filteredDisplayDocuments.length,
                   isLatest: _isLatest,
                   onDateSortPressed: () {
                     setState(() {
                       _isBookmarkMode = false;
                       _isLatest = !_isLatest;
                     });
+                    vm.getDisplayDocuments(
+                      categoryId: null,
+                      isLatestMode: _isLatest,
+                      isBookmarkMode: false,
+                    );
                   },
                   isBookmarkSelected: _isBookmarkMode,
                   onBookmarkSortPressed: () {
                     setState(() {
                       _isBookmarkMode = !_isBookmarkMode;
                     });
+                    vm.getDisplayDocuments(
+                      categoryId: null,
+                      isLatestMode: _isLatest,
+                      isBookmarkMode: _isBookmarkMode,
+                    );
                   },
                 ),
                 Expanded(

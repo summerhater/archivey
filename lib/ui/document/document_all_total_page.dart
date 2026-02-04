@@ -84,7 +84,7 @@ class _DocumentAllTotalPageState extends State<DocumentAllTotalPage> {
 
                 await Clipboard.setData(ClipboardData(text: displayDocuments[index].url));
                 if(!context.mounted) return;
-                context.showAppMessageSnackBar('수집물 원문 링크가 복사되었습니다. ☻');
+                context.showAppMessageSnackBar('☑️ 수집물 원문 링크가 복사되었습니다.');
               },
               onShareKakaoConfirmed: () {
                 String originalUrl = displayDocuments[index].url;

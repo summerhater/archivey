@@ -80,7 +80,7 @@ class _SharedCategoryWebPageState extends State<SharedCategoryWebPage> {
 
                     // 데이터 로드 실패 시 예외 처리
                     if (vm.category == null) {
-                      return const Center(child: Text("카테고리 정보를 불러올 수 없습니다."));
+                      return const Center(child: Text("⚠️ 카테고리 정보를 불러올 수 없습니다.\n잠시 후 다시 시도해 주세요."));
                     }
                     final displayDocuments = vm.displayDocuments;
                     return SafeArea(
