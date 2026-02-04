@@ -30,7 +30,7 @@ class FindEmailPasswordPage extends StatelessWidget {
 
     return DismissKeyboard(
       child: SafeArea(
-        top: !isIosMobile,
+        top: false,
         bottom: !isIosMobile,
         child: Scaffold(
           backgroundColor: appColor.primary,

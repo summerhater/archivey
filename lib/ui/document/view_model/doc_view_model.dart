@@ -48,7 +48,7 @@ class DocViewModel extends ChangeNotifier {
       false; // 1/22 란 추가 :카테고리 1개 있고 도큐먼트는 아예 없는 경우에 notifyListener()로 생기는 readDocuments() 무한루프 해결
   bool _isSearching = false;
   bool get isSearching => _isSearching;
-  int _lastWatchedCategories = 0;
+  List<CategoryModel> _lastWatchedCategories = [];
   final ScrollController _scrollController = ScrollController();
   ScrollController get scrollController => _scrollController;
 
@@ -363,7 +363,7 @@ class DocViewModel extends ChangeNotifier {
   /// 리스너
   void _onStateChanged() {
     bool isCategoryChanged =
-        _lastWatchedCategories != _appState.categories.length;
+        _lastWatchedCategories != _appState.categories;
 
     // 로그인 할 때마다 싱크 맞춰주기
     if (_appState.uid.isEmpty) {
@@ -372,7 +372,7 @@ class DocViewModel extends ChangeNotifier {
     }
     if (isCategoryChanged || !_hasInitDocs) {
       _hasInitDocs = true;
-      _lastWatchedCategories = _appState.categories.length;
+      _lastWatchedCategories = _appState.categories;
 
       readDocuments(_appState.categories, _appState.uid);
     } else {
