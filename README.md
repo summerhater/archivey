@@ -38,7 +38,7 @@
 * **프로젝트명**: 아카이비 (archivey)
 * **진행 기간**: 2025.12 - 2026.02 (8주)
 * **프로젝트 형태**: 2인 팀 프로젝트 (최란 / 이우형)
-* **목표**: 여기저기 흩어져 있어 다시 찾기 힘든 링크들을 자동으로 한데 모아 찾는 번거로움은 줄이고 읽는 즐거움은 더하도록, 무거운 기능대신 기록과 탐색의 번거로움을 최소화한 생산성 앱을 목표
+* **목표**: 여러 플랫폼에 저장해두었지만 여기저기 흩어져 있어 다시 찾기 힘든 링크들을 한데 모아 찾는 번거로움은 줄이고 다시 찾아보는 즐거움은 더하도록, 무거운 기능대신 기록과 탐색의 번거로움을 최소화한 생산성 앱을 목표
 * **주요 타겟**: 
     - 다양한 플랫폼(인스타, 유튜브, 뉴스, 웹 등)에서 정보를 수집하는 헤비 유저
     - 저장한 링크를 어디 저장했는지 다시 찾지 못해 어려움을 겪는 사용자
@@ -77,8 +77,8 @@
 	    <td><b>로그인</b></td>
 	  </tr>
 	  <tr>
-	    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="300"/></td>
 	    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/059f4092-7e87-4e0a-ba3f-e222142a3f9f" width="300"/></td>
+	    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="300"/></td>
 	  </tr>
 	</table>
 </div>
@@ -93,9 +93,9 @@
     - **실시간 동기화**: Firestore-로컬 DB 간 타임스탬프 기반 동기화로 여러 기기에서 수정 사항 즉시 반영
     
 
-* **Share Extension 기반 링크 수집** : 모바일 환경 특성 활용 사용자 경험 최적화
-    - **즉시 수집**: 외부 앱/브라우저에서 '공유하기' 선택 시 앱으로 즉시 진입 및 URL 자동 완성
-    - **유연한 입력**: 공유하기 미지원 콘텐츠를 위한 클립보드 복사-붙여넣기 기능 지원
+* **링크 수집** : 모바일 환경 특성 활용 사용자 경험 최적화
+    - **사용자 링크 직접 입력**: 공유하기 미지원 콘텐츠를 위한 사용자 직접 입력`(복사-붙여넣기)`
+    - **Share Extension 기반 즉시 수집**: 외부 앱/브라우저에서 '공유하기' 선택 시 앱으로 즉시 진입 및 URL 자동 완성
 
 <br>
 
@@ -103,7 +103,7 @@
 	<table>
 	  <tr align="center">
 	    <td><b>사용자 링크 직접 입력</b></td>
-	    <td><b>Share Extension으로 링크 자동 입력</b></td>
+	    <td><b>Share Extension 기반 링크 자동 입력</b></td>
 	  </tr>
 	  <tr>
 	    <td align="center"><img src="https://github.com/user-attachments/assets/8b091991-d85b-47c8-a018-24a19aad7c59" width="300"/></td>
@@ -120,9 +120,6 @@
     - 메뉴 아이콘 또는 카테고리 목록을 드래그해 카테고리 순서 변경 가능  
     - 카테고리의 순서는 오른쪽 세로 네비게이션과 1:1 맵핑. 편의성에 따라 자주 확인하는 카테고리 상단 배치 가능.
     - 더보기 아이콘 : 카테고리 수정 / 삭제, 카테고리 공유하기
-    - **카테고리 공유하기**
-    	- **크로스 플랫폼 개발을 통한 웹 배포**로 제3자에게 URL 링크 형태로 카테고리 공유 가능
-       - 제3자도 카테고리 내 필터링 / 검색 가능
 
 * **소분류 카테고리**
     - 해당 대분류 카테고리 안에서 `+` 아이콘으로 추가 가능
@@ -138,9 +135,9 @@
 		<td><b>소분류 카테고리 - 수정,삭제</b></td>
 	  </tr>
 	  <tr>
-	    <td align="center"><img src="https://github.com/user-attachments/assets/8919c0a1-f303-486a-bdd0-437cba2015f8" width="300"/></td>
-	    <td align="center"><img src="https://github.com/user-attachments/assets/5d19ba82-e40b-40b5-959d-de7ba013381c" width="300"/></td>
-		<td align="center"><img src="https://github.com/user-attachments/assets/f58fb1ba-cc66-4d89-82f8-1cd91d4c1d31" width="300"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/8919c0a1-f303-486a-bdd0-437cba2015f8" width="250"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/f58fb1ba-cc66-4d89-82f8-1cd91d4c1d31" width="250"/></td>
+		<td align="center"><img src="https://github.com/user-attachments/assets/5d19ba82-e40b-40b5-959d-de7ba013381c" width="250"/></td>
 	  </tr>
 	</table>
 </div>
@@ -161,9 +158,9 @@
 		<td><b>북마크 및 최신순/등록순</b></td>
 	  </tr>
 	  <tr>
-	    <td align="center"><img src="https://github.com/user-attachments/assets/a2d34065-f6a2-49d6-a23b-983a2ba5e63a" width="300"/></td>
-	    <td align="center"><img src="https://github.com/user-attachments/assets/849e847c-079b-44e0-9813-8bdf4f839c32" width="300"/></td>
-		<td align="center"><img src="https://github.com/user-attachments/assets/4eaa6683-666f-4f03-8382-b6e92d67e420" width="300"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/a2d34065-f6a2-49d6-a23b-983a2ba5e63a" width="250"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/849e847c-079b-44e0-9813-8bdf4f839c32" width="250"/></td>
+		<td align="center"><img src="https://github.com/user-attachments/assets/4eaa6683-666f-4f03-8382-b6e92d67e420" width="250"/></td>
 	  </tr>
 	</table>
 </div>
@@ -175,19 +172,19 @@
     - Kakao SDK 및 클립보드 복사를 통한 수집물 원문 링크 공유
 * **카테고리 공유하기**
     - **웹 호스팅 공유**: Kakao SDK 및 크로스 플랫폼 개발을 통한 Web Hosting으로 공유 URL 링크 제공
-    	- 앱 미설치자도 공유받은 수집물 조회 / 검색 / 필터링 가능
+    	- **앱 미설치자**도 공유받은 수집물 조회 / 검색 / 필터링 가능
  
 <br>
 
 <div align="center">
 	<table>
 	  <tr align="center">
-	    <td><b>카테고리 공유</b></td>
-	    <td><b>수집물 공유</b></td>
+		<td><b>수집물 공유 (카카오톡)</b></td>
+	    <td><b>카테고리 공유 (웹 링크 제공)</b></td>
 	  </tr>
 	  <tr>
-	    <td align="center"><img src="https://github.com/user-attachments/assets/103e8529-f037-4e10-b4d8-805f0be3789b" width="300"/></td>
 	    <td align="center"><img src="https://github.com/user-attachments/assets/6f28c98f-b7dd-48d4-9739-a926ba3aa847" width="300"/></td>
+		<td align="center"><img src="https://github.com/user-attachments/assets/103e8529-f037-4e10-b4d8-805f0be3789b" width="300"/></td>
 	  </tr>
 	</table>
 </div>
@@ -221,6 +218,9 @@
 * **AI Engine**: Firebase Gemini 2.5 Flash
 
 <br>
+<img width="1313" height="282" alt="Image" src="https://github.com/user-attachments/assets/126ae26c-b1aa-4a98-953e-4e0170c2289b" />
+
+<br>
 
 ## 5. 개발 환경
 
@@ -245,8 +245,8 @@
 
 | 이름 | 역할 | 수행 업무 |
 | :--- | :--- | :--- |
-| **최란** | **Full-Cycle Dev<br>**팀장 | • 서비스 기획 총괄 및 UI/UX 디자인 <br> • 앱 화면 70% 이상 구현 및 모듈화 FE 개발 <br> • Gemini 기반 AI 파이프라인 및 데이터 아키텍처 설계 BE 개발 <br> • Firebase 서버리스 인프라 구축 및 출시 프로세스 총괄 |
-| **이우형** | **Core BE Dev<br>**팀원 | • 로컬 데이터베이스 연동 및 오프라인 동기화 로직 구현 <br> • 성능 중심의 기술 아키텍처 설계 <br> • 회원가입 및 로그인 FE/BE 개발 <br> • 서비스 안전 이용 가이드 및 체계 수립 |
+| **최란** | **Full-Cycle Dev**<br>팀장 | • 서비스 기획 총괄 및 UI/UX 디자인 <br> • 앱 화면 70% 이상 구현 및 모듈화 FE 개발 <br> • Gemini 기반 AI 파이프라인 및 데이터 아키텍처 설계 BE 개발 <br> • Firebase 서버리스 인프라 구축 및 출시 프로세스 총괄 |
+| **이우형** | **Core BE Dev**<br>팀원 | • 로컬 데이터베이스 연동 및 오프라인 동기화 로직 구현 <br> • 성능 중심의 기술 아키텍처 설계 <br> • 회원가입 및 로그인 FE/BE 개발 <br> • 서비스 안전 이용 가이드 및 체계 수립 |
 
 <br>
 
@@ -264,7 +264,7 @@
 * **공식 앱 출시**: Apple AppStore 및 ONE Store 정식 런칭 및 운영 중 (2026.02 ~) / Google PlayStore 심사 중
 * **우수 프로젝트 선정**: 청년취업사관학교(SeSAC) 우수 프로젝트 선정
 * **기술적 도달**: 
-    - 단순 기능 구현을 넘어 **'사용자에게 닿는 기술'**에 집중하여 실사용 상용 서비스 구축
+    - 단순 기능 구현을 넘어 **'사용자에게 닿는 기술'** 에 집중하여 실사용 상용 서비스 구축
     - Provider 기반의 중앙 집중식 상태 관리 도입으로 복잡한 데이터 흐름 제어 성공
 
 <br>
@@ -277,6 +277,6 @@
 
 ---
 **Team Archivey**
-기록은 모을 때가 아니라, 다시 볼 때 비로소 가치가 생깁니다.
+<br>기록은 모을 때가 아니라, 다시 볼 때 비로소 가치가 생깁니다.
 
 <img width="1500" height="300" alt="archivey_cover" src="https://github.com/user-attachments/assets/11417546-5fa3-4535-930f-b66cd60902bc" />
