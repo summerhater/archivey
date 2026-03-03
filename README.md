@@ -97,6 +97,23 @@
     - **즉시 수집**: 외부 앱/브라우저에서 '공유하기' 선택 시 앱으로 즉시 진입 및 URL 자동 완성
     - **유연한 입력**: 공유하기 미지원 콘텐츠를 위한 클립보드 복사-붙여넣기 기능 지원
 
+<br>
+
+<div align="center">
+	<table>
+	  <tr align="center">
+	    <td><b>링크 직접 입력</b></td>
+	    <td><b>Share Extension으로 자동 입력</b></td>
+	  </tr>
+	  <tr>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/8b091991-d85b-47c8-a018-24a19aad7c59" width="300"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/42cf5404-897f-4eb7-8df0-61f172f0ecbd" width="300"/></td>
+	  </tr>
+	</table>
+</div>
+
+<br>
+
 #### 3) 대분류-소분류 카테고리
 * **대분류 카테고리**
     - `All 탭 - Index 페이지`에서 오른쪽 하단의 '새 카테고리 추가' 버튼으로 추가 가능
@@ -110,21 +127,48 @@
 * **소분류 카테고리**
     - 해당 대분류 카테고리 안에서 `+` 아이콘으로 추가 가능
     - 카테고리 수정 / 삭제 : 해당 소분류 카테고리 Long Tap시 가능
- 
-<table>
-  <tr>
-    <td><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="250"/></td>
-    <td><img src="https://github.com/user-attachments/assets/059f4092-7e87-4e0a-ba3f-e222142a3f9f" width="250"/></td>
-  </tr>
-  <tr align="center">
-    <td>회원가입</td>
-    <td>로그인</td>
-  </tr>
-</table>
+
+<br>
+
+<div align="center">
+	<table>
+	  <tr align="center">
+	    <td><b>대분류 카테고리</b></td>
+	    <td><b>소분류 카테고리 - 추가</b></td>
+		<td><b>소분류 카테고리 - 수정,삭제</b></td>
+	  </tr>
+	  <tr>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/8919c0a1-f303-486a-bdd0-437cba2015f8" width="300"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/5d19ba82-e40b-40b5-959d-de7ba013381c" width="300"/></td>
+		<td align="center"><img src="https://github.com/user-attachments/assets/f58fb1ba-cc66-4d89-82f8-1cd91d4c1d31" width="300"/></td>
+	  </tr>
+	</table>
+</div>
+
+<br>
 
 #### 4) 수집물 목록과 검색 기능(FTS)
 * **Drift FTS**: 서버 통신 없이 제목, 요약, 메모, 태그를 아우르는 빠른 통합 검색 구현
 * **실시간 동기화**: Firestore-로컬 DB 간 타임스탬프 기반 동기화로 여러 기기에서 수정 사항 즉시 반영
+
+<br>
+
+<div align="center">
+	<table>
+	  <tr align="center">
+	    <td><b>카테고리 / 수집물 목록</b></td>
+	    <td><b>검색</b></td>
+		<td><b>북마크 및 최신순/등록순</b></td>
+	  </tr>
+	  <tr>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/a2d34065-f6a2-49d6-a23b-983a2ba5e63a" width="300"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/849e847c-079b-44e0-9813-8bdf4f839c32" width="300"/></td>
+		<td align="center"><img src="https://github.com/user-attachments/assets/4eaa6683-666f-4f03-8382-b6e92d67e420" width="300"/></td>
+	  </tr>
+	</table>
+</div>
+
+<br>
 
 #### 5) 외부 공유하기
 * **수집물 공유하기**
@@ -132,9 +176,38 @@
 * **카테고리 공유하기**
     - **웹 호스팅 공유**: Kakao SDK 및 크로스 플랫폼 개발을 통한 Web Hosting으로 공유 URL 링크 제공
     	- 앱 미설치자도 공유받은 수집물 조회 / 검색 / 필터링 가능
-        
+ 
+<br>
+
+<div align="center">
+	<table>
+	  <tr align="center">
+	    <td><b>카테고리 공유</b></td>
+	    <td><b>수집물 공유</b></td>
+	  </tr>
+	  <tr>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/103e8529-f037-4e10-b4d8-805f0be3789b" width="300"/></td>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/6f28c98f-b7dd-48d4-9739-a926ba3aa847" width="300"/></td>
+	  </tr>
+	</table>
+</div>
+
+<br>
+
 #### 6) 설정
 * 로그아웃 / 탈퇴 / 공지사항 / 문의하기 / 앱 버전 / 약관 및 정책
+<br>
+
+<div align="center">
+	<table>
+	  <tr align="center">
+	    <td><b>설정</b></td>
+	  </tr>
+	  <tr>
+	    <td align="center"><img src="https://github.com/user-attachments/assets/2211cd91-56db-442e-a867-414abfdbebe9" width="300"/></td>
+	  </tr>
+	</table>
+</div>
 
 <br>
 
