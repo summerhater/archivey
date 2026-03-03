@@ -82,6 +82,27 @@
 	</table>
 </div>
 
+<div align="center">
+  <table width="100%">
+    <thead>
+      <tr>
+        <th width="50%" align="center">회원가입</th>
+        <th width="50%" align="center">로그인</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td align="center">
+          <img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="300" />
+        </td>
+        <td align="center">
+          <img src="https://github.com/user-attachments/assets/059f4092-7e87-4e0a-ba3f-e222142a3f9f" width="300" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <br>
 
 #### 2) 수집물 추가하기
