@@ -69,7 +69,16 @@
 * **로그인**: 이메일 / 비밀번호
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
 
-<p align="center"><img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/> <img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/> <img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/></p>
+<table>
+  <tr>
+    <td><img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/></td>
+    <td><img src="https://velog.velcdn.com/images/brchoi97/post/05396c24-20bf-46e0-b278-0f4d506d7044/image.gif" width="250"/></td>
+  </tr>
+  <tr align="center">
+    <td>기능 1 설명</td>
+    <td>기능 2 설명</td>
+  </tr>
+</table>
 
 <br>
 
