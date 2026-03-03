@@ -69,7 +69,6 @@
 * **로그인**: 이메일 / 비밀번호
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
 
-
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/4cdf5942-a43d-4d98-86a4-a731ebb08950"/></td>
@@ -80,7 +79,6 @@
     <td>기능 2 설명</td>
   </tr>
 </table>
-
 
 <br>
 
@@ -106,10 +104,20 @@
     	- **크로스 플랫폼 개발을 통한 웹 배포**로 제3자에게 URL 링크 형태로 카테고리 공유 가능
        - 제3자도 카테고리 내 필터링 / 검색 가능
 
-
 * **소분류 카테고리**
     - 해당 대분류 카테고리 안에서 `+` 아이콘으로 추가 가능
     - 카테고리 수정 / 삭제 : 해당 소분류 카테고리 Long Tap시 가능
+ 
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="250"/></td>
+    <td><img src="https://github.com/user-attachments/assets/059f4092-7e87-4e0a-ba3f-e222142a3f9f" width="250"/></td>
+  </tr>
+  <tr align="center">
+    <td>회원가입</td>
+    <td>로그인</td>
+  </tr>
+</table>
 
 #### 4) 수집물 목록과 검색 기능(FTS)
 * **Drift FTS**: 서버 통신 없이 제목, 요약, 메모, 태그를 아우르는 빠른 통합 검색 구현
