@@ -70,7 +70,9 @@
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
 
 <p align="center"><img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/> <img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/> <img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/></p>
+
 <br>
+
 #### 2) 수집물 추가하기
 * **AI 콘텐츠 분석 및 링크 저장** : AI 콘텐츠 분석 및 링크 저장
     - **백그라운드 AI 분석**: Gemini 2.5 Flash 기반 콘텐츠 자동 분석
