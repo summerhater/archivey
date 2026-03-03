@@ -1,12 +1,12 @@
 
 ---
-# <center> 아카이비 archivey </center>
+# <p align="center">아카이비 archivey</p>
 
-<p align="center">📁 수집의 재발견, AI가 요약하고 태그하는 링크 아카이빙 서비스</p>
+### <p align="center">📁 수집의 재발견, AI가 요약하고 태그하는 링크 아카이빙 서비스</p>
 
 ![](https://velog.velcdn.com/images/brchoi97/post/f063a67e-cf69-418b-8b0f-f6e5ef4e5009/image.png)
 
-**<center>App Store (iOS)&nbsp;&nbsp;  |  &nbsp;&nbsp;Google Play (Android)&nbsp;&nbsp; | &nbsp;&nbsp;ONE Store (Android)</center>**
+**<p align="center"><a href="https://apps.apple.com/kr/app/%EC%95%84%EC%B9%B4%EC%9D%B4%EB%B9%84-archivey/id6758512074" target="_blank">App Store (iOS)</a>&nbsp;&nbsp; | &nbsp;&nbsp;Google Play (Android) - 심사 중&nbsp;&nbsp; | &nbsp;&nbsp;<a href="https://m.onestore.co.kr/v2/ko-kr/app/0001004476" target="_blank">ONE Store (Android)</a></p>**
 
 ---
 ### 목차
@@ -23,8 +23,8 @@
     - [6) 설정](#6-설정)
 4. [인프라 아키텍처](#4-인프라-아키텍처)
 5. [개발 환경](#5-개발-환경)
-    - [⚙️ 기술 스택](#⚙️-기술-스택)
-    - [⛓️ 핵심 패키지](#-핵심-패키지)
+    - [1) 기술 스택](#1-기술-스택)
+    - [2) 핵심 패키지](#2-핵심-패키지)
 6. [팀원 소개](#6-팀원-소개)
 7. [Technical Deep Dive (개발 문서)](#7-technical-deep-dive-개발-문서)
 8. [프로젝트 결과 및 성과](#8-프로젝트-결과-및-성과)
@@ -66,11 +66,11 @@
 * **회원가입**: 
 	- 서비스 이용약관 및 개인정보 처리방침 동의 -> 이메일 입력 -> 비밀번호 입력 -> 이메일 인증 순
 
-
 * **로그인**: 이메일 / 비밀번호
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
 
-
+<p align="center"><img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/> <img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/> <img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/></p>
+<br>
 #### 2) 수집물 추가하기
 * **AI 콘텐츠 분석 및 링크 저장** : AI 콘텐츠 분석 및 링크 저장
     - **백그라운드 AI 분석**: Gemini 2.5 Flash 기반 콘텐츠 자동 분석
@@ -127,7 +127,7 @@
 
 ## 5. 개발 환경
 
-#### ⚙️ 기술 스택
+#### 1) 기술 스택
 | Category | Stack |
 |----------|-------|
 | **Frontend** | <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=Flutter&logoColor=white"> <img src="https://img.shields.io/badge/Provider-0175C2?style=for-the-badge&logo=Dart&logoColor=white"> |
@@ -135,7 +135,7 @@
 | **Database** | <img src="https://img.shields.io/badge/SQLite3-003B57?style=for-the-badge&logo=SQLite&logoColor=white"> <img src="https://img.shields.io/badge/Drift-0175C2?style=for-the-badge&logo=Dart&logoColor=white"> |
 | **AI** | <img src="https://img.shields.io/badge/Gemini%202.5%20Flash-8E75B2?style=for-the-badge&logo=Google&logoColor=white"> |
 
-#### ⛓️ 핵심 패키지
+#### 2) 핵심 패키지
 * **Navigation**: `GoRouter`
 * **통신**: `html`, `http`, `metadata_fetch`
 * **Local DB**: `drift`, `sqlite3_flutter_libs`
