@@ -2,7 +2,7 @@
 ---
 # <center> 아카이비 archivey </center>
 
-#### <center>📁 수집의 재발견, AI가 요약하고 태그하는 링크 아카이빙 서비스</center>
+<center>📁 수집의 재발견, AI가 요약하고 태그하는 링크 아카이빙 서비스</center>
 
 ![](https://velog.velcdn.com/images/brchoi97/post/f063a67e-cf69-418b-8b0f-f6e5ef4e5009/image.png)
 
