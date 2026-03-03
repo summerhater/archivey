@@ -102,8 +102,8 @@
 <div align="center">
 	<table>
 	  <tr align="center">
-	    <td><b>링크 직접 입력</b></td>
-	    <td><b>Share Extension으로 자동 입력</b></td>
+	    <td><b>사용자 링크 직접 입력</b></td>
+	    <td><b>Share Extension으로 링크 자동 입력</b></td>
 	  </tr>
 	  <tr>
 	    <td align="center"><img src="https://github.com/user-attachments/assets/8b091991-d85b-47c8-a018-24a19aad7c59" width="300"/></td>
