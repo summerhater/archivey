@@ -68,11 +68,12 @@
 
 * **로그인**: 이메일 / 비밀번호
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
+<br>
 
 <div align="center">
 	<table width="100%">
 	  <tr align="center">
-	    <td>회원가입</td>
+	    **<td>회원가입</td>**
 	    <td>로그인</td>
 	  </tr>
 	  <tr>
