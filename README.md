@@ -69,6 +69,7 @@
 * **로그인**: 이메일 / 비밀번호
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
 
+
 <table>
   <tr>
     <td><img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/></td>
@@ -79,6 +80,7 @@
     <td>기능 2 설명</td>
   </tr>
 </table>
+
 
 <br>
 
