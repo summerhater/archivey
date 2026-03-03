@@ -221,6 +221,7 @@
 <img width="1313" height="282" alt="Image" src="https://github.com/user-attachments/assets/126ae26c-b1aa-4a98-953e-4e0170c2289b" />
 
 <br>
+<br>
 
 ## 5. 개발 환경
 
@@ -275,7 +276,10 @@
 * **AI 고도화**: AI 파이프라인 강화와 OpenAI Whisper 연동 등 고도화 방안 검토 후 영상 오디오 분석 및 이미지 텍스트 요약 기능 추가
 * **성능 고도화**: 이미지 Lazy Loading 및 디스크 캐싱 전략 개선을 통한 네트워크 리소스 최적화
 
+<br>
 ---
+<br>
+
 **Team Archivey**
 <br>기록은 모을 때가 아니라, 다시 볼 때 비로소 가치가 생깁니다.
 
