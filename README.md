@@ -69,16 +69,18 @@
 * **로그인**: 이메일 / 비밀번호
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
 
-<table>
-  <tr>
-    <td><img src="https://github.com/user-attachments/assets/4cdf5942-a43d-4d98-86a4-a731ebb08950"/></td>
-    <td><img src="https://velog.velcdn.com/images/brchoi97/post/05396c24-20bf-46e0-b278-0f4d506d7044/image.gif" width="250"/></td>
-  </tr>
-  <tr align="center">
-    <td>기능 1 설명</td>
-    <td>기능 2 설명</td>
-  </tr>
-</table>
+<div align="center">
+	<table>
+	  <tr>
+	    <td><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="300"/></td>
+	    <td><img src="https://github.com/user-attachments/assets/059f4092-7e87-4e0a-ba3f-e222142a3f9f" width="300"/></td>
+	  </tr>
+	  <tr align="center">
+	    <td>회원가입</td>
+	    <td>로그인</td>
+	  </tr>
+	</table>
+</div>
 
 <br>
 
