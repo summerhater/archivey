@@ -70,10 +70,10 @@
     - 로그인 성공 시 Index(카테고리 목록) 페이지로 이동
 
 <div align="center">
-	<table>
+	<table width="100%">
 	  <tr>
-	    <td><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="300"/></td>
-	    <td><img src="https://github.com/user-attachments/assets/059f4092-7e87-4e0a-ba3f-e222142a3f9f" width="300"/></td>
+	    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="300"/></td>
+	    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/059f4092-7e87-4e0a-ba3f-e222142a3f9f" width="300"/></td>
 	  </tr>
 	  <tr align="center">
 	    <td>회원가입</td>
