@@ -72,7 +72,7 @@
 
 <table>
   <tr>
-    <td><img src="https://velog.velcdn.com/images/brchoi97/post/d27bc267-2156-4840-b529-269175a03f15/image.gif" width="250"/></td>
+    <td><img src="https://github.com/user-attachments/assets/4cdf5942-a43d-4d98-86a4-a731ebb08950"/></td>
     <td><img src="https://velog.velcdn.com/images/brchoi97/post/05396c24-20bf-46e0-b278-0f4d506d7044/image.gif" width="250"/></td>
   </tr>
   <tr align="center">
