@@ -118,7 +118,7 @@
 * **대분류 카테고리**
     - `All 탭 - Index 페이지`에서 오른쪽 하단의 '새 카테고리 추가' 버튼으로 추가 가능
     - 메뉴 아이콘 또는 카테고리 목록을 드래그해 카테고리 순서 변경 가능  
-    - 카테고리의 순서는 오른쪽 세로 네비게이션과 1:1 맵핑. 편의성에 따라 자주 확인하는 카테고리 상단 배치 가능.
+    - 카테고리의 순서는 오른쪽 세로 네비게이션과 1:1 맵핑. 편의성에 따라 자주 확인하는 카테고리 상단 배치 가능
     - 더보기 아이콘 : 카테고리 수정 / 삭제, 카테고리 공유하기
 
 * **소분류 카테고리**
@@ -231,7 +231,7 @@
 | **Frontend** | <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=Flutter&logoColor=white"> <img src="https://img.shields.io/badge/Provider-0175C2?style=for-the-badge&logo=Dart&logoColor=white"> |
 | **Backend** | <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=Firebase&logoColor=black"> <img src="https://img.shields.io/badge/Firebase%20Auth-FFCA28?style=for-the-badge&logo=Firebase&logoColor=black"> <img src="https://img.shields.io/badge/Cloud%20Firestore-FFCA28?style=for-the-badge&logo=Firebase&logoColor=black"> <img src="https://img.shields.io/badge/Cloud%20Functions-FFCA28?style=for-the-badge&logo=Firebase&logoColor=black"> |
 | **Database** | <img src="https://img.shields.io/badge/SQLite3-003B57?style=for-the-badge&logo=SQLite&logoColor=white"> <img src="https://img.shields.io/badge/Drift-0175C2?style=for-the-badge&logo=Dart&logoColor=white"> |
-| **AI** | <img src="https://img.shields.io/badge/Gemini%202.5%20Flash-8E75B2?style=for-the-badge&logo=Google&logoColor=white"> |
+| **AI Engine** | <img src="https://img.shields.io/badge/Gemini%202.5%20Flash-8E75B2?style=for-the-badge&logo=Google&logoColor=white"> |
 
 #### 2) 핵심 패키지
 * **Navigation**: `GoRouter`
@@ -254,10 +254,10 @@
 ## 7. Technical Deep Dive (개발 문서)
 기술적 한계를 극복하고 아키텍처를 개선한 과정을 상세히 기록했습니다.
 
-* [📂 CORS 제약 극복 및 Cloud Functions Proxy 구축](docs/cors_proxy.md)
-* [📂 제약 조건 내 가용성을 극대화한 적응형 AI 요약 시스템](docs/adaptive_ai.md)
-* [📂 AppState 도입을 통한 상태 관리 아키텍처 개선](docs/app_state.md)
-* [📂 위젯 리빌드 최적화를 통한 UI 렌더링 성능 개선](docs/ui_performance.md)
+* [📂 CORS 제약 극복 및 Cloud Functions Proxy 구축](docs/cors_proxy.md) (작성 중)
+* [📂 제약 조건 내 가용성을 극대화한 적응형 AI 요약 시스템](docs/adaptive_ai.md) (작성 중)
+* [📂 AppState 도입을 통한 상태 관리 아키텍처 개선](docs/app_state.md) (작성 중)
+* [📂 위젯 리빌드 최적화를 통한 UI 렌더링 성능 개선](docs/ui_performance.md) (작성 중)
 
 <br>
 
@@ -273,11 +273,13 @@
 ## 9. 개선 사항 및 추후 계획
 * **플랫폼 최적화**: 다크 모드 지원 및 태블릿 전용 UI 최적화로 UX 강화
 * **소셜/협업 확장**: SNS 간편 로그인(OAuth) 도입 및 카테고리 공동 편집 기능 추가
-* **AI 고도화**: AI 파이프라인 강화와 OpenAI Whisper 연동 등 고도화 방안 검토 후 영상 오디오 분석 및 이미지 텍스트 요약 기능 추가
+* **AI 고도화**: 영상 오디오 분석 및 이미지 텍스트 요약 기능을 위한 AI 파이프라인 강화와 OpenAI Whisper 연동 등 고도화 방안 검토
 * **성능 고도화**: 이미지 Lazy Loading 및 디스크 캐싱 전략 개선을 통한 네트워크 리소스 최적화
 
 <br>
+
 ---
+
 <br>
 
 **Team Archivey**
