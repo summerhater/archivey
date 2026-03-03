@@ -1,14 +1,18 @@
+<br>
 
----
 # <p align="center">아카이비 archivey</p>
 
 ### <p align="center">📁 수집의 재발견, AI가 요약하고 태그하는 링크 아카이빙 서비스</p>
+
+<br>
 
 ![](https://velog.velcdn.com/images/brchoi97/post/f063a67e-cf69-418b-8b0f-f6e5ef4e5009/image.png)
 
 **<p align="center"><a href="https://apps.apple.com/kr/app/%EC%95%84%EC%B9%B4%EC%9D%B4%EB%B9%84-archivey/id6758512074" target="_blank">App Store (iOS)</a>&nbsp;&nbsp; | &nbsp;&nbsp;Google Play (Android) - 심사 중&nbsp;&nbsp; | &nbsp;&nbsp;<a href="https://m.onestore.co.kr/v2/ko-kr/app/0001004476" target="_blank">ONE Store (Android)</a></p>**
 
 ---
+<br>
+
 ### 목차
 1. [프로젝트 개요](#1-프로젝트-개요)
 2. [프로젝트 소개](#2-프로젝트-소개)
