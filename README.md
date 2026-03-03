@@ -73,8 +73,8 @@
 <div align="center">
 	<table width="100%">
 	  <tr align="center">
-	    **<td>회원가입</td>**
-	    <td>로그인</td>
+	    <td><b>회원가입</b></td>
+	    <td><b>로그인</b></td>
 	  </tr>
 	  <tr>
 	    <td width="50%" align="center"><img src="https://github.com/user-attachments/assets/2c6c115f-160d-458b-8f20-9b752162bbc2" width="300"/></td>
