@@ -8,7 +8,7 @@
 
 ![](https://velog.velcdn.com/images/brchoi97/post/f063a67e-cf69-418b-8b0f-f6e5ef4e5009/image.png)
 
-**<p align="center"><a href="https://apps.apple.com/kr/app/%EC%95%84%EC%B9%B4%EC%9D%B4%EB%B9%84-archivey/id6758512074" target="_blank">App Store (iOS)</a>&nbsp;&nbsp; | &nbsp;&nbsp;Google Play (Android) - 심사 중&nbsp;&nbsp; | &nbsp;&nbsp;<a href="https://m.onestore.co.kr/v2/ko-kr/app/0001004476" target="_blank">ONE Store (Android)</a></p>**
+**<p align="center"><a href="https://apps.apple.com/kr/app/%EC%95%84%EC%B9%B4%EC%9D%B4%EB%B9%84-archivey/id6758512074" target="_blank">App Store (iOS)</a>&nbsp;&nbsp; | &nbsp;&nbsp;<a href="https://play.google.com/store/apps/details?id=com.archivey.archivey&pcampaignid=web_share" target="_blank">Google Play (Android)</a>&nbsp;&nbsp; | &nbsp;&nbsp;<a href="https://m.onestore.co.kr/v2/ko-kr/app/0001004476" target="_blank">ONE Store (Android)</a></p>**
 
 ---
 <br>
