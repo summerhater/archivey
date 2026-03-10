@@ -1,4 +1,4 @@
-📢 본 문서는 웹 환경에서 열람하기에 가장 최적화되어 있습니다.<br>
+> 📢 본 문서는 웹 환경에서 열람하기에 가장 최적화되어 있습니다.<br>
    This document is best viewed in a Web browser.
 
 <br>
