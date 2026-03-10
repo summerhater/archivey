@@ -268,7 +268,7 @@
 <br>
 
 ## 8. 프로젝트 결과 및 성과
-* **공식 앱 출시**: Apple AppStore 및 ONE Store 정식 런칭 및 운영 중 (2026.02 ~) / Google PlayStore 심사 중
+* **공식 앱 출시**: Apple AppStore 및 Google PlayStore, ONE Store 정식 런칭 및 운영 중 (2026.02 ~)
 * **우수 프로젝트 선정**: 청년취업사관학교(SeSAC) 우수 프로젝트 선정
 * **기술적 도달**: 
     - 단순 기능 구현을 넘어 **'사용자에게 닿는 기술'** 에 집중하여 실사용 상용 서비스 구축
