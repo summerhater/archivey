@@ -6,7 +6,7 @@
 
 <br>
 
-# <p align="center">아카이비 archivey</p>
+# <p align="center">아카이비 archivey<br>기록은 모을 때가 아니라, 다시 볼 때 비로소 가치가 생깁니다.</p>
 
 ### <p align="center">📁 수집의 재발견, AI가 요약하고 태그하는 링크 아카이빙 서비스</p>
 
@@ -295,6 +295,5 @@
 <br>
 
 **team archivey**
-<br>기록은 모을 때가 아니라, 다시 볼 때 비로소 가치가 생깁니다.
 
 <img width="1500" height="300" alt="archivey_cover" src="https://github.com/user-attachments/assets/11417546-5fa3-4535-930f-b66cd60902bc" />
