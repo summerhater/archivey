@@ -1,5 +1,6 @@
 > 📢 본 문서는 웹 환경에서 열람하기에 가장 최적화되어 있습니다.<br>
    This document is best viewed in a Web browser.
+> 작성자 : 최란
 
 <br>
 
@@ -265,10 +266,10 @@
 ## 7. Technical Deep Dive (개발 문서)
 기술적 한계를 극복하고 아키텍처를 개선한 과정을 상세히 기록했습니다.
 
-* [📂 CORS 제약 극복 및 Cloud Functions Proxy 구축](docs/cors_proxy.md) (작성 중)
-* [📂 제약 조건 내 가용성을 극대화한 적응형 AI 요약 시스템](docs/adaptive_ai.md) (작성 중)
-* [📂 AppState 도입을 통한 상태 관리 아키텍처 개선](docs/app_state.md) (작성 중)
-* [📂 위젯 리빌드 최적화를 통한 UI 렌더링 성능 개선](docs/ui_performance.md) (작성 중)
+* [📂 CORS 제약 극복 및 Cloud Functions Proxy 구축](docs/cors_proxy.md)  |  작성자 : 최란 (작성 중)
+* [📂 제약 조건 내 가용성을 극대화한 적응형 AI 요약 시스템](docs/adaptive_ai.md)  |  작성자 : 최란 (작성 중)
+* [📂 AppState 도입을 통한 상태 관리 아키텍처 개선](docs/app_state.md)  |  작성자 : 최란 (작성 중)
+* [📂 위젯 리빌드 최적화를 통한 UI 렌더링 성능 개선](docs/ui_performance.md)  |  작성자 : 최란 (작성 중)
 
 <br>
 
