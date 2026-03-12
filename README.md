@@ -296,5 +296,5 @@
 <br>
 
 **team archivey**
-기록은 모을 때가 아니라, 다시 볼 때 비로소 가치가 생깁니다
+<br>기록은 모을 때가 아니라, 다시 볼 때 비로소 가치가 생깁니다
 <img width="1500" height="300" alt="archivey_cover" src="https://github.com/user-attachments/assets/11417546-5fa3-4535-930f-b66cd60902bc" />
