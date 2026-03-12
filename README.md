@@ -1,6 +1,6 @@
 > 📢 본 문서는 웹 환경에서 열람하기에 가장 최적화되어 있습니다.<br>
-   This document is best viewed in a Web browser.
-> 작성자 : 최란
+   This document is best viewed in a Web browser.<br>
+   작성자 : 최란
 
 <br>
 
