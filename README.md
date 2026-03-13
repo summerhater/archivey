@@ -68,7 +68,7 @@
 
 #### 2) 프로젝트 목표
 * **통합 관리**: 분산된 콘텐츠 링크를 한곳에서 카테고리별로 관리
-* **검색성 극대화**: Firebase Gemini를 활용한 자동 요약 및 태그 생성으로 빠른 정보 재접근 지원
+* **검색성 극대화**: Firebase Gemini AI Logic을 활용한 자동 요약 및 태그 생성으로 빠른 정보 재접근 지원
 * **끊김 없는 경험**: Share Extension을 통한 즉각적인 수집과 오프라인 우선 저장 전략(Local-first) 실천
 
 <br>
@@ -100,7 +100,7 @@
 
 #### 2) 수집물 추가하기
 * **AI 콘텐츠 분석 및 링크 저장** : AI 콘텐츠 분석 및 링크 저장
-    - **백그라운드 AI 분석**: Gemini 2.5 Flash 기반 콘텐츠 자동 분석
+    - **백그라운드 AI 분석**: Firebase Gemini AI Logic 2.5 Flash 기반 콘텐츠 자동 분석
     - **유동적 프롬프트 전략**: 데이터 품질에 따른 프롬프트 최적화로 정교한 요약 및 태그 추출
     - **로컬 우선 저장**: SQLite(Drift)에 즉시 저장하여 사용자에게 기다림 없는 응답성 제공
     - **실시간 동기화**: Firestore-로컬 DB 간 타임스탬프 기반 동기화로 여러 기기에서 수정 사항 즉시 반영
@@ -225,10 +225,10 @@
 아카이비는 확장 가능한 **MVVM 패턴**과 서버리스 환경을 결합하여 구축되었습니다.
 
 * **Frontend**: Flutter (iOS, Android, Web 크로스 플랫폼)
-* **State Management**: Provider 6.1.5 (의존성 주입 및 전역 상태 관리)
+* **State Management**: Provider (의존성 주입 및 전역 상태 관리)
 * **Database**: SQLite3 + Drift (로컬), Cloud Firestore (서버)
 * **Backend**: Firebase (Authentication / Cloud Functions (Proxy Server for Web) / Hosting)
-* **AI Engine**: Firebase Gemini 2.5 Flash
+* **AI Engine**: Firebase Gemini AI Logic 2.5 Flash
 
 <br>
 <img width="1313" height="282" alt="Image" src="https://github.com/user-attachments/assets/126ae26c-b1aa-4a98-953e-4e0170c2289b" />
